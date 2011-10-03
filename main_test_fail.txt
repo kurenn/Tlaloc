@@ -1,0 +1,17 @@
+program main
+
+	define flotante as decimal.
+	define texto as string = "hola mundo"
+	
+	method string name(integer i, string a, decimal ->q):
+		
+		while(a>b):
+			for a = 3 to 8 step (a*2):
+			    a=a+1.
+		        end for
+		end while
+
+	return a
+	end method
+
+end program

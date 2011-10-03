@@ -1,0 +1,86 @@
+program main:
+
+	define flotante as decimal.
+	define texto as string = "hola mundo".
+	define bool as boolean = true.
+	define entero as integer = 8.
+	define otroentero as integer = 1+1.
+
+	method integer name(integer i, string a, decimal ->q):
+		define otroentero as integer = 1+1.
+		a=1.
+		a[4]=false.
+	
+		if(a<b):
+			a=1+1.
+			a=1+1.
+			if(b<c):
+				a = abs(b).
+				else:
+				a = sqrt(c).
+			end if
+		else:	
+			b=2-9.
+			a=1+1.
+		end if
+		
+		name(2).
+		print(a).
+		printline("hello world").
+		print("hello" + "world").
+		print((1+2) + (1*2)).
+		read(a).
+		read(a,b,c).
+
+		a[i+2] = i*fact(2).
+	
+	return true
+	end method 
+
+	method integer name(integer i, string a, decimal ->q):
+		
+		for a = 3 to 8:
+			a=a+1.
+		end for
+	
+		
+		for a = 3 to 8 step (a*2):
+			a=a+1.
+		end for
+		a = abs(b).
+	return a
+	end method 
+	
+	method string name(integer i, string a, decimal ->q):
+		
+		while(a>b):
+			for a = 3 to 8 step (a*2):
+			    a=a+1.
+		        end for
+		end while
+
+	return a
+	end method 
+
+	method string name(integer i, string a, decimal ->q):
+		
+		select a:
+			case default:
+				a=1.
+			end case
+			case 0:
+				a=0.
+			end case
+			case 0:
+				a=0.
+			end case
+			case 0:
+				a=0.
+			end case
+		end select
+
+	return a
+	end method 
+
+
+end program
