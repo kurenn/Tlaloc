@@ -56,6 +56,7 @@ program main:
 		while(a>b):
 			for a = 3 to 8 step (a*2):
 			    a=a+1.
+				B=B+2.
 		        end for
 		end while
 

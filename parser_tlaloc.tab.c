@@ -188,7 +188,26 @@
 /* Copy the first part of user declarations.  */
 #line 1 "parser_tlaloc.y"
 
+	
 	#include <stdio.h>
+
+	  int yyparse(void);
+	  int yylex(void);
+	  int yywrap() { return 1; }
+	  extern int yylineno;
+	  extern char* yytext;
+	  extern int yylval;
+	
+	void yyerror(const char *message)
+	{
+	  fprintf(stderr, "error: '%s' at '%s' - LINE '%d', yylval=%u\n", message, yytext, yylineno, yylval);
+	}
+	
+	main(int argc, char **argv) {
+		yyparse();
+	}
+	
+	
 
 
 /* Enabling traces.  */
@@ -222,7 +241,7 @@ typedef int YYSTYPE;
 
 
 /* Line 216 of yacc.c.  */
-#line 226 "parser_tlaloc.tab.c"
+#line 245 "parser_tlaloc.tab.c"
 
 #ifdef short
 # undef short
@@ -552,17 +571,17 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    17,    17,    20,    21,    24,    27,    28,    31,    32,
-      33,    34,    37,    38,    39,    40,    43,    44,    47,    50,
-      51,    52,    53,    54,    55,    58,    59,    60,    61,    62,
-      63,    64,    67,    68,    69,    72,    73,    74,    77,    78,
-      81,    82,    83,    86,    89,    90,    91,    94,    94,    94,
-      94,    94,    96,    97,    98,    99,   100,   101,   104,   104,
-     107,   110,   110,   112,   115,   116,   119,   120,   123,   124,
-     125,   126,   127,   128,   131,   134,   135,   138,   139,   142,
-     143,   144,   145,   146,   149,   153,   156,   156,   156,   159,
-     162,   165,   165,   168,   171,   171,   174,   177,   177,   180,
-     183,   183,   186,   186,   189,   189
+       0,    36,    36,    39,    40,    43,    46,    47,    50,    51,
+      52,    53,    56,    57,    58,    59,    62,    63,    66,    69,
+      70,    71,    72,    73,    74,    77,    78,    79,    80,    81,
+      82,    83,    86,    87,    88,    91,    92,    93,    96,    97,
+     100,   101,   102,   105,   108,   109,   110,   113,   113,   113,
+     113,   113,   115,   116,   117,   118,   119,   120,   123,   123,
+     126,   129,   129,   131,   134,   135,   138,   139,   142,   143,
+     144,   145,   146,   147,   150,   153,   154,   157,   158,   161,
+     162,   163,   164,   165,   168,   172,   175,   175,   175,   178,
+     181,   184,   184,   187,   190,   190,   193,   196,   196,   199,
+     202,   202,   205,   205,   208,   208
 };
 #endif
 
@@ -1611,13 +1630,13 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 17 "parser_tlaloc.y"
+#line 36 "parser_tlaloc.y"
     {printf("Programa aceptado\n");;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1621 "parser_tlaloc.tab.c"
+#line 1640 "parser_tlaloc.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1831,14 +1850,5 @@ yyreturn:
 }
 
 
-#line 192 "parser_tlaloc.y"
+#line 211 "parser_tlaloc.y"
 
-
-main(int argc, char **argv)
-{
-yyparse();
-}
-yyerror(char *s)
-{
-fprintf(stderr, "error: %s\n", s);
-}

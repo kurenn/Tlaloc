@@ -1,5 +1,24 @@
 %{
+	
 	#include <stdio.h>
+
+	  int yyparse(void);
+	  int yylex(void);
+	  int yywrap() { return 1; }
+	  extern int yylineno;
+	  extern char* yytext;
+	  extern int yylval;
+	
+	void yyerror(const char *message)
+	{
+	  fprintf(stderr, "error: '%s' at '%s' - LINE '%d', yylval=%u\n", message, yytext, yylineno, yylval);
+	}
+	
+	main(int argc, char **argv) {
+		yyparse();
+	}
+	
+	
 %}
 
 
@@ -190,12 +209,3 @@
 	
 
 %%
-
-main(int argc, char **argv)
-{
-yyparse();
-}
-yyerror(char *s)
-{
-fprintf(stderr, "error: %s\n", s);
-}

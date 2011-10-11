@@ -1,7 +1,7 @@
 %{
 	#include "parser_tlaloc.tab.h"
 %}
-
+%option yylineno
 %%
 
 "program" 	{ return PROGRAM; }
