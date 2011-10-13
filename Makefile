@@ -1,4 +1,4 @@
-tlaloc: scanner_tlaloc.l parser_tlaloc.y
+tlaloc: scanner_tlaloc.l parser_tlaloc.y hashing_tables.c hashing_tables.h
 	bison -d parser_tlaloc.y
 	flex scanner_tlaloc.l
-	gcc -o $@ parser_tlaloc.tab.c lex.yy.c -lfl
+	gcc -o $@  `pkg-config --cflags --libs glib-2.0` parser_tlaloc.tab.c lex.yy.c hashing_tables.c hashing_tables.h -lfl

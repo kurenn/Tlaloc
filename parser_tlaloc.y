@@ -1,56 +1,66 @@
 %{
-	
 	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
 
-	  int yyparse(void);
-	  int yylex(void);
-	  int yywrap() { return 1; }
-	  extern int yylineno;
-	  extern char* yytext;
-	  extern int yylval;
+	extern int yylineno;
+	char *tipo;
 	
 	void yyerror(const char *message)
 	{
-	  fprintf(stderr, "error: '%s' at '%s' - LINE '%d', yylval=%u\n", message, yytext, yylineno, yylval);
+	  fprintf(stderr, "error: '%s' - LINE '%d'", message, yylineno);
 	}
 	
 	main(int argc, char **argv) {
+		create_proc_table();
 		yyparse();
+		print_hash_table();
 	}
 	
 	
 %}
 
+%union {
+	char *str;
+	int integer;
+	float decimal;
+}
 
-%token PROGRAM METHOD PRINT PRINTLINE READ CASE DEFAULT DEFINE AS TO STEP STRING INTEGER DECIMAL 
+%token PROGRAM METHOD PRINT PRINTLINE READ CASE DEFAULT DEFINE AS TO STEP INTEGER DECIMAL 
+%token STRING
 %token BOOLEAN END FALSO VERDADERO VOID RETURN AND OR ABS COS SIN LOG TAN SQRT
 %token FOR WHILE
 %token IF SELECT ELSE
 %token PAR_ABIERTO PAR_CERRADO COMA DOS_PUNTOS CORCHETE_ABIERTO CORCHETE_CERRADO
 %token IGUAL IGUAL_IGUAL MENOR_QUE MAYOR_QUE DIFERENTE POR MAS MENOS DIVISION
 %token EXPONENCIAL PUNTO APUNTADOR COMILLAS
-%token ID CTE_INTEGER CTE_DECIMAL CTE_STRING
+%token ID
+%token CTE_STRING
+%token CTE_DECIMAL
+%token CTE_INTEGER
+%start tlaloc
 
 %%
 
-	tlaloc: PROGRAM ID DOS_PUNTOS vars metodo_def metodo END PROGRAM {printf("Programa aceptado\n");}
+	tlaloc: PROGRAM ID {insert_proc_to_table(yylval, "global");} DOS_PUNTOS vars metodo_def metodo END PROGRAM
 		  ;
 	
-	vars: vars_def vars 
+	vars: vars vars_def
 		  | 
 		  ;
 	
-	vars_def: DEFINE declaracion AS tipo asignacion_var PUNTO
+	vars_def: DEFINE declaracion AS tipo asignacion_var PUNTO 
 		    ;
 	
-	declaracion: APUNTADOR ID 
-	             | ID
+	declaracion: APUNTADOR ID
+				 | ID
 			     ;
 	
+	
 	tipo: INTEGER 
-		  | STRING 
+		  | STRING
 		  | BOOLEAN 
-		  | DECIMAL
+		  | DECIMAL 
 		  ;
 	
 	asignacion_var: IGUAL expresion 
@@ -83,7 +93,7 @@
 					 | 
 				     ;
 				
-	exp: termino 
+	exp: termino
 		 | termino MAS termino 
 		 | termino MENOS termino
 	     ;
@@ -113,7 +123,7 @@
 	factor_alterno_choices: CTE_INTEGER | llamado | funcion_matematica | ID CORCHETE_ABIERTO exp CORCHETE_CERRADO | ID;
 	
 	var: ID 
-			 | CTE_INTEGER 
+		| CTE_INTEGER 
 			 | CTE_STRING 
 			 | CTE_DECIMAL 
 			 | VERDADERO 
@@ -123,7 +133,7 @@
 	metodo: metodo_def metodo | 
 		  ;
 	
-	metodo_def: METHOD tipo ID PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body RETURN expresion END METHOD 
+	metodo_def: METHOD tipo ID {insert_proc_to_table(yylval, "global");} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body RETURN expresion END METHOD 
 			  ;
 	
 	metodo_body: body_code metodo_body | ; 
@@ -207,5 +217,4 @@
 	
 	default_choices: PRINT | PRINTLINE;
 	
-
 %%

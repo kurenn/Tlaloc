@@ -50,9 +50,9 @@
      AS = 266,
      TO = 267,
      STEP = 268,
-     STRING = 269,
-     INTEGER = 270,
-     DECIMAL = 271,
+     INTEGER = 269,
+     DECIMAL = 270,
+     STRING = 271,
      BOOLEAN = 272,
      END = 273,
      FALSO = 274,
@@ -92,9 +92,9 @@
      APUNTADOR = 308,
      COMILLAS = 309,
      ID = 310,
-     CTE_INTEGER = 311,
+     CTE_STRING = 311,
      CTE_DECIMAL = 312,
-     CTE_STRING = 313
+     CTE_INTEGER = 313
    };
 #endif
 /* Tokens.  */
@@ -109,9 +109,9 @@
 #define AS 266
 #define TO 267
 #define STEP 268
-#define STRING 269
-#define INTEGER 270
-#define DECIMAL 271
+#define INTEGER 269
+#define DECIMAL 270
+#define STRING 271
 #define BOOLEAN 272
 #define END 273
 #define FALSO 274
@@ -151,15 +151,24 @@
 #define APUNTADOR 308
 #define COMILLAS 309
 #define ID 310
-#define CTE_INTEGER 311
+#define CTE_STRING 311
 #define CTE_DECIMAL 312
-#define CTE_STRING 313
+#define CTE_INTEGER 313
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef union YYSTYPE
+#line 23 "parser_tlaloc.y"
+{
+	char *str;
+	int integer;
+	float decimal;
+}
+/* Line 1529 of yacc.c.  */
+#line 171 "parser_tlaloc.tab.h"
+	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

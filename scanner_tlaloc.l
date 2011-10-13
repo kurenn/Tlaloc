@@ -1,10 +1,14 @@
 %{
+	#include <string.h>
+	#include <stdio.h>
+	#include <stdlib.h>
 	#include "parser_tlaloc.tab.h"
 %}
-%option yylineno
+%option noyywrap nodefault yylineno case-insensitive
+
 %%
 
-"program" 	{ return PROGRAM; }
+"program" 	{ yylval.str = strdup(yytext); return PROGRAM; }
 "method" 	{ return METHOD; }
 "print" 	{ return PRINT; }
 "printline" { return PRINTLINE; }
@@ -15,10 +19,10 @@
 "as" 		{ return AS; }
 "to" 		{ return TO; }
 "step" 		{ return STEP; }
-"string" 	{ return STRING; }
-"integer" 	{ return INTEGER; }
-"decimal" 	{ return DECIMAL; }
-"boolean" 	{ return BOOLEAN; }
+"string" 	{ yylval.str = strdup(yytext); return STRING; }
+"integer" 	{ yylval.str = strdup(yytext); return INTEGER; }
+"decimal" 	{ yylval.str = strdup(yytext); return DECIMAL; }
+"boolean" 	{ yylval.str = strdup(yytext); return BOOLEAN; }
 "end" 		{ return END;}
 "true" 		{ return VERDADERO; }
 "false" 	{ return FALSO; }
@@ -64,10 +68,10 @@
 "\""		{ return COMILLAS; }
 
 
-[a-zA-Z]([a-zA-Z]|[0-9])* { return ID; }
-[0-9]+ 					  { return CTE_INTEGER; }
-[0-9]+\.[0-9]+ 			  { return CTE_DECIMAL; }
-\".*\"             		  { return CTE_STRING; }
+[a-zA-Z][a-zA-Z0-9]* 	   { yylval.str = strdup(yytext); return ID; }
+[0-9]+ 					   { yylval.integer = atoi(yytext); return CTE_INTEGER; }
+[0-9]+\.[0-9]+ 			   { yylval.decimal = atof(yytext); return CTE_DECIMAL; }
+\".*\"             		   { return CTE_STRING; }
 \n
 .
 %%

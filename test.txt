@@ -1,0 +1,9 @@
+program main:
+
+	define flotante as string.
+	
+	method string main():
+		return 1
+	end method
+
+end program
