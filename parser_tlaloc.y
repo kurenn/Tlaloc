@@ -26,7 +26,7 @@
 	float decimal;
 }
 
-%token PROGRAM METHOD PRINT PRINTLINE READ CASE DEFAULT DEFINE AS TO STEP INTEGER DECIMAL 
+%token PROGRAM METHOD PRINT PRINTLINE READ CASE DEFAULT DEFINE AS TO STEP INTEGER DECIMAL MAIN
 %token STRING
 %token BOOLEAN END FALSO VERDADERO VOID RETURN AND OR ABS COS SIN LOG TAN SQRT
 %token FOR WHILE
@@ -42,7 +42,7 @@
 
 %%
 
-	tlaloc: PROGRAM ID {insert_proc_to_table(yylval, "global");} DOS_PUNTOS vars metodo_def metodo END PROGRAM
+	tlaloc: PROGRAM ID {insert_proc_to_table(yylval, "global");} DOS_PUNTOS vars metodo metodo_main END PROGRAM
 		  ;
 	
 	vars: vars vars_def
@@ -130,8 +130,11 @@
 			 | FALSO
 		   	 ;
 		 
-	metodo: metodo_def metodo | 
+	metodo: metodo metodo_def 
+			| 
 		  ;
+	 
+	metodo_main: METHOD VOID MAIN PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body END METHOD 
 	
 	metodo_def: METHOD tipo {type = yylval.str;} ID {insert_proc_to_table(yylval, type);} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body RETURN expresion END METHOD 
 			  ;
@@ -154,7 +157,6 @@
 			   | estatuto
 			   | llamado PUNTO
 			   | default_functions
-		       | 
 			   ;
 	
 	llamado: ID PAR_ABIERTO exp PAR_CERRADO
@@ -172,7 +174,6 @@
 		      | for_statement
 			  | while_statement
 			  | select_statement
-			  | 
 			  ;
 	
 	if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body ELSE DOS_PUNTOS metodo_body END IF
@@ -184,8 +185,7 @@
 	
 	for_step: DOS_PUNTOS metodo_body 
 			  | STEP exp DOS_PUNTOS metodo_body 
-			  | DOS_PUNTOS
-		    ;
+		    ; 
 	
 	while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
 				   ;

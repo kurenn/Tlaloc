@@ -36,6 +36,7 @@
 "log" 		{ return LOG; }
 "tan" 		{ return TAN; }
 "sqrt" 		{ return SQRT; }
+"main"		{ return MAIN; }
 
 
 "for" 		{ return FOR; }

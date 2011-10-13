@@ -52,49 +52,50 @@
      STEP = 268,
      INTEGER = 269,
      DECIMAL = 270,
-     STRING = 271,
-     BOOLEAN = 272,
-     END = 273,
-     FALSO = 274,
-     VERDADERO = 275,
-     VOID = 276,
-     RETURN = 277,
-     AND = 278,
-     OR = 279,
-     ABS = 280,
-     COS = 281,
-     SIN = 282,
-     LOG = 283,
-     TAN = 284,
-     SQRT = 285,
-     FOR = 286,
-     WHILE = 287,
-     IF = 288,
-     SELECT = 289,
-     ELSE = 290,
-     PAR_ABIERTO = 291,
-     PAR_CERRADO = 292,
-     COMA = 293,
-     DOS_PUNTOS = 294,
-     CORCHETE_ABIERTO = 295,
-     CORCHETE_CERRADO = 296,
-     IGUAL = 297,
-     IGUAL_IGUAL = 298,
-     MENOR_QUE = 299,
-     MAYOR_QUE = 300,
-     DIFERENTE = 301,
-     POR = 302,
-     MAS = 303,
-     MENOS = 304,
-     DIVISION = 305,
-     EXPONENCIAL = 306,
-     PUNTO = 307,
-     APUNTADOR = 308,
-     COMILLAS = 309,
-     ID = 310,
-     CTE_STRING = 311,
-     CTE_DECIMAL = 312,
-     CTE_INTEGER = 313
+     MAIN = 271,
+     STRING = 272,
+     BOOLEAN = 273,
+     END = 274,
+     FALSO = 275,
+     VERDADERO = 276,
+     VOID = 277,
+     RETURN = 278,
+     AND = 279,
+     OR = 280,
+     ABS = 281,
+     COS = 282,
+     SIN = 283,
+     LOG = 284,
+     TAN = 285,
+     SQRT = 286,
+     FOR = 287,
+     WHILE = 288,
+     IF = 289,
+     SELECT = 290,
+     ELSE = 291,
+     PAR_ABIERTO = 292,
+     PAR_CERRADO = 293,
+     COMA = 294,
+     DOS_PUNTOS = 295,
+     CORCHETE_ABIERTO = 296,
+     CORCHETE_CERRADO = 297,
+     IGUAL = 298,
+     IGUAL_IGUAL = 299,
+     MENOR_QUE = 300,
+     MAYOR_QUE = 301,
+     DIFERENTE = 302,
+     POR = 303,
+     MAS = 304,
+     MENOS = 305,
+     DIVISION = 306,
+     EXPONENCIAL = 307,
+     PUNTO = 308,
+     APUNTADOR = 309,
+     COMILLAS = 310,
+     ID = 311,
+     CTE_STRING = 312,
+     CTE_DECIMAL = 313,
+     CTE_INTEGER = 314
    };
 #endif
 /* Tokens.  */
@@ -111,49 +112,50 @@
 #define STEP 268
 #define INTEGER 269
 #define DECIMAL 270
-#define STRING 271
-#define BOOLEAN 272
-#define END 273
-#define FALSO 274
-#define VERDADERO 275
-#define VOID 276
-#define RETURN 277
-#define AND 278
-#define OR 279
-#define ABS 280
-#define COS 281
-#define SIN 282
-#define LOG 283
-#define TAN 284
-#define SQRT 285
-#define FOR 286
-#define WHILE 287
-#define IF 288
-#define SELECT 289
-#define ELSE 290
-#define PAR_ABIERTO 291
-#define PAR_CERRADO 292
-#define COMA 293
-#define DOS_PUNTOS 294
-#define CORCHETE_ABIERTO 295
-#define CORCHETE_CERRADO 296
-#define IGUAL 297
-#define IGUAL_IGUAL 298
-#define MENOR_QUE 299
-#define MAYOR_QUE 300
-#define DIFERENTE 301
-#define POR 302
-#define MAS 303
-#define MENOS 304
-#define DIVISION 305
-#define EXPONENCIAL 306
-#define PUNTO 307
-#define APUNTADOR 308
-#define COMILLAS 309
-#define ID 310
-#define CTE_STRING 311
-#define CTE_DECIMAL 312
-#define CTE_INTEGER 313
+#define MAIN 271
+#define STRING 272
+#define BOOLEAN 273
+#define END 274
+#define FALSO 275
+#define VERDADERO 276
+#define VOID 277
+#define RETURN 278
+#define AND 279
+#define OR 280
+#define ABS 281
+#define COS 282
+#define SIN 283
+#define LOG 284
+#define TAN 285
+#define SQRT 286
+#define FOR 287
+#define WHILE 288
+#define IF 289
+#define SELECT 290
+#define ELSE 291
+#define PAR_ABIERTO 292
+#define PAR_CERRADO 293
+#define COMA 294
+#define DOS_PUNTOS 295
+#define CORCHETE_ABIERTO 296
+#define CORCHETE_CERRADO 297
+#define IGUAL 298
+#define IGUAL_IGUAL 299
+#define MENOR_QUE 300
+#define MAYOR_QUE 301
+#define DIFERENTE 302
+#define POR 303
+#define MAS 304
+#define MENOS 305
+#define DIVISION 306
+#define EXPONENCIAL 307
+#define PUNTO 308
+#define APUNTADOR 309
+#define COMILLAS 310
+#define ID 311
+#define CTE_STRING 312
+#define CTE_DECIMAL 313
+#define CTE_INTEGER 314
 
 
 
@@ -167,7 +169,7 @@ typedef union YYSTYPE
 	float decimal;
 }
 /* Line 1529 of yacc.c.  */
-#line 171 "parser_tlaloc.tab.h"
+#line 173 "parser_tlaloc.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

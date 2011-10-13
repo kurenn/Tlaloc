@@ -1,9 +1,8 @@
-program main:
+program edo:
 
 	define flotante as string.
 	
-	method string edo():
-		return 1
+	method void main():
 	end method
 
 end program
