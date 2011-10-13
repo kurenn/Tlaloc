@@ -2,7 +2,7 @@ program main:
 
 	define flotante as string.
 	
-	method string main():
+	method string edo():
 		return 1
 	end method
 

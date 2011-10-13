@@ -4,7 +4,7 @@
 	#include <string.h>
 
 	extern int yylineno;
-	char *tipo;
+	char *type;
 	
 	void yyerror(const char *message)
 	{
@@ -129,14 +129,14 @@
 			 | VERDADERO 
 			 | FALSO
 		   	 ;
-		
+		 
 	metodo: metodo_def metodo | 
 		  ;
 	
-	metodo_def: METHOD tipo ID {insert_proc_to_table(yylval, "global");} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body RETURN expresion END METHOD 
+	metodo_def: METHOD tipo {type = yylval.str;} ID {insert_proc_to_table(yylval, type);} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body RETURN expresion END METHOD 
 			  ;
 	
-	metodo_body: body_code metodo_body | ; 
+	metodo_body: metodo_body body_code | ; 
 	
 	parametros: parametros_def
 			  ;
@@ -182,7 +182,9 @@
 	for_statement: FOR ID IGUAL exp TO exp for_step END FOR
 				 ;
 	
-	for_step: DOS_PUNTOS metodo_body | STEP exp DOS_PUNTOS metodo_body | DOS_PUNTOS metodo_body
+	for_step: DOS_PUNTOS metodo_body 
+			  | STEP exp DOS_PUNTOS metodo_body 
+			  | DOS_PUNTOS
 		    ;
 	
 	while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE

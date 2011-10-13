@@ -4,7 +4,7 @@
 
 static GHashTable *proc_table;
 
-typedef struct type_table{
+typedef struct {
 	char *method_type;
 	GHashTable *h_table;
 }type_table;
@@ -24,9 +24,9 @@ void insert_proc_to_table(char *proc, char *tipo){
 }
 
 static void print_hash(char *key, type_table *value, gpointer user_data){
-	printf("%s : %s", key, value->method_type);
+	printf("%s : %s\n", key, value->method_type);
 }
 
 void print_hash_table(){
-	g_hash_foreach(proc_table, (GHFunc)print_hash, NULL);
+	g_hash_table_foreach(proc_table, (GHFunc)print_hash, NULL);
 }
