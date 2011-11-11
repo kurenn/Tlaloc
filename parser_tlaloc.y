@@ -41,7 +41,7 @@
 %start tlaloc
 
 %%
-
+ 
 	tlaloc: PROGRAM ID {insert_proc_to_table(yylval, "global");} DOS_PUNTOS vars metodo metodo_main END PROGRAM
 		  ;
 	
@@ -61,6 +61,7 @@
 		  | STRING
 		  | BOOLEAN 
 		  | DECIMAL 
+		  | VOID
 		  ;
 	
 	asignacion_var: IGUAL expresion 

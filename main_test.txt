@@ -1,4 +1,4 @@
-program main:
+program kuri:
 
 	define flotante as decimal.
 	define texto as string = "hola mundo".
@@ -37,7 +37,7 @@ program main:
 	return true
 	end method 
 
-	method integer name(integer i, string a, decimal ->q):
+	method integer nam(integer i, string a, decimal ->q):
 		
 		for a = 3 to 8:
 			a=a+1.
@@ -51,7 +51,7 @@ program main:
 	return a
 	end method 
 	
-	method string name(integer i, string a, decimal ->q):
+	method string na(integer i, string a, decimal ->q):
 		
 		while(a>b):
 			for a = 3 to 8 step (a*2):
@@ -63,7 +63,7 @@ program main:
 	return a
 	end method 
 
-	method string name(integer i, string a, decimal ->q):
+	method string n(integer i, string a, decimal ->q):
 		
 		select a:
 			case default:
@@ -83,5 +83,7 @@ program main:
 	return a
 	end method 
 
+	method void main():
+	end method
 
 end program

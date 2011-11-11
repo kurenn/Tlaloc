@@ -1,6 +1,7 @@
 #include <glib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 static GHashTable *proc_table;
 
@@ -15,7 +16,8 @@ void create_proc_table(){
 
 void insert_proc_to_table(char *proc, char *tipo){
 	if(g_hash_table_lookup(proc_table, (gpointer)proc) != NULL){
-		printf("El metodo ya esta dado de alta");
+		printf("El metodo '%s' ya esta dado de alta\n", proc);
+		exit(0);
 	}else{
 		type_table *t_table = g_slice_new(type_table); //Creamos tabla de hashing para los tipos 1x2
 		t_table->method_type = tipo;

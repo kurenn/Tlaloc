@@ -1,6 +1,12 @@
 program edo:
-
-	define flotante as string.
+	
+	method integer test():
+		return 0;
+	end method
+	
+	method integer test():
+		return 0;
+	end method
 	
 	method void main():
 	end method
