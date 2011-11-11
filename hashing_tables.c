@@ -3,17 +3,20 @@
 #include <string.h>
 #include <stdlib.h>
 
-static GHashTable *proc_table;
-char *current_function;
+static GHashTable *proc_table; // HashTable de procedimientos (key) leidos. (value) apunta a type_table 
+char *current_function;        // Variable que mantiene el nombre de la funcion actual
 
+// type_table: tabla que guarda el tipo de valor de retorno de la funcion leia en programa
 typedef struct {
-	char *method_type;
-	GHashTable *h_table;
+	char *method_type;          // Nombre del metodo
+	GHashTable *h_table;        // Tabla de variables del metodo
 }type_table;
 
+// Inicializa tabla de procedimientos
 void create_proc_table(){
 	proc_table = g_hash_table_new(g_str_hash, g_str_equal); 
 }
+
 
 void insert_proc_to_table(char *proc, char *tipo){
 	if(g_hash_table_lookup(proc_table, (gpointer)proc) != NULL){
@@ -30,7 +33,6 @@ void insert_proc_to_table(char *proc, char *tipo){
 }
 
 void insert_vars_to_proc_table(char *var, char *tipo){
-
 	 if(g_hash_table_lookup(proc_table, (gpointer)current_function) != NULL){
 		type_table *temp_t_table = g_slice_new(type_table);
 		temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
@@ -43,12 +45,12 @@ void insert_vars_to_proc_table(char *var, char *tipo){
 		}
 	 	
 	 }
-	// 
-	// if(g_hash_table_lookup(vars_table, (gpointer)var) != NULL){
-	// 	printf("Variable ya declarada")
-	// }
 }
 
+
+/*
+Bloque de impresión
+*/
 static void print_hash(char *key, type_table *value, gpointer user_data){
 	printf("%s : %s\n", key, value->method_type);
 }
