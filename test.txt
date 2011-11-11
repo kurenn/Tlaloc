@@ -1,14 +1,29 @@
 program edo:
+
 	
-	method integer test():
-		return 0;
-	end method
-	
-	method integer test():
-		return 0;
-	end method
-	
+method integer test():
+define x as integer.
+	return 0.
+end method
+
+method integer tes():
+define y as integer.
+define x as integer.
+	return 0.
+end method
+method integer te():
+	return 0.
+end method
+
+method integer t():
+	return 0.
+end method
+method integer f():
+	return 0.
+end method
+
 	method void main():
+	define x as integer.
 	end method
 
 end program

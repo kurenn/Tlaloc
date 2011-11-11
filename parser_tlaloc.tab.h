@@ -162,7 +162,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 23 "parser_tlaloc.y"
+#line 25 "parser_tlaloc.y"
 {
 	char *str;
 	int integer;

@@ -5,6 +5,8 @@
 
 	extern int yylineno;
 	char *type;
+	char *name;
+	char *proc;
 	
 	void yyerror(const char *message)
 	{
@@ -14,7 +16,7 @@
 	main(int argc, char **argv) {
 		create_proc_table();
 		yyparse();
-		print_hash_table();
+		//print_hash_table();
 	}
 	
 	
@@ -42,14 +44,14 @@
 
 %%
  
-	tlaloc: PROGRAM ID {insert_proc_to_table(yylval, "global");} DOS_PUNTOS vars metodo metodo_main END PROGRAM
+	tlaloc: PROGRAM ID {insert_proc_to_table(yylval.str, "global");} DOS_PUNTOS vars metodo metodo_main END PROGRAM
 		  ;
 	
 	vars: vars vars_def
-		  | 
+		  |
 		  ;
 	
-	vars_def: DEFINE declaracion AS tipo asignacion_var PUNTO 
+	vars_def: DEFINE declaracion {name = yylval.str} AS tipo {insert_vars_to_proc_table(name, yylval.str);} asignacion_var PUNTO
 		    ;
 	
 	declaracion: APUNTADOR ID
@@ -135,9 +137,9 @@
 			| 
 		  ;
 	 
-	metodo_main: METHOD VOID MAIN PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body END METHOD 
+	metodo_main: METHOD VOID MAIN {insert_proc_to_table(yylval.str, "void"); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body {print_var_table(proc);} END METHOD 
 	
-	metodo_def: METHOD tipo {type = yylval.str;} ID {insert_proc_to_table(yylval, type);} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body RETURN expresion END METHOD 
+	metodo_def: METHOD tipo {type = yylval.str;} ID {insert_proc_to_table(yylval.str, type); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body {print_var_table(proc);} RETURN expresion PUNTO END METHOD 
 			  ;
 	
 	metodo_body: metodo_body body_code | ; 
@@ -149,7 +151,7 @@
 		            | 
 			  		;
  
-	parametros_extra: COMA parametros 
+	parametros_extra: COMA parametros_def 
 	 	  			  | 
 					  ;
 

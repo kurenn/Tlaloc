@@ -26,7 +26,7 @@
 "end" 		{ return END;}
 "true" 		{ return VERDADERO; }
 "false" 	{ return FALSO; }
-"void" 		{ return VOID; }
+"void" 		{ yylval.str = strdup(yytext); return VOID; }
 "return" 	{ return RETURN; }
 "and" 		{ return AND; }
 "or" 		{ return OR; }
@@ -36,7 +36,7 @@
 "log" 		{ return LOG; }
 "tan" 		{ return TAN; }
 "sqrt" 		{ return SQRT; }
-"main"		{ return MAIN; }
+"main"		{ yylval.str = strdup(yytext); return MAIN; }
 
 
 "for" 		{ return FOR; }

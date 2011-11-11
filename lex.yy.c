@@ -979,7 +979,7 @@ YY_RULE_SETUP
 case 19:
 YY_RULE_SETUP
 #line 29 "scanner_tlaloc.l"
-{ return VOID; }
+{ yylval.str = strdup(yytext); return VOID; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
@@ -1029,7 +1029,7 @@ YY_RULE_SETUP
 case 29:
 YY_RULE_SETUP
 #line 39 "scanner_tlaloc.l"
-{ return MAIN; }
+{ yylval.str = strdup(yytext); return MAIN; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
