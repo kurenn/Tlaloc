@@ -90,20 +90,19 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
             if (strcmp(current_function, global_function) == 0) {   // Si las variables son globales
                 if (strcmp(tipo, "integer") == 0) {
                         address = GINTEGERS + global_integers_count + dimension;                        
-                        global_integers_count = global_integers_count + 1 + dimension;  
-                        printf("%d\n", global_integers_count);                    
+                        global_integers_count = global_integers_count++ + dimension;                
                 }
                 if (strcmp(tipo, "string") == 0) {
                         address = GSTRINGS + global_strings_count;                        
-                        global_strings_count++;                        
+                        global_strings_count = global_strings_count++ + dimension;                        
                 }
                 if (strcmp(tipo, "boolean") == 0) {
                         address = GBOOLEANS + global_booleans_count;                        
-                        global_booleans_count++;                        
+                        global_booleans_count = global_booleans_count++ + dimension;                        
                 }
                 if (strcmp(tipo, "decimal") == 0) {
                         address = GDECIMALS + global_decimals_count;                        
-                        global_decimals_count++;                        
+                        global_decimals_count = global_decimals_count++ + dimension;                        
                 }
                 v_memory->virtual_address = address;
             }                
