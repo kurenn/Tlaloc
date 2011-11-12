@@ -1,24 +1,23 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
-
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -29,9 +28,10 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-
+   
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
+
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -98,83 +98,30 @@
      CTE_INTEGER = 314
    };
 #endif
-/* Tokens.  */
-#define PROGRAM 258
-#define METHOD 259
-#define PRINT 260
-#define PRINTLINE 261
-#define READ 262
-#define CASE 263
-#define DEFAULT 264
-#define DEFINE 265
-#define AS 266
-#define TO 267
-#define STEP 268
-#define INTEGER 269
-#define DECIMAL 270
-#define MAIN 271
-#define STRING 272
-#define BOOLEAN 273
-#define END 274
-#define FALSO 275
-#define VERDADERO 276
-#define VOID 277
-#define RETURN 278
-#define AND 279
-#define OR 280
-#define ABS 281
-#define COS 282
-#define SIN 283
-#define LOG 284
-#define TAN 285
-#define SQRT 286
-#define FOR 287
-#define WHILE 288
-#define IF 289
-#define SELECT 290
-#define ELSE 291
-#define PAR_ABIERTO 292
-#define PAR_CERRADO 293
-#define COMA 294
-#define DOS_PUNTOS 295
-#define CORCHETE_ABIERTO 296
-#define CORCHETE_CERRADO 297
-#define IGUAL 298
-#define IGUAL_IGUAL 299
-#define MENOR_QUE 300
-#define MAYOR_QUE 301
-#define DIFERENTE 302
-#define POR 303
-#define MAS 304
-#define MENOS 305
-#define DIVISION 306
-#define EXPONENCIAL 307
-#define PUNTO 308
-#define APUNTADOR 309
-#define COMILLAS 310
-#define ID 311
-#define CTE_STRING 312
-#define CTE_DECIMAL 313
-#define CTE_INTEGER 314
-
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 25 "parser_tlaloc.y"
 {
+
+/* Line 1676 of yacc.c  */
+#line 26 "parser_tlaloc.y"
+
 	char *str;
 	int integer;
 	float decimal;
-}
-/* Line 1529 of yacc.c.  */
-#line 173 "parser_tlaloc.tab.h"
-	YYSTYPE;
+
+
+
+/* Line 1676 of yacc.c  */
+#line 119 "parser_tlaloc.tab.h"
+} YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
+
 

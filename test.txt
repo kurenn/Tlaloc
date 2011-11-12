@@ -1,8 +1,16 @@
 program edo:
 
+define kuri as integer.
+define algo as integer.
+define raya as string.
+define arreglo as integer [10].
+define random as integer.
+define arreglo2 as integer [5].
+define asjhd as integer.
 	
-method integer test():
+method integer test(integer a, boolean j):
 define x as integer.
+define arregloo as integer [5].
 	return 0.
 end method
 
@@ -24,6 +32,7 @@ end method
 
 	method void main():
 	define x as integer.
+    define algo2 as integer.
 	end method
 
 end program

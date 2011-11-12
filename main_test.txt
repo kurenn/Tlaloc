@@ -5,6 +5,7 @@ program kuri:
 	define bool as boolean = true.
 	define entero as integer = 8.
 	define otroentero as integer = 1+1.
+    define arreglo as integer [2,3].
 
 	method integer name(integer i, string a, decimal ->q):
 		define otroentero as integer = 1+1.

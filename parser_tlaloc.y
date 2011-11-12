@@ -7,6 +7,7 @@
 	char *type;
 	char *name;
 	char *proc;
+    int dimension = 0;
 	
 	void yyerror(const char *message)
 	{
@@ -44,14 +45,14 @@
 
 %%
  
-	tlaloc: PROGRAM ID {insert_proc_to_table(yylval.str, "global");} DOS_PUNTOS vars metodo metodo_main END PROGRAM
+	tlaloc: PROGRAM ID {insert_proc_to_table(yylval.str, "global"); proc = yylval.str} DOS_PUNTOS vars {print_var_table(proc);} metodo metodo_main END PROGRAM
 		  ;
 	
 	vars: vars vars_def
 		  |
 		  ;
 	
-	vars_def: DEFINE declaracion {name = yylval.str} AS tipo {insert_vars_to_proc_table(name, yylval.str);} asignacion_var PUNTO
+	vars_def: DEFINE declaracion {name = yylval.str;} AS tipo {insert_vars_to_proc_table(name, yylval.str, dimension); dimension = 0 } asignacion_var PUNTO
 		    ;
 	
 	declaracion: APUNTADOR ID
@@ -66,8 +67,9 @@
 		  | VOID
 		  ;
 	
+    // Manda dimension - 1 para manipular indexaciones de 0 a N-1
 	asignacion_var: IGUAL expresion 
-	                | CORCHETE_ABIERTO CTE_INTEGER CORCHETE_CERRADO 
+	                | CORCHETE_ABIERTO CTE_INTEGER {dimension = yylval.integer -1;} CORCHETE_CERRADO 
 	                | CORCHETE_ABIERTO CTE_INTEGER COMA CTE_INTEGER CORCHETE_CERRADO 
 	                |   
 			        ;		
@@ -147,7 +149,7 @@
 	parametros: parametros_def
 			  ;
 	
-	parametros_def: tipo declaracion parametros_extra 
+	parametros_def: tipo {type = yylval.str } declaracion {insert_vars_to_proc_table(yylval.str, type);} parametros_extra 
 		            | 
 			  		;
  
