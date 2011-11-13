@@ -3,9 +3,15 @@
 #include <string.h>
 #include <stdlib.h>
 
-static GHashTable *proc_table; // HashTable de procedimientos (key) leidos. (value) apunta a type_table 
+static GHashTable *proc_table; // HashTable de procedimientos (key) leidos. (value) apunta a type_table
+static GQueue *StackO;
+static GQueue *StackOper;
+static GQueue *StackTypes;
+static GQueue *Quadruples; 
 char *current_function;        // Variable que mantiene el nombre de la funcion actual
 char *global_function;         // Variable que mantiene el nombre del programa
+
+// Contadores que controlan el incremento de las direcciones virtuales para las variables
 int global_integers_count = 0, global_strings_count = 0,
     global_booleans_count = 0, global_decimals_count = 0, 
     local_integers_count = 0, local_strings_count = 0,
@@ -21,6 +27,8 @@ typedef struct {
 	GHashTable *h_table;        // Tabla de variables del metodo
 }type_table;
 
+// vars_memory: almacena el tipo de dato de la variable y su direccion virtual. 
+// Key de la hash table que apunta type_table
 typedef struct {
     char *type;
     int virtual_address;
@@ -31,10 +39,52 @@ void create_proc_table(){
 	proc_table = g_hash_table_new(g_str_hash, g_str_equal); 
 }
 
+// Inicializa filas y pilas
+void create_stacks_and_queues(){
+	StackO = g_queue_new(); 
+    StackOper = g_queue_new(); 
+    StackTypes = g_queue_new(); 
+    Quadruples = g_queue_new(); 
+}
+
 // Inicializa variables locales a 0 para cada nuevo procedimiento
 void reset_memory_counters(){
     local_integers_count = 0, local_strings_count = 0,
     local_booleans_count = 0, local_decimals_count = 0;
+}
+
+int get_var_virtual_address(char *id){
+    type_table *temp_t_table = g_slice_new(type_table);
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
+    vars_memory *v_table = g_slice_new(vars_memory);
+    v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    if (v_table == NULL){   // Si no encuentra en locales, busca en globales
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
+        v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    }
+    if (v_table == NULL){
+        printf("Variable '%s' no reconocida en locales ni globales\n", id);
+        exit(0);
+    }
+    int address = v_table->virtual_address;
+    return address;
+}
+
+char *get_var_type(char *id){
+    type_table *temp_t_table = g_slice_new(type_table);
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
+    vars_memory *v_table = g_slice_new(vars_memory);
+    v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    if (v_table == NULL){   // Si no encuentra en locales, busca en globales
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
+        v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    }
+    if (v_table == NULL){
+        printf("Variable '%s' no reconocida en locales ni globales\n", id);
+        exit(0);
+    }
+    char *this_type = v_table->type;
+    return this_type;
 }
 
 /*
@@ -91,6 +141,7 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
                 if (strcmp(tipo, "integer") == 0) {
                         address = GINTEGERS + global_integers_count + dimension;                        
                         global_integers_count = global_integers_count + 1 + dimension;  
+                        
                 }
                 if (strcmp(tipo, "string") == 0) {
                         address = GSTRINGS + global_strings_count + dimension;                        
@@ -109,8 +160,7 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
             else {  // Si las variables son parte de un metodo
                 if (strcmp(tipo, "integer") == 0) {
                         address = LINTEGERS + local_integers_count + dimension;                        
-                        local_integers_count = local_integers_count + 1 + dimension;
-                        printf("dim: %d   addr: %d\n",dimension, address);                        
+                        local_integers_count = local_integers_count + 1 + dimension;                    
                 }
                 if (strcmp(tipo, "string") == 0) {
                         address = LSTRINGS + local_strings_count + dimension;                        
@@ -131,6 +181,18 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
     } else {
         printf("Error. Procedimiento no existe\n");
     }
+}
+
+void insert_to_StackO(char *id){
+    // Get vars_memory struct (obtiene tipo y direccion virtual de una variable)  
+    if(id != NULL){ 
+        g_queue_push_head(StackO, (gpointer)get_var_virtual_address(id));
+        g_queue_push_head(StackTypes, (gpointer)get_var_type(id));   
+    }        
+}
+
+void insert_to_StackOper(char *oper){
+    g_queue_push_head(StackOper, (gpointer)oper);
 }
 
 

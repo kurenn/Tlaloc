@@ -3,20 +3,29 @@
 	#include <stdlib.h>
 	#include <string.h>
 
-	extern int yylineno;
-	char *type;
-    char *var_type = "";
-	char *name;
-	char *proc;
+	extern int yylineno;    // Guarda la linea que se lee, por si existe error de sitaxis 
+	char *type;             // Tipo de procedimiento que se guardara en la tabla de procs
+    char *var_type = "";    // Tipo de dato de la variable que se guardara en tabla de vars
+	char *name;             // Nombre de variable que se guardara en tabla de vars
+	char *proc;             // Procedimiento ejecutandose actualmente en memoria
+    int first_dim;          // Primera dimension de un arreglo bidimensional. Usado para obtener dimension entera.
+
+    // Dimensiones para cada tipo de variable, si es que se declaran arreglos
     int integer_dimension = 0, string_dimension = 0, boolean_dimension = 0, decimal_dimension = 0;
-    int first_dim;
 	
 	void yyerror(const char *message)
 	{
-	  fprintf(stderr, "error: '%s' - LINE '%d'", message, yylineno);
+	  fprintf(stderr, "error: '%s' - LINE '%d'\n", message, yylineno);
 	}
-	
 
+    // Inicializa variables para uso en otros metodos después de terminar el bloque global
+    void reset_block_vars(){
+        var_type = ""; name = ""; 
+        integer_dimension = 0; string_dimension = 0; 
+        boolean_dimension = 0; decimal_dimension = 0; 
+    }
+	
+    // Llama al metodo con la dimension que le corresponde a esta nueva nueva variable a agregar
     void set_dimension(){
         if (strcmp(var_type, "integer") == 0) {
                 insert_vars_to_proc_table(name, var_type, integer_dimension);
@@ -31,11 +40,11 @@
                 insert_vars_to_proc_table(name, var_type, decimal_dimension);
                 decimal_dimension = 0;
         } else { 
-                printf("%s",proc);
                 insert_vars_to_proc_table(name, var_type, 0); 
         }
     }
 
+    // Guarda dimension - 1 para manipular indexaciones de 0 a N-1
     void get_constant(int constant){
         if (strcmp(var_type, "integer") == 0) integer_dimension = constant - 1;
         if (strcmp(var_type, "string") == 0) string_dimension = constant - 1;
@@ -45,6 +54,7 @@
     
 	main(int argc, char **argv) {
 		create_proc_table();
+        create_stacks_and_queues();
 		yyparse();
 		//print_hash_table();
 	}
@@ -74,7 +84,7 @@
 
 %%
  
-	tlaloc: PROGRAM ID {insert_proc_to_table(yylval.str, "global"); proc = yylval.str} DOS_PUNTOS vars {print_var_table(proc); var_type = ""; name = ""; integer_dimension = 0; string_dimension = 0; boolean_dimension = 0; decimal_dimension = 0; } metodo metodo_main END PROGRAM
+	tlaloc: PROGRAM ID {insert_proc_to_table(yylval.str, "global"); proc = yylval.str} DOS_PUNTOS vars {print_var_table(proc); reset_block_vars(); } metodo metodo_main END PROGRAM
 		  ;
 	
 	vars: vars vars_def
@@ -103,7 +113,6 @@
 		  | VOID
 		  ;
 	
-    // Manda dimension - 1 para manipular indexaciones de 0 a N-1
 	asignacion_var: IGUAL expresion
                     | dimension_arreglo
 	                |   
@@ -140,8 +149,8 @@
 				     ;
 				
 	exp: termino
-		 | termino MAS termino 
-		 | termino MENOS termino
+		 | termino MAS { insert_to_StackOper(yylval.str); } termino 
+		 | termino MENOS { insert_to_StackOper(yylval.str); } termino
 	     ;
 	
 	termino: exponencial 
@@ -153,7 +162,7 @@
 	  		     | factor EXPONENCIAL
 			     ;
 	
-	factor: var 
+	factor: var { insert_to_StackO(yylval.str); }
 	 	    | PAR_ABIERTO expresion PAR_CERRADO 
 			| factor_alterno
 	        ;
@@ -208,7 +217,7 @@
 	llamado: ID PAR_ABIERTO exp PAR_CERRADO
 		   ;
 	
-	asignacion: ID IGUAL expresion PUNTO 
+	asignacion: ID { insert_to_StackO(yylval.str); } IGUAL expresion PUNTO 
 				| array_assignment
 			    ;
 	
