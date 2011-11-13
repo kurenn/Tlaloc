@@ -90,38 +90,39 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
             if (strcmp(current_function, global_function) == 0) {   // Si las variables son globales
                 if (strcmp(tipo, "integer") == 0) {
                         address = GINTEGERS + global_integers_count + dimension;                        
-                        global_integers_count = global_integers_count++ + dimension;                
+                        global_integers_count = global_integers_count + 1 + dimension;  
                 }
                 if (strcmp(tipo, "string") == 0) {
-                        address = GSTRINGS + global_strings_count;                        
-                        global_strings_count = global_strings_count++ + dimension;                        
+                        address = GSTRINGS + global_strings_count + dimension;                        
+                        global_strings_count = global_strings_count + 1 + dimension;                        
                 }
                 if (strcmp(tipo, "boolean") == 0) {
-                        address = GBOOLEANS + global_booleans_count;                        
-                        global_booleans_count = global_booleans_count++ + dimension;                        
+                        address = GBOOLEANS + global_booleans_count + dimension;                        
+                        global_booleans_count = global_booleans_count + 1 + dimension;                        
                 }
                 if (strcmp(tipo, "decimal") == 0) {
-                        address = GDECIMALS + global_decimals_count;                        
-                        global_decimals_count = global_decimals_count++ + dimension;                        
+                        address = GDECIMALS + global_decimals_count + dimension;                        
+                        global_decimals_count = global_decimals_count + 1 + dimension;                        
                 }
                 v_memory->virtual_address = address;
             }                
             else {  // Si las variables son parte de un metodo
                 if (strcmp(tipo, "integer") == 0) {
-                        address = LINTEGERS + local_integers_count;                        
-                        local_integers_count++;                        
+                        address = LINTEGERS + local_integers_count + dimension;                        
+                        local_integers_count = local_integers_count + 1 + dimension;
+                        printf("dim: %d   addr: %d\n",dimension, address);                        
                 }
                 if (strcmp(tipo, "string") == 0) {
-                        address = LSTRINGS + local_strings_count;                        
-                        local_strings_count++;                        
+                        address = LSTRINGS + local_strings_count + dimension;                        
+                        local_strings_count = local_strings_count + 1 + dimension;                      
                 }
                 if (strcmp(tipo, "boolean") == 0) {
-                        address = LBOOLEANS + local_booleans_count;                        
-                        local_booleans_count++;                        
+                        address = LBOOLEANS + local_booleans_count + dimension;                        
+                        local_booleans_count = local_booleans_count + 1 + dimension;                         
                 }
                 if (strcmp(tipo, "decimal") == 0) {
-                        address = LDECIMALS + local_decimals_count;                        
-                        local_decimals_count++;                        
+                        address = LDECIMALS + local_decimals_count + dimension;                        
+                        local_decimals_count = local_decimals_count + 1 + dimension; ;                        
                 }
                 v_memory->virtual_address = address;
             }     

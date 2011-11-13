@@ -5,15 +5,43 @@
 
 	extern int yylineno;
 	char *type;
+    char *var_type = "";
 	char *name;
 	char *proc;
-    int dimension = 0;
+    int integer_dimension = 0, string_dimension = 0, boolean_dimension = 0, decimal_dimension = 0;
 	
 	void yyerror(const char *message)
 	{
 	  fprintf(stderr, "error: '%s' - LINE '%d'", message, yylineno);
 	}
 	
+
+    void set_dimension(){
+        if (strcmp(var_type, "integer") == 0) {
+                insert_vars_to_proc_table(name, var_type, integer_dimension);
+                integer_dimension = 0;
+        } else if (strcmp(var_type, "string") == 0) {
+                insert_vars_to_proc_table(name, var_type, string_dimension);
+                string_dimension = 0;
+        } else if (strcmp(var_type, "boolean") == 0) {
+                insert_vars_to_proc_table(name, var_type, boolean_dimension);
+                boolean_dimension = 0;
+        } else if (strcmp(var_type, "decimal") == 0) {
+                insert_vars_to_proc_table(name, var_type, decimal_dimension);
+                decimal_dimension = 0;
+        } else { 
+                printf("%s",proc);
+                insert_vars_to_proc_table(name, var_type, 0); 
+        }
+    }
+
+    void get_constant(int constant){
+        if (strcmp(var_type, "integer") == 0) integer_dimension = constant - 1;
+        if (strcmp(var_type, "string") == 0) string_dimension = constant - 1;
+        if (strcmp(var_type, "boolean") == 0) boolean_dimension = constant - 1;
+        if (strcmp(var_type, "decimal") == 0) decimal_dimension = constant - 1;
+    }
+    
 	main(int argc, char **argv) {
 		create_proc_table();
 		yyparse();
@@ -45,14 +73,17 @@
 
 %%
  
-	tlaloc: PROGRAM ID {insert_proc_to_table(yylval.str, "global"); proc = yylval.str} DOS_PUNTOS vars {print_var_table(proc);} metodo metodo_main END PROGRAM
+	tlaloc: PROGRAM ID {insert_proc_to_table(yylval.str, "global"); proc = yylval.str} DOS_PUNTOS vars {print_var_table(proc); var_type = ""; integer_dimension = 0; string_dimension = 0; boolean_dimension = 0; decimal_dimension = 0; } metodo metodo_main END PROGRAM
 		  ;
 	
 	vars: vars vars_def
 		  |
 		  ;
 	
-	vars_def: DEFINE declaracion {name = yylval.str;} AS tipo {insert_vars_to_proc_table(name, yylval.str, dimension); dimension = 0 } asignacion_var PUNTO
+	vars_def: DEFINE declaracion {name = yylval.str;} AS tipo { 
+                var_type = yylval.str; 
+                set_dimension();
+            } asignacion_var PUNTO
 		    ;
 	
 	declaracion: APUNTADOR ID
@@ -69,7 +100,9 @@
 	
     // Manda dimension - 1 para manipular indexaciones de 0 a N-1
 	asignacion_var: IGUAL expresion 
-	                | CORCHETE_ABIERTO CTE_INTEGER {dimension = yylval.integer -1;} CORCHETE_CERRADO 
+	                | CORCHETE_ABIERTO CTE_INTEGER {
+                       get_constant(yylval.integer);
+                    } CORCHETE_CERRADO 
 	                | CORCHETE_ABIERTO CTE_INTEGER COMA CTE_INTEGER CORCHETE_CERRADO 
 	                |   
 			        ;		
@@ -149,7 +182,7 @@
 	parametros: parametros_def
 			  ;
 	
-	parametros_def: tipo {type = yylval.str } declaracion {insert_vars_to_proc_table(yylval.str, type);} parametros_extra 
+	parametros_def: tipo {type = yylval.str } declaracion {insert_vars_to_proc_table(yylval.str, type, 0);} parametros_extra 
 		            | 
 			  		;
  

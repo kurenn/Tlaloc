@@ -76,15 +76,43 @@
 
 	extern int yylineno;
 	char *type;
+    char *var_type = "";
 	char *name;
 	char *proc;
-    int dimension = 0;
+    int integer_dimension = 0, string_dimension = 0, boolean_dimension = 0, decimal_dimension = 0;
 	
 	void yyerror(const char *message)
 	{
 	  fprintf(stderr, "error: '%s' - LINE '%d'", message, yylineno);
 	}
 	
+
+    void set_dimension(){
+        if (strcmp(var_type, "integer") == 0) {
+                insert_vars_to_proc_table(name, var_type, integer_dimension);
+                integer_dimension = 0;
+        } else if (strcmp(var_type, "string") == 0) {
+                insert_vars_to_proc_table(name, var_type, string_dimension);
+                string_dimension = 0;
+        } else if (strcmp(var_type, "boolean") == 0) {
+                insert_vars_to_proc_table(name, var_type, boolean_dimension);
+                boolean_dimension = 0;
+        } else if (strcmp(var_type, "decimal") == 0) {
+                insert_vars_to_proc_table(name, var_type, decimal_dimension);
+                decimal_dimension = 0;
+        } else { 
+                printf("%s",proc);
+                insert_vars_to_proc_table(name, var_type, 0); 
+        }
+    }
+
+    void get_constant(int constant){
+        if (strcmp(var_type, "integer") == 0) integer_dimension = constant - 1;
+        if (strcmp(var_type, "string") == 0) string_dimension = constant - 1;
+        if (strcmp(var_type, "boolean") == 0) boolean_dimension = constant - 1;
+        if (strcmp(var_type, "decimal") == 0) decimal_dimension = constant - 1;
+    }
+    
 	main(int argc, char **argv) {
 		create_proc_table();
 		yyparse();
@@ -95,7 +123,7 @@
 
 
 /* Line 189 of yacc.c  */
-#line 99 "parser_tlaloc.tab.c"
+#line 127 "parser_tlaloc.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -189,7 +217,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 26 "parser_tlaloc.y"
+#line 54 "parser_tlaloc.y"
 
 	char *str;
 	int integer;
@@ -198,7 +226,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 202 "parser_tlaloc.tab.c"
+#line 230 "parser_tlaloc.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -210,7 +238,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 214 "parser_tlaloc.tab.c"
+#line 242 "parser_tlaloc.tab.c"
 
 #ifdef short
 # undef short
@@ -543,20 +571,20 @@ static const yytype_int8 yyrhs[] =
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
-       0,    48,    48,    48,    48,    51,    52,    55,    55,    55,
-      58,    59,    63,    64,    65,    66,    67,    71,    72,    72,
-      73,    74,    77,    78,    81,    84,    85,    86,    87,    88,
-      89,    92,    93,    94,    95,    96,    97,    98,   101,   102,
-     103,   106,   107,   108,   111,   112,   115,   116,   117,   120,
-     123,   124,   125,   128,   128,   128,   128,   128,   130,   131,
-     132,   133,   134,   135,   138,   139,   142,   142,   142,   144,
-     144,   144,   144,   147,   147,   149,   152,   152,   152,   153,
-     156,   157,   160,   161,   162,   163,   164,   167,   170,   171,
-     174,   175,   178,   179,   180,   181,   184,   188,   191,   192,
-     195,   198,   201,   201,   204,   207,   207,   210,   213,   213,
-     216,   219,   219,   222,   222,   225,   225
+       0,    76,    76,    76,    76,    79,    80,    83,    83,    83,
+      89,    90,    94,    95,    96,    97,    98,   102,   103,   103,
+     106,   107,   110,   111,   114,   117,   118,   119,   120,   121,
+     122,   125,   126,   127,   128,   129,   130,   131,   134,   135,
+     136,   139,   140,   141,   144,   145,   148,   149,   150,   153,
+     156,   157,   158,   161,   161,   161,   161,   161,   163,   164,
+     165,   166,   167,   168,   171,   172,   175,   175,   175,   177,
+     177,   177,   177,   180,   180,   182,   185,   185,   185,   186,
+     189,   190,   193,   194,   195,   196,   197,   200,   203,   204,
+     207,   208,   211,   212,   213,   214,   217,   221,   224,   225,
+     228,   231,   234,   234,   237,   240,   240,   243,   246,   246,
+     249,   252,   252,   255,   255,   258,   258
 };
 #endif
 
@@ -1626,91 +1654,96 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 48 "parser_tlaloc.y"
+#line 76 "parser_tlaloc.y"
     {insert_proc_to_table(yylval.str, "global"); proc = yylval.str;}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 48 "parser_tlaloc.y"
-    {print_var_table(proc);;}
+#line 76 "parser_tlaloc.y"
+    {print_var_table(proc); var_type = ""; integer_dimension = 0; string_dimension = 0; boolean_dimension = 0; decimal_dimension = 0; ;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 55 "parser_tlaloc.y"
+#line 83 "parser_tlaloc.y"
     {name = yylval.str;;}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 55 "parser_tlaloc.y"
-    {insert_vars_to_proc_table(name, yylval.str, dimension); dimension = 0 ;}
+#line 83 "parser_tlaloc.y"
+    { 
+                var_type = yylval.str; 
+                set_dimension();
+            ;}
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 72 "parser_tlaloc.y"
-    {dimension = yylval.integer -1;;}
+#line 103 "parser_tlaloc.y"
+    {
+                       get_constant(yylval.integer);
+                    ;}
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 142 "parser_tlaloc.y"
+#line 175 "parser_tlaloc.y"
     {insert_proc_to_table(yylval.str, "void"); proc = yylval.str;}
     break;
 
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 142 "parser_tlaloc.y"
+#line 175 "parser_tlaloc.y"
     {print_var_table(proc);;}
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 144 "parser_tlaloc.y"
+#line 177 "parser_tlaloc.y"
     {type = yylval.str;;}
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 144 "parser_tlaloc.y"
+#line 177 "parser_tlaloc.y"
     {insert_proc_to_table(yylval.str, type); proc = yylval.str;}
     break;
 
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 144 "parser_tlaloc.y"
+#line 177 "parser_tlaloc.y"
     {print_var_table(proc);;}
     break;
 
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 152 "parser_tlaloc.y"
+#line 185 "parser_tlaloc.y"
     {type = yylval.str ;}
     break;
 
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 152 "parser_tlaloc.y"
-    {insert_vars_to_proc_table(yylval.str, type);;}
+#line 185 "parser_tlaloc.y"
+    {insert_vars_to_proc_table(yylval.str, type, 0);;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1714 "parser_tlaloc.tab.c"
+#line 1747 "parser_tlaloc.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1922,6 +1955,6 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 227 "parser_tlaloc.y"
+#line 260 "parser_tlaloc.y"
 
 
