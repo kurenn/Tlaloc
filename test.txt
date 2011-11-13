@@ -3,7 +3,7 @@ program edo:
 define kuri as integer.
 define algo as integer.
 define raya as string.
-define arreglo as string [10].
+define arreglo as string [10,5].
 define random as integer.
 define arreglo2 as integer [5].
 define asjhd as integer [4].
@@ -11,7 +11,7 @@ define b as boolean [20].
 define d as decimal.
 define otroarray as string [20]. 
 	
-method integer test(integer a, boolean j):
+method integer test(integer a[4], boolean j):
 define x as integer.
 define arregloo as integer [5].
 define t as integer.

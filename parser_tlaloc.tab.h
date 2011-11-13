@@ -106,7 +106,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 54 "parser_tlaloc.y"
+#line 55 "parser_tlaloc.y"
 
 	char *str;
 	int integer;
