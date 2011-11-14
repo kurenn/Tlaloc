@@ -146,7 +146,6 @@
 					 | MENOR_QUE 
 					 | DIFERENTE 
 					 | IGUAL_IGUAL 
-					 | 
 				     ;
 				
 	exp: termino
@@ -170,10 +169,7 @@
 			| factor_alterno
 	        ;
 	
-	factor_alterno: factor_alterno_choices
-	 	          ;
-	
-	factor_alterno_choices: llamado | funcion_matematica | ID CORCHETE_ABIERTO exp CORCHETE_CERRADO;
+	factor_alterno: llamado | funcion_matematica | ID CORCHETE_ABIERTO exp CORCHETE_CERRADO;
 	
 	var: ID 
 		| CTE_INTEGER 
@@ -217,7 +213,7 @@
 		   ;
 	
     // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
-	asignacion: ID { equals_var = get_var_virtual_address(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion {generate_quadruple(); } PUNTO 
+	asignacion: ID { equals_var = get_var_virtual_address(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion {generate_quadruple(equals_var); } PUNTO 
 				| array_assignment
 			    ;
 	

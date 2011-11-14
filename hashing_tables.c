@@ -212,7 +212,7 @@ void insert_to_StackOper(int oper){
     g_queue_push_tail(StackOper, (gpointer)oper);
 }
 
-void generate_quadruple(){
+void generate_quadruple(char *equals){
     char *first_type;   // Top de la pila de tipos
     char *second_type;  // Top-1 de la pila de tipos
     char *first_id;
@@ -230,14 +230,17 @@ void generate_quadruple(){
                 first_oper = g_queue_pop_tail(StackO);
                 second_oper = g_queue_pop_tail(StackO);
                 printf("Cuadruplo: %c\t %d\t %d\t Resultado\n", operator, first_oper, second_oper);
+            } else { // Error semantico, tipos incompatibles
+                printf("Error en los tipos de dato\n");
+                exit(0);
             }   
         }
         if (operator == 61) {   // '='
             first_type = g_queue_peek_tail(StackTypes);
             second_type = g_queue_peek_nth(StackTypes, g_queue_get_length(StackTypes)-1);
-            if (valid_var_types(first_type, second_type) != 0){ // Si es valido, se genera el cuadruplo
+            if (valid_var_types(first_type, second_type) != 0) { // Si es valido, se genera el cuadruplo
                 operator = (int)g_queue_pop_tail(StackOper); 
-                first_oper = g_queue_pop_tail(StackO);
+                first_oper = equals;
                 //second_oper = g_queue_pop_tail(StackO);
                 printf("Cuadruplo: %c\t %d\t\t Resultado\n", operator, first_oper);
             }   
