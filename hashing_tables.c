@@ -39,6 +39,22 @@ void create_proc_table(){
 	proc_table = g_hash_table_new(g_str_hash, g_str_equal); 
 }
 
+// Tabla de validacion de tipos de datos
+// Opcion es 0 con tipos incompatibles. Opcion es 1 por default ya que los demas son validos. 
+int valid_var_types(char *first_type, char *second_type){
+    int option = 1;
+    if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"boolean") == 0
+        || strcmp(first_type,"string") == 0 && strcmp(second_type,"boolean") == 0
+        || strcmp(first_type,"boolean") == 0 && strcmp(second_type,"decimal") == 0
+        || strcmp(first_type,"boolean") == 0 && strcmp(second_type,"integer") == 0
+        || strcmp(first_type,"boolean") == 0 && strcmp(second_type,"string") == 0
+        || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"boolean") == 0) // Combinaciones invalidas
+        option = 0;
+    
+    return option;
+}
+
+
 // Inicializa filas y pilas
 void create_stacks_and_queues(){
 	StackO = g_queue_new(); 
@@ -53,6 +69,7 @@ void reset_memory_counters(){
     local_booleans_count = 0, local_decimals_count = 0;
 }
 
+// get_var_virtual_address: devuelve direccion virtual de una variable (id) que viene de sintaxis
 int get_var_virtual_address(char *id){
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
@@ -70,6 +87,7 @@ int get_var_virtual_address(char *id){
     return address;
 }
 
+// get_var_type: devuelve tipo de dato de una variable (id) que viene de sintaxis
 char *get_var_type(char *id){
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
@@ -184,15 +202,46 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
 }
 
 void insert_to_StackO(char *id){
-    // Get vars_memory struct (obtiene tipo y direccion virtual de una variable)  
-    if(id != NULL){ 
+    if(id != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
         g_queue_push_head(StackO, (gpointer)get_var_virtual_address(id));
-        g_queue_push_head(StackTypes, (gpointer)get_var_type(id));   
+        g_queue_push_head(StackTypes, (gpointer)get_var_type(id)); 
     }        
 }
 
-void insert_to_StackOper(char *oper){
+void insert_to_StackOper(int oper){
+    printf("%c\n", oper);
     g_queue_push_head(StackOper, (gpointer)oper);
+}
+
+void generate_quadruple(){
+    char *first_type;   // Top de la pila de tipos
+    char *second_type;  // Top-1 de la pila de tipos
+    char *first_id;
+    char *second_id;
+    int first_oper;
+    int second_oper;
+    int operator = (int)g_queue_peek_tail(StackOper);   
+    if (operator == 43 || operator == 45) { // '+' o '-'
+        first_type = g_queue_peek_tail(StackTypes);
+        second_type = g_queue_peek_nth(StackTypes, g_queue_get_length(StackTypes)-1);
+        if (valid_var_types(first_type, second_type) != 0){ // Si es valido, se genera el cuadruplo
+            operator = (int)g_queue_pop_tail(StackOper); 
+            first_oper = g_queue_pop_tail(StackO);
+            second_oper = g_queue_pop_tail(StackO);
+            printf("Cuadruplo: %c\t %d\t %d\t Resultado\n", operator, first_oper, second_oper);
+        }   
+    }
+    if (operator == 61) {   // '='
+        first_type = g_queue_peek_tail(StackTypes);
+        second_type = g_queue_peek_nth(StackTypes, g_queue_get_length(StackTypes)-1);
+        if (valid_var_types(first_type, second_type) != 0){ // Si es valido, se genera el cuadruplo
+            operator = (int)g_queue_pop_tail(StackOper); 
+            first_oper = g_queue_pop_tail(StackO);
+            //second_oper = g_queue_pop_tail(StackO);
+            printf("Cuadruplo: %c\t %d\t\t Resultado\n", operator, first_oper);
+        }   
+    }
+    
 }
 
 

@@ -148,34 +148,31 @@
 					 | 
 				     ;
 				
-	exp: termino
-		 | termino MAS { insert_to_StackOper(yylval.str); } termino 
-		 | termino MENOS { insert_to_StackOper(yylval.str); } termino
+	exp: termino { generate_quadruple(); }
+		 | termino MAS { /*insert_to_StackOper('+');*/ printf("entre\n") } exp 
+		 | termino MENOS { /*insert_to_StackOper('-');*/ } exp
 	     ;
 	
 	termino: exponencial 
-	         | exponencial POR exponencial 
-	  		 | exponencial DIVISION exponencial
+	         | exponencial POR exp 
+	  		 | exponencial DIVISION exp
 		     ;
 		
 	exponencial: factor 
-	  		     | factor EXPONENCIAL
+	  		     | factor EXPONENCIAL exp
 			     ;
 	
-	factor: var { insert_to_StackO(yylval.str); }
+	factor: var { /*insert_to_StackO(yylval.str);*/ }
 	 	    | PAR_ABIERTO expresion PAR_CERRADO 
+            | MAS CTE_INTEGER
+            | MENOS CTE_INTEGER
 			| factor_alterno
 	        ;
 	
-	factor_alterno: operadores_binarios factor_alterno_choices
+	factor_alterno: factor_alterno_choices
 	 	          ;
 	
-	operadores_binarios: MAS 
-		   	            | MENOS 
-						| 
-	                    ;
-	
-	factor_alterno_choices: CTE_INTEGER | llamado | funcion_matematica | ID CORCHETE_ABIERTO exp CORCHETE_CERRADO | ID;
+	factor_alterno_choices: llamado | funcion_matematica | ID CORCHETE_ABIERTO exp CORCHETE_CERRADO;
 	
 	var: ID 
 		| CTE_INTEGER 
@@ -189,7 +186,8 @@
 			| 
 		  ;
 	 
-	metodo_main: METHOD VOID MAIN {insert_proc_to_table(yylval.str, "void"); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body {print_var_table(proc);} END METHOD 
+	metodo_main: METHOD VOID MAIN {insert_proc_to_table(yylval.str, "void"); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body {print_var_table(proc);} END METHOD
+                ;
 	
 	metodo_def: METHOD tipo {type = yylval.str;} ID {insert_proc_to_table(yylval.str, type); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body {print_var_table(proc);} RETURN expresion PUNTO END METHOD 
 			  ;
@@ -217,7 +215,7 @@
 	llamado: ID PAR_ABIERTO exp PAR_CERRADO
 		   ;
 	
-	asignacion: ID { insert_to_StackO(yylval.str); } IGUAL expresion PUNTO 
+	asignacion: ID { /*insert_to_StackO(yylval.str);*/ } IGUAL { /*insert_to_StackOper('=');*/ } expresion PUNTO 
 				| array_assignment
 			    ;
 	

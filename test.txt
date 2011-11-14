@@ -1,7 +1,7 @@
 program edo:
 
     define _kuri as integer.
-    define algo as integer = _kuri.
+    define algo as integer.
     define raya as string.
     define arreglo as string [10,5].
     define random as integer.
@@ -18,23 +18,19 @@ method integer test(integer a[4,5], boolean j[100]):
     define t as integer.
     define booly as boolean.
 
-    t = x + _kuri.
+    _kuri = (t + t) + t * (t + t + (t / t) + t^2).
 	
     return 0.
 
 end method
 
-	method void prueba():
-	    define x as integer.
-        define algo2 as integer.
-        x = x + x * x.
-        return 0.
-	end method
+method string lopez():
+    define l as integer.
+    return 0.
+end method
 
 	method void main():
-	    define x as integer.
-        define algo2 as integer.
-        x = algo2.
+        define r as integer.
 	end method
 
 end program
