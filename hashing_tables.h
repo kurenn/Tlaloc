@@ -6,3 +6,4 @@ void print_var_table(char *proc);
 void create_stacks_and_queues();
 void insert_to_StackO(char *id);
 void insert_to_StackOper(char oper);
+int get_var_virtual_address(char *id);

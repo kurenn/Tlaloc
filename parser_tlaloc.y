@@ -9,6 +9,7 @@
 	char *name;             // Nombre de variable que se guardara en tabla de vars
 	char *proc;             // Procedimiento ejecutandose actualmente en memoria
     int first_dim;          // Primera dimension de un arreglo bidimensional. Usado para obtener dimension entera.
+    int equals_var;         // Guarda la direccion de la variable a la cual se le asignara una expresion
 
     // Dimensiones para cada tipo de variable, si es que se declaran arreglos
     int integer_dimension = 0, string_dimension = 0, boolean_dimension = 0, decimal_dimension = 0;
@@ -148,9 +149,9 @@
 					 | 
 				     ;
 				
-	exp: termino { generate_quadruple(); }
-		 | termino MAS { /*insert_to_StackOper('+');*/ printf("entre\n") } exp 
-		 | termino MENOS { /*insert_to_StackOper('-');*/ } exp
+	exp: termino
+		 | termino MAS { insert_to_StackOper('+'); } exp 
+		 | termino MENOS { insert_to_StackOper('-'); } exp
 	     ;
 	
 	termino: exponencial 
@@ -162,7 +163,7 @@
 	  		     | factor EXPONENCIAL exp
 			     ;
 	
-	factor: var { /*insert_to_StackO(yylval.str);*/ }
+	factor: var { insert_to_StackO(yylval.str); }
 	 	    | PAR_ABIERTO expresion PAR_CERRADO 
             | MAS CTE_INTEGER
             | MENOS CTE_INTEGER
@@ -215,7 +216,8 @@
 	llamado: ID PAR_ABIERTO exp PAR_CERRADO
 		   ;
 	
-	asignacion: ID { /*insert_to_StackO(yylval.str);*/ } IGUAL { /*insert_to_StackOper('=');*/ } expresion PUNTO 
+    // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
+	asignacion: ID { equals_var = get_var_virtual_address(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion {generate_quadruple(); } PUNTO 
 				| array_assignment
 			    ;
 	
