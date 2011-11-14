@@ -1,7 +1,7 @@
-lex.yy.c
-parser_tlaloc.output
-parser_tlaloc.tab.c
-parser_tlaloc.tab.h
-y.tab.c
-y.tab.h
+/lex.yy.c
+/parser_tlaloc.output
+/parser_tlaloc.tab.c
+/parser_tlaloc.tab.h
+/y.tab.c
+/y.tab.h
 
