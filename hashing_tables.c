@@ -11,15 +11,18 @@ static GQueue *Quadruples;
 char *current_function;        // Variable que mantiene el nombre de la funcion actual
 char *global_function;         // Variable que mantiene el nombre del programa
 
+// Inicio de bloques de memoria para cada tipo de variables
+enum memory_blocks {GINTEGERS=5000, GSTRINGS=10000, GBOOLEANS=15000, GDECIMALS=20000, 
+                    LINTEGERS=25000, LSTRINGS=30000, LBOOLEANS=35000, LDECIMALS=40000,
+                    TINTEGERS=45000, TSTRINGS=50000, TBOOLEANS=55000, TDECIMALS=60000 };
+
 // Contadores que controlan el incremento de las direcciones virtuales para las variables
 int global_integers_count = 0, global_strings_count = 0,
     global_booleans_count = 0, global_decimals_count = 0, 
     local_integers_count = 0, local_strings_count = 0,
-    local_booleans_count = 0, local_decimals_count = 0;
-
-// Inicio de bloques de memoria para cada tipo de variables
-enum memory_blocks {GINTEGERS=5000, GSTRINGS=10000, GBOOLEANS=15000, GDECIMALS=20000, 
-                    LINTEGERS=25000, LSTRINGS=30000, LBOOLEANS=35000, LDECIMALS=40000 };
+    local_booleans_count = 0, local_decimals_count = 0,
+    temp_integers_count = TINTEGERS, temp_strings_count = TSTRINGS,
+    temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS;
 
 // type_table: tabla que guarda el tipo de valor de retorno de la funcion leia en programa
 typedef struct {
@@ -43,6 +46,7 @@ void create_proc_table(){
 // Opcion es 0 con tipos incompatibles. Opcion es 1 por default ya que los demas son validos. 
 int valid_var_types(char *first_type, char *second_type){
     int option = 1;
+    printf("Entre valido, %s, %s\n", first_type, second_type);
     if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"boolean") == 0
         || strcmp(first_type,"string") == 0 && strcmp(second_type,"boolean") == 0
         || strcmp(first_type,"boolean") == 0 && strcmp(second_type,"decimal") == 0
@@ -54,13 +58,18 @@ int valid_var_types(char *first_type, char *second_type){
     return option;
 }
 
-
 // Inicializa filas y pilas
 void create_stacks_and_queues(){
 	StackO = g_queue_new(); 
     StackOper = g_queue_new(); 
     StackTypes = g_queue_new(); 
     Quadruples = g_queue_new(); 
+}
+
+// Inicializa variables temporales para operaciones dentro de cada funcion
+void reset_temp_vars(){
+    temp_integers_count = TINTEGERS, temp_strings_count = TSTRINGS,
+    temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS;
 }
 
 // Inicializa variables locales a 0 para cada nuevo procedimiento
@@ -221,31 +230,36 @@ void generate_quadruple(char *equals){
     int second_oper;
     int operator;
     while (g_queue_is_empty(StackOper) != TRUE){    // Mientras la pila tenga operaciones a hacer, que continue
-        operator = (int)g_queue_peek_tail(StackOper);
+        operator = (int)g_queue_pop_tail(StackOper);
         if (operator == 43 || operator == 45) { // '+' o '-'
             first_type = g_queue_peek_tail(StackTypes);
-            second_type = g_queue_peek_nth(StackTypes, g_queue_get_length(StackTypes)-1);
+            second_type = g_queue_peek_nth(StackTypes, g_queue_get_length(StackTypes)-2);
             if (valid_var_types(first_type, second_type) != 0){ // Si es valido, se genera el cuadruplo
-                operator = (int)g_queue_pop_tail(StackOper); 
                 first_oper = g_queue_pop_tail(StackO);
                 second_oper = g_queue_pop_tail(StackO);
-                printf("Cuadruplo: %c\t %d\t %d\t Resultado\n", operator, first_oper, second_oper);
+                // Introducir a stackO la variable temp para utilizarla en la siguiente operacion
+                printf("Cuadruplo: %c\t %d\t %d\t %d\n", operator, first_oper, second_oper, (temp_integers_count));
+                g_queue_push_head(StackO, (gpointer)temp_integers_count);
+                temp_integers_count = temp_integers_count + 1;
             } else { // Error semantico, tipos incompatibles
-                printf("Error en los tipos de dato\n");
+                printf("Error al hacer la operacion entre los tipos de dato\n");
                 exit(0);
             }   
         }
         if (operator == 61) {   // '='
             first_type = g_queue_peek_tail(StackTypes);
-            second_type = g_queue_peek_nth(StackTypes, g_queue_get_length(StackTypes)-1);
+            second_type = g_queue_peek_nth(StackTypes, g_queue_get_length(StackTypes)-2);
             if (valid_var_types(first_type, second_type) != 0) { // Si es valido, se genera el cuadruplo
-                operator = (int)g_queue_pop_tail(StackOper); 
                 first_oper = equals;
-                //second_oper = g_queue_pop_tail(StackO);
-                printf("Cuadruplo: %c\t %d\t\t Resultado\n", operator, first_oper);
-            }   
+                second_oper = g_queue_pop_tail(StackO);
+                printf("Cuadruplo: %c\t %d\t\t %d\n", operator, second_oper, first_oper);
+            } else { // Error semantico, tipos incompatibles
+                printf("Error en la asignacion entre los tipos de dato\n");
+                exit(0);
+            }      
         }
     }
+    reset_temp_vars();
 }
 
 
