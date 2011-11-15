@@ -1819,7 +1819,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 216 "parser_tlaloc.y"
-    { equals_var = get_var_virtual_address(yylval.str); ;}
+    { insert_to_StackO(yylval.str); ;}
     break;
 
   case 92:
@@ -1833,7 +1833,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 216 "parser_tlaloc.y"
-    {generate_quadruple(equals_var); ;}
+    {generate_quadruple(); ;}
     break;
 
 

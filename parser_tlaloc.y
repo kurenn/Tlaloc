@@ -213,7 +213,7 @@
 		   ;
 	
     // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
-	asignacion: ID { equals_var = get_var_virtual_address(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion {generate_quadruple(equals_var); } PUNTO 
+	asignacion: ID { insert_to_StackO(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion {generate_quadruple(); } PUNTO 
 				| array_assignment
 			    ;
 	
