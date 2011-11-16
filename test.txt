@@ -18,7 +18,7 @@ method integer test(integer a[4,5], boolean j[100]):
     define t as integer.
     define booly as boolean.
 
-    _kuri = _kuri - random - algo * _kuri - algo + algo / algo + algo + algo + algo * _kuri - random - algo * _kuri - algo + algo / algo + algo + algo + algo * _kuri - random - algo * _kuri - algo + algo / algo + algo + algo + algo.
+    _kuri = _kuri - random - 3 + algo * _kuri - random - algo * _kuri.
     algo = x * x.
 	
     return 0.

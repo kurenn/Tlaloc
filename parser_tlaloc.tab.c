@@ -1826,11 +1826,18 @@ yyreduce:
     { generate_mult_div_quadruple(); ;}
     break;
 
-  case 56:
+  case 64:
 
 /* Line 1455 of yacc.c  */
-#line 165 "parser_tlaloc.y"
-    { insert_to_StackO(yylval.str); ;}
+#line 174 "parser_tlaloc.y"
+    { insert_id_to_StackO(yylval.str); ;}
+    break;
+
+  case 65:
+
+/* Line 1455 of yacc.c  */
+#line 175 "parser_tlaloc.y"
+    { insert_cte_to_StackO(yylval.str); ;}
     break;
 
   case 72:
@@ -1879,7 +1886,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 216 "parser_tlaloc.y"
-    { insert_to_StackO(yylval.str); ;}
+    { insert_id_to_StackO(yylval.str); ;}
     break;
 
   case 94:
@@ -1899,7 +1906,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1903 "parser_tlaloc.tab.c"
+#line 1910 "parser_tlaloc.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

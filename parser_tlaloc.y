@@ -162,7 +162,7 @@
 	  		     | factor EXPONENCIAL exp
 			     ;
 	
-	factor: var { insert_to_StackO(yylval.str); }
+	factor: var
 	 	    | PAR_ABIERTO expresion PAR_CERRADO 
             | MAS CTE_INTEGER
             | MENOS CTE_INTEGER
@@ -171,8 +171,8 @@
 	
 	factor_alterno: llamado | funcion_matematica | ID CORCHETE_ABIERTO exp CORCHETE_CERRADO;
 	
-	var: ID 
-		| CTE_INTEGER 
+	var: ID { insert_id_to_StackO(yylval.str); }
+		| CTE_INTEGER { insert_cte_to_StackO(yylval.str); }
 			 | CTE_STRING 
 			 | CTE_DECIMAL 
 			 | VERDADERO 
@@ -213,7 +213,7 @@
 		   ;
 	
     // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
-	asignacion: ID { insert_to_StackO(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion PUNTO { generate_exp_quadruples(); reset_temp_vars(); }
+	asignacion: ID { insert_id_to_StackO(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion PUNTO { generate_exp_quadruples(); reset_temp_vars(); }
 				| array_assignment
 			    ;
 	

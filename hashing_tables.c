@@ -211,10 +211,17 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
     }
 }
 
-void insert_to_StackO(char *id){
+void insert_id_to_StackO(char *id){
     if(id != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
         g_queue_push_tail(StackO, (gpointer)get_var_virtual_address(id));
         g_queue_push_tail(StackTypes, (gpointer)get_var_type(id)); 
+    }        
+}
+
+void insert_cte_to_StackO(int cte_integer){
+    if(cte_integer != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
+        g_queue_push_tail(StackO, (gpointer)cte_integer);
+        g_queue_push_tail(StackTypes, (gpointer)"integer"); 
     }        
 }
 
@@ -232,33 +239,30 @@ void generate_mult_div_quadruple() {
         generate_exp_quadruples();
 }
 
-//void generate_equals_quadruple() {
-//    if ((int)g_queue_peek_tail(StackOper) == 61) // '='
-//        generate_exp_quadruples();
-//}
-
 void generate_exp_quadruples(){
-    char *first_type;   // Top de la pila de tipos
-    char *second_type;  // Top-1 de la pila de tipos
-    int first_oper;
-    int second_oper;
-    int operator;
-    operator = (int)g_queue_pop_tail(StackOper);
-    first_type = g_queue_pop_tail(StackTypes);
-    second_type = g_queue_pop_tail(StackTypes);
-    if (valid_var_types(first_type, second_type) != 0){ // Si es valido, se genera el cuadruplo
+    char *first_type, *second_type;  // Top y Top-1 de la pila de tipos
+    char *temp_type;                 // Tipo de dato de la variable temporal
+    int *temp_count;
+    int first_oper, second_oper, operator, valid_type;
+
+    operator = (int)g_queue_pop_tail(StackOper);    // Saca primer operador de la pila de operadores
+    first_type = g_queue_pop_tail(StackTypes);      // Saca primer operando
+    second_type = g_queue_pop_tail(StackTypes);     // Saca siguiente operando
+    valid_type = valid_var_types(first_type, second_type); // Obtiene el tipo de valor al cual se casteara la operacion
+    if (valid_type != 0){ // Si es valido, se genera el cuadruplo
         first_oper = g_queue_pop_tail(StackO);
         second_oper = g_queue_pop_tail(StackO);
         if (operator == 61) {   // '='
             printf("Cuadruplo: %d\t%c\t %d\t\t %d\n", ++quadruple_index, operator, second_oper, first_oper);
-        } else {            
-            printf("Cuadruplo: %d\t%c\t %d\t %d\t %d\n", ++quadruple_index, operator, second_oper, first_oper, (temp_integers_count));
-            // Introducir a stackO la variable temp para utilizarla en la siguiente operacion
-            g_queue_push_tail(StackO, (gpointer)temp_integers_count);
-            g_queue_push_tail(StackTypes, (gpointer)"integer");
-            temp_integers_count = temp_integers_count + 1;
+        } else {
+            if (valid_type == 1) { temp_count = &temp_integers_count; temp_type = "integer"; }
+            if (valid_type == 2) { temp_count = &temp_strings_count; temp_type = "string"; }
+            printf("Cuadruplo: %d\t%c\t %d\t %d\t %d\n", ++quadruple_index, operator, second_oper, first_oper, *temp_count);
+            g_queue_push_tail(StackO, (gpointer)*temp_count);   // Mete el temporal a la pila para incluirse en las operaciones
+            g_queue_push_tail(StackTypes, (gpointer)temp_type);
+            *temp_count = *temp_count + 1;
         }   
-    } else { // Error semantico, tipos incompatibles
+    } else { // Error semantico, tipos incompatibles (var_type == 0)
         printf("Error al hacer la operacion entre los tipos de dato\n");
         exit(0);
     }
