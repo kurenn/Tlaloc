@@ -148,14 +148,14 @@
 					 | IGUAL_IGUAL 
 				     ;
 				
-	exp: termino
-		 | termino MAS { insert_to_StackOper('+'); } exp 
-		 | termino MENOS { insert_to_StackOper('-'); } exp
+	exp: termino { generate_add_sust_quadruple(); }
+		 | termino MAS { insert_to_StackOper('+'); } exp { generate_add_sust_quadruple(); }
+		 | termino MENOS { insert_to_StackOper('-'); } exp { generate_add_sust_quadruple(); }
 	     ;
 	
-	termino: exponencial 
-	         | exponencial POR exp 
-	  		 | exponencial DIVISION exp
+	termino: exponencial { generate_mult_div_quadruple(); }
+	         | exponencial POR { insert_to_StackOper('*'); } exp { generate_mult_div_quadruple(); }
+	  		 | exponencial DIVISION { insert_to_StackOper('/'); } exp { generate_mult_div_quadruple(); }
 		     ;
 		
 	exponencial: factor 
@@ -213,7 +213,7 @@
 		   ;
 	
     // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
-	asignacion: ID { insert_to_StackO(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion {generate_quadruple(); } PUNTO 
+	asignacion: ID { insert_to_StackO(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion PUNTO { generate_exp_quadruples(); reset_temp_vars(); }
 				| array_assignment
 			    ;
 	

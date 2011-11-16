@@ -10,6 +10,7 @@ static GQueue *StackTypes;
 static GQueue *Quadruples; 
 char *current_function;        // Variable que mantiene el nombre de la funcion actual
 char *global_function;         // Variable que mantiene el nombre del programa
+int quadruple_index = 0;       // Contador de cuadruplos
 
 // Inicio de bloques de memoria para cada tipo de variables
 enum memory_blocks {GINTEGERS=5000, GSTRINGS=10000, GBOOLEANS=15000, GDECIMALS=20000, 
@@ -46,7 +47,7 @@ void create_proc_table(){
 // Opcion es 0 con tipos incompatibles. Opcion es 1 por default ya que los demas son validos. 
 int valid_var_types(char *first_type, char *second_type){
     int option = 1;
-    printf("Entre valido, %s, %s\n", first_type, second_type);
+    //printf("Entre valido, %s, %s\n", first_type, second_type);
     if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"boolean") == 0
         || strcmp(first_type,"string") == 0 && strcmp(second_type,"boolean") == 0
         || strcmp(first_type,"boolean") == 0 && strcmp(second_type,"decimal") == 0
@@ -221,37 +222,46 @@ void insert_to_StackOper(int oper){
     g_queue_push_tail(StackOper, (gpointer)oper);
 }
 
-void generate_quadruple(){
+void generate_add_sust_quadruple() {
+    if ((int)g_queue_peek_tail(StackOper) == 43 || (int)g_queue_peek_tail(StackOper) == 45) // '+' o '-'
+        generate_exp_quadruples();
+}
+
+void generate_mult_div_quadruple() {
+    if ((int)g_queue_peek_tail(StackOper) == 42 || (int)g_queue_peek_tail(StackOper) == 47) // '*' o '/'
+        generate_exp_quadruples();
+}
+
+//void generate_equals_quadruple() {
+//    if ((int)g_queue_peek_tail(StackOper) == 61) // '='
+//        generate_exp_quadruples();
+//}
+
+void generate_exp_quadruples(){
     char *first_type;   // Top de la pila de tipos
     char *second_type;  // Top-1 de la pila de tipos
-    char *first_id;
-    char *second_id;
     int first_oper;
     int second_oper;
     int operator;
-    while (g_queue_is_empty(StackOper) != TRUE){    // Mientras la pila tenga operaciones a hacer, que continue
-        operator = (int)g_queue_pop_tail(StackOper);
-        first_type = g_queue_pop_tail(StackTypes);
-        second_type = g_queue_pop_tail(StackTypes);
-        if (valid_var_types(first_type, second_type) != 0){ // Si es valido, se genera el cuadruplo
-            first_oper = g_queue_pop_tail(StackO);
-            second_oper = g_queue_pop_tail(StackO);
-            if (operator == 43 || operator == 45) { // '+' o '-'
-                // Capturar valor que devuelve la operacion de las variables y meterlo aqui -->
-                printf("Cuadruplo: %c\t %d\t %d\t %d\n", operator, second_oper, first_oper, (temp_integers_count));
-                // Introducir a stackO la variable temp para utilizarla en la siguiente operacion
-                g_queue_push_tail(StackO, (gpointer)temp_integers_count);
-                g_queue_push_tail(StackTypes, (gpointer)"integer");
-                temp_integers_count = temp_integers_count + 1;
-            } else if (operator == 61) {   // '='
-                printf("Cuadruplo: %c\t %d\t\t %d\n", operator, second_oper, first_oper);
-            }     
-        } else { // Error semantico, tipos incompatibles
-            printf("Error al hacer la operacion entre los tipos de dato\n");
-            exit(0);
-        } 
+    operator = (int)g_queue_pop_tail(StackOper);
+    first_type = g_queue_pop_tail(StackTypes);
+    second_type = g_queue_pop_tail(StackTypes);
+    if (valid_var_types(first_type, second_type) != 0){ // Si es valido, se genera el cuadruplo
+        first_oper = g_queue_pop_tail(StackO);
+        second_oper = g_queue_pop_tail(StackO);
+        if (operator == 61) {   // '='
+            printf("Cuadruplo: %d\t%c\t %d\t\t %d\n", ++quadruple_index, operator, second_oper, first_oper);
+        } else {            
+            printf("Cuadruplo: %d\t%c\t %d\t %d\t %d\n", ++quadruple_index, operator, second_oper, first_oper, (temp_integers_count));
+            // Introducir a stackO la variable temp para utilizarla en la siguiente operacion
+            g_queue_push_tail(StackO, (gpointer)temp_integers_count);
+            g_queue_push_tail(StackTypes, (gpointer)"integer");
+            temp_integers_count = temp_integers_count + 1;
+        }   
+    } else { // Error semantico, tipos incompatibles
+        printf("Error al hacer la operacion entre los tipos de dato\n");
+        exit(0);
     }
-    reset_temp_vars();
 }
 
 

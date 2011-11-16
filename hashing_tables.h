@@ -7,3 +7,7 @@ void create_stacks_and_queues();
 void insert_to_StackO(char *id);
 void insert_to_StackOper(char oper);
 int get_var_virtual_address(char *id);
+void reset_temp_vars();
+void generate_exp_quadruples();
+void generate_add_sust_quadruple();
+void generate_mult_div_quadruple();
