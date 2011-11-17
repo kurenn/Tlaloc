@@ -225,7 +225,7 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
                 }
                 if (strcmp(tipo, "decimal") == 0) {
                         address = LDECIMALS + local_decimals_count + dimension;                        
-                        local_decimals_count = local_decimals_count + 1 + dimension; ;                        
+                        local_decimals_count = local_decimals_count + 1 + dimension;                        
                 }
                 v_memory->virtual_address = address;
             }     
@@ -237,7 +237,10 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
 }
 
 
-// Funciones para la inserción de variables, constantes y demas en la generacion de expresiones
+/* Bloque para agregar constantes
+    Agrega todas las constantes que encuentra en expresiones a la HashTable de constantes.
+    Si la variable ya existe, toma la direccion que ya le fue asignadas
+*/
 void insert_id_to_StackO(char *id){
     if(id != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
         g_queue_push_tail(StackO, (gpointer)get_var_virtual_address(id));
@@ -246,11 +249,11 @@ void insert_id_to_StackO(char *id){
 }
 
 void insert_cte_int_to_StackO(int cte){
-    char *cte_integer = (char *)malloc(sizeof(int));
-    sprintf (cte_integer, "%d", cte);
-    if(cte_integer != NULL){ 
+    if(cte != NULL){ 
+        char *cte_integer = (char *)malloc(sizeof(int));
+        sprintf (cte_integer, "%d", cte);
         vars_memory *temp_memory = g_slice_new(vars_memory);
-        printf("integer: %s\n", cte_integer);
+        printf("%s\n", cte_integer);
         if (g_hash_table_lookup(constants_table, (gpointer)cte_integer) != NULL) { // ya existe la constante
             temp_memory = g_hash_table_lookup(constants_table, (gpointer)cte_integer);
         } else {
@@ -264,26 +267,53 @@ void insert_cte_int_to_StackO(int cte){
     }        
 }
 
-/*void insert_cte_decimal_to_StackO(float cte_decimal){
-//    if(cte_decimal != NULL){
-        g_queue_push_tail(StackO, (gpointer)const_decimals_count);
+void insert_cte_decimal_to_StackO(float cte){
+//    if(cte != NULL){ 
+        char *cte_decimal = (char *)malloc(sizeof(float));
+        sprintf (cte_decimal, "%f", cte);
+        vars_memory *temp_memory = g_slice_new(vars_memory);
+        printf("%s\n", cte_decimal);
+        if (g_hash_table_lookup(constants_table, (gpointer)cte_decimal) != NULL) { // ya existe la constante
+            temp_memory = g_hash_table_lookup(constants_table, (gpointer)cte_decimal);
+        } else {
+            temp_memory->type = "decimal";
+            temp_memory->virtual_address = const_decimals_count;
+            g_hash_table_insert(constants_table, (gpointer)cte_decimal, (gpointer)temp_memory);
+        }
+        g_queue_push_tail(StackO, (gpointer)temp_memory->virtual_address);
         g_queue_push_tail(StackTypes, (gpointer)"decimal"); 
-        const_decimals_count = const_decimals_count + 1;
-//    }        
+        const_decimals_count = const_decimals_count + 1;    
+    }      
+//}
+
+void insert_cte_string_to_StackO(char *c_string){
+    if(c_string != NULL){
+        char cte_string[] = "'";
+        strcat(cte_string, c_string);
+        strcat(cte_string, "'");
+        printf("%s\n", cte_string);
+        vars_memory *temp_memory = g_slice_new(vars_memory);
+        if (g_hash_table_lookup(constants_table, (gpointer)cte_string) != NULL) { // ya existe la constante
+            temp_memory = g_hash_table_lookup(constants_table, (gpointer)cte_string);
+        } else {
+            temp_memory->type = "string";
+            temp_memory->virtual_address = const_strings_count;
+            g_hash_table_insert(constants_table, (gpointer)cte_string, (gpointer)temp_memory);
+        }
+        g_queue_push_tail(StackO, (gpointer)temp_memory->virtual_address);
+        g_queue_push_tail(StackTypes, (gpointer)"string"); 
+        const_strings_count = const_strings_count + 1;    
+    }         
 }
 
-void insert_cte_string_to_StackO(char *cte_string){
-    if(cte_string != NULL){
-        g_queue_push_tail(StackO, (gpointer)const_strings_count);
-        g_queue_push_tail(StackTypes, (gpointer)"string"); 
-        const_strings_count = const_strings_count + 1;
-    }        
-}*/
-
+// Inserta operador en pila de operadores para la jerarquía de operaciones
 void insert_to_StackOper(int oper){
     g_queue_push_tail(StackOper, (gpointer)oper);
 }
 
+/* Bloque de validación jerarquico
+    Verifica los operadores en la pila de tipos para aplicar su jerarquia
+ */
 void generate_add_sust_quadruple() {
     if ((int)g_queue_peek_tail(StackOper) == 43 || (int)g_queue_peek_tail(StackOper) == 45) // '+' o '-'
         generate_exp_quadruples();
@@ -294,6 +324,12 @@ void generate_mult_div_quadruple() {
         generate_exp_quadruples();
 }
 
+void generate_exponential_quadruple() {
+    if ((int)g_queue_peek_tail(StackOper) == 94) // '^'
+        generate_exp_quadruples();
+}
+
+// Funcion que genera los cuadruplos para las expresiones
 void generate_exp_quadruples(){
     char *first_type, *second_type;  // Top y Top-1 de la pila de tipos
     char *temp_type;                 // Tipo de dato de la variable temporal
@@ -309,7 +345,7 @@ void generate_exp_quadruples(){
         second_oper = g_queue_pop_tail(StackO);
         if (operator == 61) {   // '='
             printf("Cuadruplo: %d\t%c\t %d\t\t %d\n", ++quadruple_index, operator, second_oper, first_oper);
-        } else {
+        } else {    // Asigna el tipo de dato a la variable que guardara el resultado de la operacion
             if (valid_type == 1) { temp_count = &temp_integers_count; temp_type = "integer"; }
             if (valid_type == 2) { temp_count = &temp_strings_count; temp_type = "string"; }
             if (valid_type == 3) { temp_count = &temp_booleans_count; temp_type = "boolean"; }

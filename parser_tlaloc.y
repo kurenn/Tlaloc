@@ -159,14 +159,16 @@
 	  		 | exponencial DIVISION { insert_to_StackOper('/'); } exp { generate_mult_div_quadruple(); }
 		     ;
 		
-	exponencial: factor 
-	  		     | factor EXPONENCIAL exp
+	exponencial: factor { generate_exponential_quadruple(); }
+	  		     | factor EXPONENCIAL { insert_to_StackOper('^'); } exp { generate_exponential_quadruple(); }
 			     ;
 	
 	factor: var
 	 	    | PAR_ABIERTO expresion PAR_CERRADO 
-            | MAS CTE_INTEGER
-            | MENOS CTE_INTEGER
+            | MAS CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); } // Acepta enteros y decimales negativos
+            | MAS CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.integer); }
+            | MENOS CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer * -1); }
+            | MENOS CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.integer * -1); }
 			| factor_alterno
 	        ;
 	
@@ -174,10 +176,10 @@
 	
 	var: ID { insert_id_to_StackO(yylval.str); }
 		| CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); }
-			 | CTE_STRING { /*insert_cte_string_to_StackO(yylval.str);*/ }
-			 | CTE_DECIMAL 
-			 | VERDADERO 
-			 | FALSO
+			 | CTE_STRING { insert_cte_string_to_StackO(yylval.str); }
+			 | CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.decimal); }
+			 | VERDADERO  /*En la maquina virtual se asigna directamente el valor*/
+			 | FALSO      /*En la maquina virtual se asigna directamente el valor*/
 		   	 ;
 		 
 	metodo: metodo metodo_def 

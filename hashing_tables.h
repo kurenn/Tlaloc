@@ -14,4 +14,5 @@ void reset_temp_vars();
 void generate_exp_quadruples();
 void generate_add_sust_quadruple();
 void generate_mult_div_quadruple();
+void generate_exponential_quadruple();
 void create_constants_table();
