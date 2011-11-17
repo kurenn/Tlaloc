@@ -55,6 +55,7 @@
     
 	main(int argc, char **argv) {
 		create_proc_table();
+        create_constants_table();
         create_stacks_and_queues();
 		yyparse();
 		//print_hash_table();
@@ -172,8 +173,8 @@
 	factor_alterno: llamado | funcion_matematica | ID CORCHETE_ABIERTO exp CORCHETE_CERRADO;
 	
 	var: ID { insert_id_to_StackO(yylval.str); }
-		| CTE_INTEGER { insert_cte_to_StackO(yylval.str); }
-			 | CTE_STRING 
+		| CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); }
+			 | CTE_STRING { /*insert_cte_string_to_StackO(yylval.str);*/ }
 			 | CTE_DECIMAL 
 			 | VERDADERO 
 			 | FALSO

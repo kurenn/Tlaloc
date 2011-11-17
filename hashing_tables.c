@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 static GHashTable *proc_table; // HashTable de procedimientos (key) leidos. (value) apunta a type_table
+static GHashTable *constants_table;  //HashTable con las constantes usadas en todo el programa
 static GQueue *StackO;
 static GQueue *StackOper;
 static GQueue *StackTypes;
@@ -15,7 +16,8 @@ int quadruple_index = 0;       // Contador de cuadruplos
 // Inicio de bloques de memoria para cada tipo de variables
 enum memory_blocks {GINTEGERS=5000, GSTRINGS=10000, GBOOLEANS=15000, GDECIMALS=20000, 
                     LINTEGERS=25000, LSTRINGS=30000, LBOOLEANS=35000, LDECIMALS=40000,
-                    TINTEGERS=45000, TSTRINGS=50000, TBOOLEANS=55000, TDECIMALS=60000 };
+                    TINTEGERS=45000, TSTRINGS=50000, TBOOLEANS=55000, TDECIMALS=60000, 
+                    CINTEGERS=65000, CSTRINGS=70000, CBOOLEANS=75000, CDECIMALS=80000};
 
 // Contadores que controlan el incremento de las direcciones virtuales para las variables
 int global_integers_count = 0, global_strings_count = 0,
@@ -23,7 +25,9 @@ int global_integers_count = 0, global_strings_count = 0,
     local_integers_count = 0, local_strings_count = 0,
     local_booleans_count = 0, local_decimals_count = 0,
     temp_integers_count = TINTEGERS, temp_strings_count = TSTRINGS,
-    temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS;
+    temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS,
+    const_integers_count = CINTEGERS, const_strings_count = CSTRINGS,
+    const_booleans_count = CBOOLEANS, const_decimals_count = CDECIMALS;
 
 // type_table: tabla que guarda el tipo de valor de retorno de la funcion leia en programa
 typedef struct {
@@ -43,10 +47,15 @@ void create_proc_table(){
 	proc_table = g_hash_table_new(g_str_hash, g_str_equal); 
 }
 
+// Inicializa tabla de constantes del programa
+void create_constants_table(){
+	constants_table = g_hash_table_new(g_str_hash, g_str_equal); // key: constante | value: vars_memory(struct)
+}
+
 // Tabla de validacion de tipos de datos
 // Opcion es 0 con tipos incompatibles. Opcion es 1 por default ya que los demas son validos. 
 int valid_var_types(char *first_type, char *second_type){
-    int option = 1;
+    int option;
     //printf("Entre valido, %s, %s\n", first_type, second_type);
     if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"boolean") == 0
         || strcmp(first_type,"string") == 0 && strcmp(second_type,"boolean") == 0
@@ -55,6 +64,20 @@ int valid_var_types(char *first_type, char *second_type){
         || strcmp(first_type,"boolean") == 0 && strcmp(second_type,"string") == 0
         || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"boolean") == 0) // Combinaciones invalidas
         option = 0;
+    else if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"integer") == 0)
+        option = 1;
+    else if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"string") == 0
+        || strcmp(first_type,"string") == 0 && strcmp(second_type,"decimal") == 0
+        || strcmp(first_type,"string") == 0 && strcmp(second_type,"integer") == 0
+        || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"string") == 0
+        || strcmp(first_type,"string") == 0 && strcmp(second_type,"string") == 0)
+        option = 2;
+    else if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"decimal") == 0
+        || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"integer") == 0
+        || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"decimal") == 0) // Combinaciones invalidas
+        option = 4;
+    else if (strcmp(first_type,"boolean") == 0 && strcmp(second_type,"boolean") == 0) // Combinaciones invalidas
+        option = 3;
     
     return option;
 }
@@ -70,7 +93,9 @@ void create_stacks_and_queues(){
 // Inicializa variables temporales para operaciones dentro de cada funcion
 void reset_temp_vars(){
     temp_integers_count = TINTEGERS, temp_strings_count = TSTRINGS,
-    temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS;
+    temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS,
+    const_integers_count = CINTEGERS, const_strings_count = CSTRINGS,
+    const_booleans_count = CBOOLEANS, const_decimals_count = CDECIMALS;
 }
 
 // Inicializa variables locales a 0 para cada nuevo procedimiento
@@ -211,6 +236,8 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
     }
 }
 
+
+// Funciones para la inserción de variables, constantes y demas en la generacion de expresiones
 void insert_id_to_StackO(char *id){
     if(id != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
         g_queue_push_tail(StackO, (gpointer)get_var_virtual_address(id));
@@ -218,12 +245,40 @@ void insert_id_to_StackO(char *id){
     }        
 }
 
-void insert_cte_to_StackO(int cte_integer){
-    if(cte_integer != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
-        g_queue_push_tail(StackO, (gpointer)cte_integer);
+void insert_cte_int_to_StackO(int cte){
+    char *cte_integer = (char *)malloc(sizeof(int));
+    sprintf (cte_integer, "%d", cte);
+    if(cte_integer != NULL){ 
+        vars_memory *temp_memory = g_slice_new(vars_memory);
+        printf("integer: %s\n", cte_integer);
+        if (g_hash_table_lookup(constants_table, (gpointer)cte_integer) != NULL) { // ya existe la constante
+            temp_memory = g_hash_table_lookup(constants_table, (gpointer)cte_integer);
+        } else {
+            temp_memory->type = "integer";
+            temp_memory->virtual_address = const_integers_count;
+            g_hash_table_insert(constants_table, (gpointer)cte_integer, (gpointer)temp_memory);
+        }
+        g_queue_push_tail(StackO, (gpointer)temp_memory->virtual_address);
         g_queue_push_tail(StackTypes, (gpointer)"integer"); 
+        const_integers_count = const_integers_count + 1;    
     }        
 }
+
+/*void insert_cte_decimal_to_StackO(float cte_decimal){
+//    if(cte_decimal != NULL){
+        g_queue_push_tail(StackO, (gpointer)const_decimals_count);
+        g_queue_push_tail(StackTypes, (gpointer)"decimal"); 
+        const_decimals_count = const_decimals_count + 1;
+//    }        
+}
+
+void insert_cte_string_to_StackO(char *cte_string){
+    if(cte_string != NULL){
+        g_queue_push_tail(StackO, (gpointer)const_strings_count);
+        g_queue_push_tail(StackTypes, (gpointer)"string"); 
+        const_strings_count = const_strings_count + 1;
+    }        
+}*/
 
 void insert_to_StackOper(int oper){
     g_queue_push_tail(StackOper, (gpointer)oper);
@@ -257,8 +312,11 @@ void generate_exp_quadruples(){
         } else {
             if (valid_type == 1) { temp_count = &temp_integers_count; temp_type = "integer"; }
             if (valid_type == 2) { temp_count = &temp_strings_count; temp_type = "string"; }
+            if (valid_type == 3) { temp_count = &temp_booleans_count; temp_type = "boolean"; }
+            if (valid_type == 4) { temp_count = &temp_decimals_count; temp_type = "decimal"; }
             printf("Cuadruplo: %d\t%c\t %d\t %d\t %d\n", ++quadruple_index, operator, second_oper, first_oper, *temp_count);
-            g_queue_push_tail(StackO, (gpointer)*temp_count);   // Mete el temporal a la pila para incluirse en las operaciones
+            // Mete el temporal a la pila para incluirse en las operaciones
+            g_queue_push_tail(StackO, (gpointer)*temp_count);  
             g_queue_push_tail(StackTypes, (gpointer)temp_type);
             *temp_count = *temp_count + 1;
         }   
