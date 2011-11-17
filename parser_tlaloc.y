@@ -126,27 +126,28 @@
 	                | CORCHETE_ABIERTO CTE_INTEGER { first_dim = yylval.integer; } COMA CTE_INTEGER { get_constant(yylval.integer * first_dim); } CORCHETE_CERRADO
                     ;
 	
-	expresion: exp 
-	          | exp operador_logico exp
+	expresion: exp { generate_relational_quadruple(); }
+	          | exp operador_logico exp { generate_relational_quadruple(); }
 			  ;
 	
-	funcion_matematica: math_choices PAR_ABIERTO exp PAR_CERRADO
+	funcion_matematica: math_choices PAR_ABIERTO { insert_to_StackOper('['); } exp 
+                                     PAR_CERRADO { remove_from_StackOper(); generate_exp_quadruples(); }
 					  ;
 	
-	math_choices: ABS
-		          | COS
-			      | SIN
-			      | LOG
-			      | TAN
-			      | SQRT
+	math_choices: ABS { insert_to_StackOper('A'); } 
+		          | COS { insert_to_StackOper('C'); } 
+			      | SIN { insert_to_StackOper('S'); } 
+			      | LOG { insert_to_StackOper('L'); } 
+			      | TAN { insert_to_StackOper('T'); } 
+			      | SQRT { insert_to_StackOper('Q'); } 
 				  ;
 	
-	operador_logico: AND 
-				     | OR 
-				     | MAYOR_QUE 
-					 | MENOR_QUE 
-					 | DIFERENTE 
-					 | IGUAL_IGUAL 
+	operador_logico: AND { insert_to_StackOper('a'); }
+				     | OR { insert_to_StackOper('o'); }
+				     | MAYOR_QUE { insert_to_StackOper('>'); }
+					 | MENOR_QUE { insert_to_StackOper('<'); }
+					 | DIFERENTE { insert_to_StackOper('!'); }
+					 | IGUAL_IGUAL { insert_to_StackOper('i'); }
 				     ;
 				
 	exp: termino { generate_add_sust_quadruple(); }
@@ -163,8 +164,9 @@
 	  		     | factor EXPONENCIAL { insert_to_StackOper('^'); } exp { generate_exponential_quadruple(); }
 			     ;
 	
+    // Inserta corchete para distinguir de parentesis como fondo falso 91 = [ -- 93 = ]
 	factor: var
-	 	    | PAR_ABIERTO expresion PAR_CERRADO 
+	 	    | PAR_ABIERTO { insert_to_StackOper('['); } expresion PAR_CERRADO { remove_from_StackOper(); }
             | MAS CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); } // Acepta enteros y decimales negativos
             | MAS CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.integer); }
             | MENOS CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer * -1); }

@@ -18,8 +18,10 @@ method integer test(integer a[4,5], boolean j[100]):
     define t as integer.
     define booly as boolean.
 
-    _kuri = _kuri ^ 3 * raya + "algo" * random - -2.0 + raya.
+    _kuri = _kuri > 3 + (2 ^ 3 + (algo + algo + (algo * algo + _kuri))).
     algo = x * x ^ x * x.
+    algo = _kuri.
+    _kuri = abs(algo * algo) + 3 + algo + cos(35).
 	
     return 0.
 
@@ -27,6 +29,7 @@ end method
 
 method string lopez():
     define l as integer.
+        l = raya.
     return 0.
 end method
 
