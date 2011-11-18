@@ -18,3 +18,5 @@ void generate_mult_div_quadruple();
 void generate_exponential_quadruple();
 void generate_relational_quadruple();
 void create_constants_table();
+void create_quadruples_array();
+void print_quadruples_array_to_file();

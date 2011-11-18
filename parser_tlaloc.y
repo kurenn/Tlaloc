@@ -57,7 +57,9 @@
 		create_proc_table();
         create_constants_table();
         create_stacks_and_queues();
+		create_quadruples_array();
 		yyparse();
+		print_quadruples_array_to_file();
 		//print_hash_table();
 	}
 	
@@ -134,12 +136,12 @@
                                      PAR_CERRADO { remove_from_StackOper(); generate_exp_quadruples(); }
 					  ;
 	
-	math_choices: ABS { insert_to_StackOper('A'); } 
-		          | COS { insert_to_StackOper('C'); } 
-			      | SIN { insert_to_StackOper('S'); } 
-			      | LOG { insert_to_StackOper('L'); } 
-			      | TAN { insert_to_StackOper('T'); } 
-			      | SQRT { insert_to_StackOper('Q'); } 
+	math_choices: ABS { insert_to_StackOper(212); } 
+		          | COS { insert_to_StackOper(214); } 
+			      | SIN { insert_to_StackOper(225); } 
+			      | LOG { insert_to_StackOper(211); } 
+			      | TAN { insert_to_StackOper(225); } 
+			      | SQRT { insert_to_StackOper(231); } 
 				  ;
 	
 	operador_logico: AND { insert_to_StackOper('a'); }
