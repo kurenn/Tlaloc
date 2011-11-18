@@ -1,0 +1,42 @@
+Simbolo				Valor
+
+(Suma de la primera y ultima letra)
+
+print					213 
+printline			228
+read					215
+return				224
+and						197
+or						225
+abs						212
+cos						214
+sin						225
+log						211
+tan						226
+sqrt					231
+RET						166
+true					217
+false					203
+
+(Valor ascii)
+
+(							40
+)							21
+[							91
+]							93
+,							44
+.							46
+:							58
+=							61
+==						122
+<							60
+>							62
+<>						123
+*							42
++							43
+-							45
+/							47
+^							94
+->						107
+"							34
+! 						33
