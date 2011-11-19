@@ -331,6 +331,11 @@ void remove_from_StackOper(){
     g_queue_pop_tail(StackOper);
 }
 
+// Saca el id de la pila de operandos en caso de que en la definicion no se le asigne un valor
+void remove_from_StackO(){
+    g_queue_pop_tail(StackO);
+}
+
 /* Bloque de validación jerarquico
     Verifica los operadores en la pila de tipos para aplicar su jerarquia
  */
