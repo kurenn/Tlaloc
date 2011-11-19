@@ -17,7 +17,7 @@ method integer test(integer a[4,5], boolean j[100]):
     define arregloo as integer [5].
     define t as integer = 666.
     define booly as boolean.
-    define mama as string = "mama".
+   
 
     _kuri = _kuri + 3 + (2 ^ 3 + (algo + algo + (algo * algo + _kuri))).
     algo = x * x ^ x * x.
