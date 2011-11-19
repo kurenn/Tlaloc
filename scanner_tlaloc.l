@@ -67,6 +67,9 @@
 "." 		{ return PUNTO; }
 "->"		{ return APUNTADOR; }
 "\""		{ return COMILLAS; }
+">="		{ return MAYOR_IGUAL; }
+"<="		{ return MENOR_IGUAL; }
+
 
 
 [a-zA-Z_][a-zA-Z0-9_]*     { yylval.str = strdup(yytext); return ID; }

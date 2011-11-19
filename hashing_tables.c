@@ -8,12 +8,14 @@ static GHashTable *constants_table;  //HashTable con las constantes usadas en to
 static GQueue *StackO;
 static GQueue *StackOper;
 static GQueue *StackTypes;
-static GQueue *Quadruples; 
+static GQueue *Quadruples;
+static GQueue *StackJumps; 
 char *current_function;        // Variable que mantiene el nombre de la funcion actual
 char *global_function;         // Variable que mantiene el nombre del programa
 int quadruple_index = 0;       // Contador de cuadruplos
 FILE *middle_code;			   //Archivo de cuadruplos
 static GPtrArray *QuadruplesList; //lista de cuadruplos
+
 // Inicio de bloques de memoria para cada tipo de variables
 enum memory_blocks {GINTEGERS=5000, GSTRINGS=10000, GBOOLEANS=15000, GDECIMALS=20000, 
                     LINTEGERS=25000, LSTRINGS=30000, LBOOLEANS=35000, LDECIMALS=40000,
@@ -102,6 +104,7 @@ void create_stacks_and_queues(){
     StackOper = g_queue_new(); 
     StackTypes = g_queue_new(); 
     Quadruples = g_queue_new(); 
+	StackJumps = g_queue_new();
 }
 
 // Inicializa variables temporales para operaciones dentro de cada funcion
@@ -349,9 +352,47 @@ void generate_exponential_quadruple() {
 void generate_relational_quadruple() {
     if ((int)g_queue_peek_tail(StackOper) == 197 || (int)g_queue_peek_tail(StackOper) == 225 ||
         (int)g_queue_peek_tail(StackOper) == 60 || (int)g_queue_peek_tail(StackOper) == 62 ||
-        (int)g_queue_peek_tail(StackOper) == 33 || (int)g_queue_peek_tail(StackOper) == 123) // 'ad', 'or', '<', '>', '!', <>        
+        (int)g_queue_peek_tail(StackOper) == 33 || (int)g_queue_peek_tail(StackOper) == 123 ||
+		(int)g_queue_peek_tail(StackOper) == 124 || (int)g_queue_peek_tail(StackOper) == 125) // 'ad', 'or', '<', '>', '!', <>, >=, <=        
         generate_exp_quadruples();
 }
+
+//Funcion para la generacion de cuadruplos para IF
+void generate_gotoF_if_quadruple(){
+	char *aux = g_queue_pop_tail(StackTypes);
+	int result;
+	if(aux != "boolean"){
+		printf("error semantico\n");
+		exit(0);
+	}else{
+	    result = g_queue_pop_tail(StackO);
+		insert_quadruple_to_array(205, result, 0, 0);
+		printf("Cuadruplo: %d\t%d\t %d\n", ++quadruple_index, 205, result);
+		g_queue_push_tail(StackJumps, (gpointer)(quadruple_index - 1));    
+		//g_ptr_array_index(QuadruplesList,);
+		//printf("%d\n", quadruple_index);
+		//cont = quadruple_index - 1;
+	}
+}
+
+void generate_goto_if_quadruple(){
+	insert_quadruple_to_array(206, 0, 0, 0);
+	printf("Cuadruplo: %d\t%d\t %d\n", ++quadruple_index, 206, 0);
+	fill_if();
+	g_queue_push_tail(StackJumps, (gpointer)(quadruple_index - 1));
+}
+
+void fill_if() {
+	int temp_count;
+	char *t_count = (char *)malloc(sizeof(int));
+	temp_count = g_queue_pop_tail(StackJumps);
+	quad_struct *t_quadruple = g_slice_new(quad_struct);
+	sprintf(t_count, "%d", (quadruple_index + 1));
+	t_quadruple = g_ptr_array_index(QuadruplesList,temp_count);
+	t_quadruple->result = t_count;
+
+}
+
 
 void insert_quadruple_to_array(int operator, int second_oper, int first_oper, int *count){
 	quad_struct *quadruple = g_slice_new(quad_struct);
@@ -369,7 +410,6 @@ void insert_quadruple_to_array(int operator, int second_oper, int first_oper, in
 	quadruple->second_oper = c_second_oper;
 	quadruple->result = c_count;
 	g_ptr_array_add(QuadruplesList, (gpointer)quadruple); 
-	//printf("added\n");
 }
 
 // Funcion que genera los cuadruplos para las expresiones
@@ -378,9 +418,10 @@ void generate_exp_quadruples(){
     char *temp_type;                 // Tipo de dato de la variable temporal
     int *temp_count;
     int first_oper, second_oper, operator, valid_type;
-	
+
     operator = (int)g_queue_pop_tail(StackOper);    // Saca primer operador de la pila de operadores
     first_oper = g_queue_pop_tail(StackO);          // Solo sacamos el primer_oper en caso de que sea math_function
+	
     if (operator == 212 || operator == 214 || operator == 225 || // 'as' 'cs' 'sn'    // Generacion de Math_function
         operator == 211 || operator == 226 || operator == 231) { // 'lg' 'tn' 'st'
 		insert_quadruple_to_array(operator, first_oper, 0, temp_decimals_count);
@@ -411,6 +452,11 @@ void generate_exp_quadruples(){
                 // Mete el temporal a la pila para incluirse en las operaciones
                 g_queue_push_tail(StackO, (gpointer)*temp_count);  
                 g_queue_push_tail(StackTypes, (gpointer)temp_type);
+				//Si es un operador logico, mete un tipo booleano a la pila de tipos
+				if(operator == 60 || operator == 62){
+					g_queue_push_tail(StackTypes, (gpointer)"boolean");
+					printf("Added\n");
+				}
                 *temp_count = *temp_count + 1;
             }   
         } else { // Error semantico, tipos incompatibles (var_type == 0)
@@ -452,11 +498,12 @@ static void print_array(quad_struct *quadruple, gpointer user_data){
 		printf("Error opening d:/website.txt\n");
 	}
 	
-	printf("%s\t%s\t%s\t%s\n", quadruple->operator, quadruple->second_oper, quadruple->first_oper, quadruple->result);
+	printf("%d\t%c\t%s\t%s\t%s\n", quadruple_index++, atoi(quadruple->operator), quadruple->second_oper, quadruple->first_oper, quadruple->result);
 }
 
 void print_quadruples_array_to_file(){
 	printf("---\n");
+	quadruple_index = 1;
 	g_ptr_array_foreach(QuadruplesList, (GFunc)print_array, NULL);
 	middle_code = fopen("tlaloc.obj", "a+");
 	fprintf(middle_code, "END");

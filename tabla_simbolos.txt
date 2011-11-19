@@ -17,6 +17,8 @@ sqrt					231
 RET						166
 true					217
 false					203
+gotoF					205
+goto					206
 
 (Valor ascii)
 
@@ -32,3 +34,5 @@ false					203
 ^							94
 ->						107
 ! 						33
+>=						124
+<=						125

@@ -18,20 +18,34 @@ method integer test(integer a[4,5], boolean j[100]):
     define t as integer.
     define booly as boolean.
 
-    _kuri = _kuri > 3 + (2 ^ 3 + (algo + algo + (algo * algo + _kuri))).
+    _kuri = _kuri <= 3 + (2 ^ 3 + (algo + algo + (algo * algo + _kuri))).
     algo = x * x ^ x * x.
     algo = _kuri.
     _kuri = abs(algo * algo) + 3 + algo + cos(35).
-    printline(algo + "algo").
     read(_kuri, algo).
-	
+		print(_kuri + 2).
+		printline(_kuri).
     return 0.
 
 end method
 
 method string lopez():
     define l as integer.
+
         l = raya.
+
+				if(l < raya):
+					if(_kuri > raya):
+						algo = _kuri.
+						else:
+						_kuri = algo.
+					end if
+					else:
+						algo = l.
+				end if
+				
+				algo = algo.
+				
     return 0.
 end method
 

@@ -60,7 +60,7 @@
 		create_quadruples_array();
 		yyparse();
 		print_quadruples_array_to_file();
-		//print_hash_table();
+		print_hash_table();
 	}
 	
 	
@@ -78,7 +78,7 @@
 %token FOR WHILE
 %token IF SELECT ELSE
 %token PAR_ABIERTO PAR_CERRADO COMA DOS_PUNTOS CORCHETE_ABIERTO CORCHETE_CERRADO
-%token IGUAL IGUAL_IGUAL MENOR_QUE MAYOR_QUE DIFERENTE POR MAS MENOS DIVISION
+%token IGUAL IGUAL_IGUAL MENOR_QUE MAYOR_QUE DIFERENTE POR MAS MENOS DIVISION MAYOR_IGUAL MENOR_IGUAL
 %token EXPONENCIAL PUNTO APUNTADOR COMILLAS
 %token ID
 %token CTE_STRING
@@ -150,6 +150,8 @@
 					 | MENOR_QUE { insert_to_StackOper('<'); }
 					 | DIFERENTE { insert_to_StackOper('!'); }
 					 | IGUAL_IGUAL { insert_to_StackOper('i'); }
+					 | MAYOR_IGUAL { insert_to_StackOper(124); }
+					 | MENOR_IGUAL { insert_to_StackOper(125); }
 				     ;
 				
 	exp: termino { generate_add_sust_quadruple(); }
@@ -234,9 +236,10 @@
 			  | select_statement
 			  ;
 	
-	if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body ELSE DOS_PUNTOS metodo_body END IF
+	if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS {generate_gotoF_if_quadruple();} metodo_body else_statement END IF {fill_if();}
 				;
 	
+	else_statement: ELSE DOS_PUNTOS {generate_goto_if_quadruple();} metodo_body | 
 	
 	for_statement: FOR ID IGUAL exp TO exp for_step END FOR
 				 ;
