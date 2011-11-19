@@ -388,7 +388,7 @@ void generate_exp_quadruples(){
         g_queue_push_tail(StackO, (gpointer)temp_decimals_count);   // Se da push al temp que guarda el valor de la fn
         g_queue_push_tail(StackTypes, (gpointer)"decimal");         // Se da push al tipo decimal que sera igual para todos
         temp_decimals_count = temp_decimals_count + 1;              // Se incrementa en uno el temp de decimales
-    } else if (operator == 213 || operator == 228) {    // if para default_functions
+    } else if (operator == 213 || operator == 228 || operator == 215) {  // Para default_functions 'print' 'printline' 'read'
 		insert_quadruple_to_array(operator, first_oper, 0, 0);
         printf("Cuadruplo: %d\t%d\t %d\n", ++quadruple_index, operator, first_oper);        
         g_queue_push_tail(StackOper, (gpointer)operator);
