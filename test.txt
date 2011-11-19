@@ -2,7 +2,7 @@ program edo:
 
     define _kuri as integer = 5.
     define algo as integer = 18283.
-    define raya as string = "mama".
+    define raya as string.
     define arreglo as string [10,5].
     define random as integer.
     define arreglo2 as integer [5].
