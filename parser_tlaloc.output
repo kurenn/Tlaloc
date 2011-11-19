@@ -6,20 +6,20 @@ Grammar
 
     0 $accept: tlaloc $end
 
-    1 @1: /* empty */
+    1 $@1: /* empty */
 
-    2 @2: /* empty */
+    2 $@2: /* empty */
 
-    3 tlaloc: PROGRAM ID @1 DOS_PUNTOS vars @2 metodo metodo_main END PROGRAM
+    3 tlaloc: PROGRAM ID $@1 DOS_PUNTOS vars $@2 metodo metodo_main END PROGRAM
 
     4 vars: vars vars_def
     5     | /* empty */
 
-    6 @3: /* empty */
+    6 $@3: /* empty */
 
-    7 @4: /* empty */
+    7 $@4: /* empty */
 
-    8 vars_def: DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+    8 vars_def: DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
 
     9 declaracion: APUNTADOR ID
    10            | ID
@@ -27,9 +27,9 @@ Grammar
    11 params: APUNTADOR ID
    12       | ID
 
-   13 @5: /* empty */
+   13 $@5: /* empty */
 
-   14 params: ID @5 dimension_arreglo
+   14 params: ID $@5 dimension_arreglo
 
    15 tipo: INTEGER
    16     | STRING
@@ -41,22 +41,22 @@ Grammar
    21               | dimension_arreglo
    22               | /* empty */
 
-   23 @6: /* empty */
+   23 $@6: /* empty */
 
-   24 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER @6 CORCHETE_CERRADO
+   24 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER $@6 CORCHETE_CERRADO
 
-   25 @7: /* empty */
+   25 $@7: /* empty */
 
-   26 @8: /* empty */
+   26 $@8: /* empty */
 
-   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER @7 COMA CTE_INTEGER @8 CORCHETE_CERRADO
+   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER $@7 COMA CTE_INTEGER $@8 CORCHETE_CERRADO
 
    28 expresion: exp
    29          | exp operador_logico exp
 
-   30 @9: /* empty */
+   30 $@9: /* empty */
 
-   31 funcion_matematica: math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
 
    32 math_choices: ABS
    33             | COS
@@ -74,35 +74,35 @@ Grammar
 
    44 exp: termino
 
-   45 @10: /* empty */
+   45 $@10: /* empty */
 
-   46 exp: termino MAS @10 exp
+   46 exp: termino MAS $@10 exp
 
-   47 @11: /* empty */
+   47 $@11: /* empty */
 
-   48 exp: termino MENOS @11 exp
+   48 exp: termino MENOS $@11 exp
 
    49 termino: exponencial
 
-   50 @12: /* empty */
+   50 $@12: /* empty */
 
-   51 termino: exponencial POR @12 exp
+   51 termino: exponencial POR $@12 exp
 
-   52 @13: /* empty */
+   52 $@13: /* empty */
 
-   53 termino: exponencial DIVISION @13 exp
+   53 termino: exponencial DIVISION $@13 exp
 
    54 exponencial: factor
 
-   55 @14: /* empty */
+   55 $@14: /* empty */
 
-   56 exponencial: factor EXPONENCIAL @14 exp
+   56 exponencial: factor EXPONENCIAL $@14 exp
 
    57 factor: var
 
-   58 @15: /* empty */
+   58 $@15: /* empty */
 
-   59 factor: PAR_ABIERTO @15 expresion PAR_CERRADO
+   59 factor: PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | MAS CTE_INTEGER
    61       | MAS CTE_DECIMAL
    62       | MENOS CTE_INTEGER
@@ -123,28 +123,28 @@ Grammar
    74 metodo: metodo metodo_def
    75       | /* empty */
 
-   76 @16: /* empty */
+   76 $@16: /* empty */
 
-   77 @17: /* empty */
+   77 $@17: /* empty */
 
-   78 metodo_main: METHOD VOID MAIN @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 END METHOD
+   78 metodo_main: METHOD VOID MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 END METHOD
 
-   79 @18: /* empty */
+   79 $@18: /* empty */
 
-   80 @19: /* empty */
+   80 $@19: /* empty */
 
-   81 @20: /* empty */
+   81 $@20: /* empty */
 
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
 
    83 metodo_body: metodo_body body_code
    84            | /* empty */
 
    85 parametros: parametros_def
 
-   86 @21: /* empty */
+   86 $@21: /* empty */
 
-   87 parametros_def: tipo @21 params parametros_extra
+   87 parametros_def: tipo $@21 params parametros_extra
    88               | /* empty */
 
    89 parametros_extra: COMA parametros_def
@@ -158,11 +158,11 @@ Grammar
 
    96 llamado: ID PAR_ABIERTO exp PAR_CERRADO
 
-   97 @22: /* empty */
+   97 $@22: /* empty */
 
-   98 @23: /* empty */
+   98 $@23: /* empty */
 
-   99 asignacion: ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: ID $@22 IGUAL $@23 expresion PUNTO
   100           | array_assignment
 
   101 array_assignment: ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -192,21 +192,25 @@ Grammar
   116 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | read
 
-  118 read: READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
+  118 $@24: /* empty */
 
-  119 ids: ids_def ids
-  120    | /* empty */
+  119 $@25: /* empty */
 
-  121 ids_def: COMA ID
+  120 read: READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
 
-  122 default_function_input: MAS default_function_input_def default_function_input
-  123                       | /* empty */
+  121 ids: ids_def ids
+  122    | /* empty */
 
-  124 default_function_input_def: expresion
-  125                           | COMILLAS CTE_STRING COMILLAS
+  123 ids_def: COMA ID
 
-  126 default_choices: PRINT
-  127                | PRINTLINE
+  124 default_function_input: MAS default_function_input_def default_function_input
+  125                       | /* empty */
+
+  126 default_function_input_def: expresion
+  127                           | COMILLAS CTE_STRING COMILLAS
+
+  128 default_choices: PRINT
+  129                | PRINTLINE
 
 
 Terminals, with rules where they appear
@@ -215,9 +219,9 @@ $end (0) 0
 error (256)
 PROGRAM (258) 3
 METHOD (259) 78 82
-PRINT (260) 126
-PRINTLINE (261) 127
-READ (262) 118
+PRINT (260) 128
+PRINTLINE (261) 129
+READ (262) 120
 CASE (263) 112 115
 DEFAULT (264) 112
 DEFINE (265) 8
@@ -247,9 +251,9 @@ WHILE (288) 111
 IF (289) 107
 SELECT (290) 112
 ELSE (291) 107
-PAR_ABIERTO (292) 31 59 78 82 96 107 111 116 118
-PAR_CERRADO (293) 31 59 78 82 96 107 111 116 118
-COMA (294) 27 89 102 121
+PAR_ABIERTO (292) 31 59 78 82 96 107 111 116 120
+PAR_CERRADO (293) 31 59 78 82 96 107 111 116 120
+COMA (294) 27 89 102 123
 DOS_PUNTOS (295) 3 78 82 107 109 110 111 112 115
 CORCHETE_ABIERTO (296) 24 27 67 101 102
 CORCHETE_CERRADO (297) 24 27 67 101 102
@@ -259,15 +263,15 @@ MENOR_QUE (300) 41
 MAYOR_QUE (301) 40
 DIFERENTE (302) 42
 POR (303) 51
-MAS (304) 46 60 61 122
+MAS (304) 46 60 61 124
 MENOS (305) 48 62 63
 DIVISION (306) 53
 EXPONENCIAL (307) 56
-PUNTO (308) 8 82 94 99 101 102 116 118
+PUNTO (308) 8 82 94 99 101 102 116 120
 APUNTADOR (309) 9 11
-COMILLAS (310) 125
-ID (311) 3 9 10 11 12 14 67 68 82 96 99 101 102 108 112 118 121
-CTE_STRING (312) 70 125
+COMILLAS (310) 127
+ID (311) 3 9 10 11 12 14 67 68 82 96 99 101 102 108 112 120 123
+CTE_STRING (312) 70 127
 CTE_DECIMAL (313) 61 63 71
 CTE_INTEGER (314) 24 27 60 62 69 115
 
@@ -278,23 +282,23 @@ $accept (60)
     on left: 0
 tlaloc (61)
     on left: 3, on right: 0
-@1 (62)
+$@1 (62)
     on left: 1, on right: 3
-@2 (63)
+$@2 (63)
     on left: 2, on right: 3
 vars (64)
     on left: 4 5, on right: 3 4
 vars_def (65)
     on left: 8, on right: 4 91
-@3 (66)
+$@3 (66)
     on left: 6, on right: 8
-@4 (67)
+$@4 (67)
     on left: 7, on right: 8
 declaracion (68)
     on left: 9 10, on right: 8
 params (69)
     on left: 11 12 14, on right: 87
-@5 (70)
+$@5 (70)
     on left: 13, on right: 14
 tipo (71)
     on left: 15 16 17 18 19, on right: 8 82 87
@@ -302,17 +306,17 @@ asignacion_var (72)
     on left: 20 21 22, on right: 8
 dimension_arreglo (73)
     on left: 24 27, on right: 14 21
-@6 (74)
+$@6 (74)
     on left: 23, on right: 24
-@7 (75)
+$@7 (75)
     on left: 25, on right: 27
-@8 (76)
+$@8 (76)
     on left: 26, on right: 27
 expresion (77)
-    on left: 28 29, on right: 20 59 82 99 101 102 107 111 124
+    on left: 28 29, on right: 20 59 82 99 101 102 107 111 126
 funcion_matematica (78)
     on left: 31, on right: 66
-@9 (79)
+$@9 (79)
     on left: 30, on right: 31
 math_choices (80)
     on left: 32 33 34 35 36 37, on right: 31
@@ -321,23 +325,23 @@ operador_logico (81)
 exp (82)
     on left: 44 46 48, on right: 28 29 31 46 48 51 53 56 67 96 101
     102 108 110
-@10 (83)
+$@10 (83)
     on left: 45, on right: 46
-@11 (84)
+$@11 (84)
     on left: 47, on right: 48
 termino (85)
     on left: 49 51 53, on right: 44 46 48
-@12 (86)
+$@12 (86)
     on left: 50, on right: 51
-@13 (87)
+$@13 (87)
     on left: 52, on right: 53
 exponencial (88)
     on left: 54 56, on right: 49 51 53
-@14 (89)
+$@14 (89)
     on left: 55, on right: 56
 factor (90)
     on left: 57 59 60 61 62 63 64, on right: 54 56
-@15 (91)
+$@15 (91)
     on left: 58, on right: 59
 factor_alterno (92)
     on left: 65 66 67, on right: 64
@@ -347,17 +351,17 @@ metodo (94)
     on left: 74 75, on right: 3 74
 metodo_main (95)
     on left: 78, on right: 3
-@16 (96)
+$@16 (96)
     on left: 76, on right: 78
-@17 (97)
+$@17 (97)
     on left: 77, on right: 78
 metodo_def (98)
     on left: 82, on right: 74
-@18 (99)
+$@18 (99)
     on left: 79, on right: 82
-@19 (100)
+$@19 (100)
     on left: 80, on right: 82
-@20 (101)
+$@20 (101)
     on left: 81, on right: 82
 metodo_body (102)
     on left: 83 84, on right: 78 82 83 107 109 110 111 112 115
@@ -365,7 +369,7 @@ parametros (103)
     on left: 85, on right: 78 82
 parametros_def (104)
     on left: 87 88, on right: 85 89
-@21 (105)
+$@21 (105)
     on left: 86, on right: 87
 parametros_extra (106)
     on left: 89 90, on right: 87
@@ -375,9 +379,9 @@ llamado (108)
     on left: 96, on right: 65 94
 asignacion (109)
     on left: 99 100, on right: 92
-@22 (110)
+$@22 (110)
     on left: 97, on right: 99
-@23 (111)
+$@23 (111)
     on left: 98, on right: 99
 array_assignment (112)
     on left: 101 102, on right: 100
@@ -400,23 +404,27 @@ case_statement_def (120)
 default_functions (121)
     on left: 116 117, on right: 95
 read (122)
-    on left: 118, on right: 117
-ids (123)
-    on left: 119 120, on right: 118 119
-ids_def (124)
-    on left: 121, on right: 119
-default_function_input (125)
-    on left: 122 123, on right: 116 122
-default_function_input_def (126)
-    on left: 124 125, on right: 116 122
-default_choices (127)
-    on left: 126 127, on right: 116
+    on left: 120, on right: 117
+$@24 (123)
+    on left: 118, on right: 120
+$@25 (124)
+    on left: 119, on right: 120
+ids (125)
+    on left: 121 122, on right: 120 121
+ids_def (126)
+    on left: 123, on right: 121
+default_function_input (127)
+    on left: 124 125, on right: 116 124
+default_function_input_def (128)
+    on left: 126 127, on right: 116 124
+default_choices (129)
+    on left: 128 129, on right: 116
 
 
 state 0
 
     0 $accept: . tlaloc $end
-    3 tlaloc: . PROGRAM ID @1 DOS_PUNTOS vars @2 metodo metodo_main END PROGRAM
+    3 tlaloc: . PROGRAM ID $@1 DOS_PUNTOS vars $@2 metodo metodo_main END PROGRAM
 
     PROGRAM  shift, and go to state 1
 
@@ -425,7 +433,7 @@ state 0
 
 state 1
 
-    3 tlaloc: PROGRAM . ID @1 DOS_PUNTOS vars @2 metodo metodo_main END PROGRAM
+    3 tlaloc: PROGRAM . ID $@1 DOS_PUNTOS vars $@2 metodo metodo_main END PROGRAM
 
     ID  shift, and go to state 3
 
@@ -439,12 +447,12 @@ state 2
 
 state 3
 
-    1 @1: .
-    3 tlaloc: PROGRAM ID . @1 DOS_PUNTOS vars @2 metodo metodo_main END PROGRAM
+    1 $@1: .
+    3 tlaloc: PROGRAM ID . $@1 DOS_PUNTOS vars $@2 metodo metodo_main END PROGRAM
 
-    $default  reduce using rule 1 (@1)
+    $default  reduce using rule 1 ($@1)
 
-    @1  go to state 5
+    $@1  go to state 5
 
 
 state 4
@@ -456,14 +464,14 @@ state 4
 
 state 5
 
-    3 tlaloc: PROGRAM ID @1 . DOS_PUNTOS vars @2 metodo metodo_main END PROGRAM
+    3 tlaloc: PROGRAM ID $@1 . DOS_PUNTOS vars $@2 metodo metodo_main END PROGRAM
 
     DOS_PUNTOS  shift, and go to state 6
 
 
 state 6
 
-    3 tlaloc: PROGRAM ID @1 DOS_PUNTOS . vars @2 metodo metodo_main END PROGRAM
+    3 tlaloc: PROGRAM ID $@1 DOS_PUNTOS . vars $@2 metodo metodo_main END PROGRAM
     4 vars: . vars vars_def
     5     | .
 
@@ -474,22 +482,22 @@ state 6
 
 state 7
 
-    2 @2: .  [METHOD]
-    3 tlaloc: PROGRAM ID @1 DOS_PUNTOS vars . @2 metodo metodo_main END PROGRAM
+    2 $@2: .  [METHOD]
+    3 tlaloc: PROGRAM ID $@1 DOS_PUNTOS vars . $@2 metodo metodo_main END PROGRAM
     4 vars: vars . vars_def
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
 
     DEFINE  shift, and go to state 8
 
-    $default  reduce using rule 2 (@2)
+    $default  reduce using rule 2 ($@2)
 
-    @2        go to state 9
+    $@2       go to state 9
     vars_def  go to state 10
 
 
 state 8
 
-    8 vars_def: DEFINE . declaracion @3 AS tipo @4 asignacion_var PUNTO
+    8 vars_def: DEFINE . declaracion $@3 AS tipo $@4 asignacion_var PUNTO
     9 declaracion: . APUNTADOR ID
    10            | . ID
 
@@ -501,7 +509,7 @@ state 8
 
 state 9
 
-    3 tlaloc: PROGRAM ID @1 DOS_PUNTOS vars @2 . metodo metodo_main END PROGRAM
+    3 tlaloc: PROGRAM ID $@1 DOS_PUNTOS vars $@2 . metodo metodo_main END PROGRAM
    74 metodo: . metodo metodo_def
    75       | .
 
@@ -533,20 +541,20 @@ state 12
 
 state 13
 
-    6 @3: .
-    8 vars_def: DEFINE declaracion . @3 AS tipo @4 asignacion_var PUNTO
+    6 $@3: .
+    8 vars_def: DEFINE declaracion . $@3 AS tipo $@4 asignacion_var PUNTO
 
-    $default  reduce using rule 6 (@3)
+    $default  reduce using rule 6 ($@3)
 
-    @3  go to state 16
+    $@3  go to state 16
 
 
 state 14
 
-    3 tlaloc: PROGRAM ID @1 DOS_PUNTOS vars @2 metodo . metodo_main END PROGRAM
+    3 tlaloc: PROGRAM ID $@1 DOS_PUNTOS vars $@2 metodo . metodo_main END PROGRAM
    74 metodo: metodo . metodo_def
-   78 metodo_main: . METHOD VOID MAIN @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 END METHOD
-   82 metodo_def: . METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   78 metodo_main: . METHOD VOID MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 END METHOD
+   82 metodo_def: . METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
 
     METHOD  shift, and go to state 17
 
@@ -563,7 +571,7 @@ state 15
 
 state 16
 
-    8 vars_def: DEFINE declaracion @3 . AS tipo @4 asignacion_var PUNTO
+    8 vars_def: DEFINE declaracion $@3 . AS tipo $@4 asignacion_var PUNTO
 
     AS  shift, and go to state 20
 
@@ -575,8 +583,8 @@ state 17
    17     | . BOOLEAN
    18     | . DECIMAL
    19     | . VOID
-   78 metodo_main: METHOD . VOID MAIN @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 END METHOD
-   82 metodo_def: METHOD . tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   78 metodo_main: METHOD . VOID MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 END METHOD
+   82 metodo_def: METHOD . tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
 
     INTEGER  shift, and go to state 21
     DECIMAL  shift, and go to state 22
@@ -589,7 +597,7 @@ state 17
 
 state 18
 
-    3 tlaloc: PROGRAM ID @1 DOS_PUNTOS vars @2 metodo metodo_main . END PROGRAM
+    3 tlaloc: PROGRAM ID $@1 DOS_PUNTOS vars $@2 metodo metodo_main . END PROGRAM
 
     END  shift, and go to state 27
 
@@ -603,7 +611,7 @@ state 19
 
 state 20
 
-    8 vars_def: DEFINE declaracion @3 AS . tipo @4 asignacion_var PUNTO
+    8 vars_def: DEFINE declaracion $@3 AS . tipo $@4 asignacion_var PUNTO
    15 tipo: . INTEGER
    16     | . STRING
    17     | . BOOLEAN
@@ -650,7 +658,7 @@ state 24
 state 25
 
    19 tipo: VOID .  [ID]
-   78 metodo_main: METHOD VOID . MAIN @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 END METHOD
+   78 metodo_main: METHOD VOID . MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 END METHOD
 
     MAIN  shift, and go to state 30
 
@@ -659,17 +667,17 @@ state 25
 
 state 26
 
-   79 @18: .
-   82 metodo_def: METHOD tipo . @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   79 $@18: .
+   82 metodo_def: METHOD tipo . $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
 
-    $default  reduce using rule 79 (@18)
+    $default  reduce using rule 79 ($@18)
 
-    @18  go to state 31
+    $@18  go to state 31
 
 
 state 27
 
-    3 tlaloc: PROGRAM ID @1 DOS_PUNTOS vars @2 metodo metodo_main END . PROGRAM
+    3 tlaloc: PROGRAM ID $@1 DOS_PUNTOS vars $@2 metodo metodo_main END . PROGRAM
 
     PROGRAM  shift, and go to state 32
 
@@ -683,46 +691,46 @@ state 28
 
 state 29
 
-    7 @4: .
-    8 vars_def: DEFINE declaracion @3 AS tipo . @4 asignacion_var PUNTO
+    7 $@4: .
+    8 vars_def: DEFINE declaracion $@3 AS tipo . $@4 asignacion_var PUNTO
 
-    $default  reduce using rule 7 (@4)
+    $default  reduce using rule 7 ($@4)
 
-    @4  go to state 33
+    $@4  go to state 33
 
 
 state 30
 
-   76 @16: .
-   78 metodo_main: METHOD VOID MAIN . @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 END METHOD
+   76 $@16: .
+   78 metodo_main: METHOD VOID MAIN . $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 END METHOD
 
-    $default  reduce using rule 76 (@16)
+    $default  reduce using rule 76 ($@16)
 
-    @16  go to state 34
+    $@16  go to state 34
 
 
 state 31
 
-   82 metodo_def: METHOD tipo @18 . ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   82 metodo_def: METHOD tipo $@18 . ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
 
     ID  shift, and go to state 35
 
 
 state 32
 
-    3 tlaloc: PROGRAM ID @1 DOS_PUNTOS vars @2 metodo metodo_main END PROGRAM .
+    3 tlaloc: PROGRAM ID $@1 DOS_PUNTOS vars $@2 metodo metodo_main END PROGRAM .
 
     $default  reduce using rule 3 (tlaloc)
 
 
 state 33
 
-    8 vars_def: DEFINE declaracion @3 AS tipo @4 . asignacion_var PUNTO
+    8 vars_def: DEFINE declaracion $@3 AS tipo $@4 . asignacion_var PUNTO
    20 asignacion_var: . IGUAL expresion
    21               | . dimension_arreglo
    22               | .  [PUNTO]
-   24 dimension_arreglo: . CORCHETE_ABIERTO CTE_INTEGER @6 CORCHETE_CERRADO
-   27                  | . CORCHETE_ABIERTO CTE_INTEGER @7 COMA CTE_INTEGER @8 CORCHETE_CERRADO
+   24 dimension_arreglo: . CORCHETE_ABIERTO CTE_INTEGER $@6 CORCHETE_CERRADO
+   27                  | . CORCHETE_ABIERTO CTE_INTEGER $@7 COMA CTE_INTEGER $@8 CORCHETE_CERRADO
 
     CORCHETE_ABIERTO  shift, and go to state 36
     IGUAL             shift, and go to state 37
@@ -735,25 +743,25 @@ state 33
 
 state 34
 
-   78 metodo_main: METHOD VOID MAIN @16 . PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 END METHOD
+   78 metodo_main: METHOD VOID MAIN $@16 . PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 END METHOD
 
     PAR_ABIERTO  shift, and go to state 40
 
 
 state 35
 
-   80 @19: .
-   82 metodo_def: METHOD tipo @18 ID . @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   80 $@19: .
+   82 metodo_def: METHOD tipo $@18 ID . $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
 
-    $default  reduce using rule 80 (@19)
+    $default  reduce using rule 80 ($@19)
 
-    @19  go to state 41
+    $@19  go to state 41
 
 
 state 36
 
-   24 dimension_arreglo: CORCHETE_ABIERTO . CTE_INTEGER @6 CORCHETE_CERRADO
-   27                  | CORCHETE_ABIERTO . CTE_INTEGER @7 COMA CTE_INTEGER @8 CORCHETE_CERRADO
+   24 dimension_arreglo: CORCHETE_ABIERTO . CTE_INTEGER $@6 CORCHETE_CERRADO
+   27                  | CORCHETE_ABIERTO . CTE_INTEGER $@7 COMA CTE_INTEGER $@8 CORCHETE_CERRADO
 
     CTE_INTEGER  shift, and go to state 42
 
@@ -763,7 +771,7 @@ state 37
    20 asignacion_var: IGUAL . expresion
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -771,15 +779,15 @@ state 37
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -826,7 +834,7 @@ state 37
 
 state 38
 
-    8 vars_def: DEFINE declaracion @3 AS tipo @4 asignacion_var . PUNTO
+    8 vars_def: DEFINE declaracion $@3 AS tipo $@4 asignacion_var . PUNTO
 
     PUNTO  shift, and go to state 68
 
@@ -845,9 +853,9 @@ state 40
    17     | . BOOLEAN
    18     | . DECIMAL
    19     | . VOID
-   78 metodo_main: METHOD VOID MAIN @16 PAR_ABIERTO . parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 END METHOD
+   78 metodo_main: METHOD VOID MAIN $@16 PAR_ABIERTO . parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 END METHOD
    85 parametros: . parametros_def
-   87 parametros_def: . tipo @21 params parametros_extra
+   87 parametros_def: . tipo $@21 params parametros_extra
    88               | .  [PAR_CERRADO]
 
     INTEGER  shift, and go to state 21
@@ -865,23 +873,23 @@ state 40
 
 state 41
 
-   82 metodo_def: METHOD tipo @18 ID @19 . PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   82 metodo_def: METHOD tipo $@18 ID $@19 . PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
 
     PAR_ABIERTO  shift, and go to state 72
 
 
 state 42
 
-   23 @6: .  [CORCHETE_CERRADO]
-   24 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER . @6 CORCHETE_CERRADO
-   25 @7: .  [COMA]
-   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER . @7 COMA CTE_INTEGER @8 CORCHETE_CERRADO
+   23 $@6: .  [CORCHETE_CERRADO]
+   24 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER . $@6 CORCHETE_CERRADO
+   25 $@7: .  [COMA]
+   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER . $@7 COMA CTE_INTEGER $@8 CORCHETE_CERRADO
 
-    COMA      reduce using rule 25 (@7)
-    $default  reduce using rule 23 (@6)
+    COMA      reduce using rule 25 ($@7)
+    $default  reduce using rule 23 ($@6)
 
-    @6  go to state 73
-    @7  go to state 74
+    $@6  go to state 73
+    $@7  go to state 74
 
 
 state 43
@@ -942,12 +950,12 @@ state 50
 
 state 51
 
-   58 @15: .
-   59 factor: PAR_ABIERTO . @15 expresion PAR_CERRADO
+   58 $@15: .
+   59 factor: PAR_ABIERTO . $@15 expresion PAR_CERRADO
 
-    $default  reduce using rule 58 (@15)
+    $default  reduce using rule 58 ($@15)
 
-    @15  go to state 75
+    $@15  go to state 75
 
 
 state 52
@@ -1017,7 +1025,7 @@ state 59
 
 state 60
 
-   31 funcion_matematica: math_choices . PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: math_choices . PAR_ABIERTO $@9 exp PAR_CERRADO
 
     PAR_ABIERTO  shift, and go to state 82
 
@@ -1048,8 +1056,8 @@ state 61
 state 62
 
    44 exp: termino .  [TO, STEP, AND, OR, PAR_CERRADO, COMA, DOS_PUNTOS, CORCHETE_CERRADO, IGUAL_IGUAL, MENOR_QUE, MAYOR_QUE, DIFERENTE, POR, MAS, MENOS, DIVISION, PUNTO]
-   46    | termino . MAS @10 exp
-   48    | termino . MENOS @11 exp
+   46    | termino . MAS $@10 exp
+   48    | termino . MENOS $@11 exp
 
     MAS    shift, and go to state 90
     MENOS  shift, and go to state 91
@@ -1062,8 +1070,8 @@ state 62
 state 63
 
    49 termino: exponencial .  [TO, STEP, AND, OR, PAR_CERRADO, COMA, DOS_PUNTOS, CORCHETE_CERRADO, IGUAL_IGUAL, MENOR_QUE, MAYOR_QUE, DIFERENTE, POR, MAS, MENOS, DIVISION, PUNTO]
-   51        | exponencial . POR @12 exp
-   53        | exponencial . DIVISION @13 exp
+   51        | exponencial . POR $@12 exp
+   53        | exponencial . DIVISION $@13 exp
 
     POR       shift, and go to state 92
     DIVISION  shift, and go to state 93
@@ -1076,7 +1084,7 @@ state 63
 state 64
 
    54 exponencial: factor .  [TO, STEP, AND, OR, PAR_CERRADO, COMA, DOS_PUNTOS, CORCHETE_CERRADO, IGUAL_IGUAL, MENOR_QUE, MAYOR_QUE, DIFERENTE, POR, MAS, MENOS, DIVISION, PUNTO]
-   56            | factor . EXPONENCIAL @14 exp
+   56            | factor . EXPONENCIAL $@14 exp
 
     EXPONENCIAL  shift, and go to state 94
 
@@ -1106,24 +1114,24 @@ state 67
 
 state 68
 
-    8 vars_def: DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO .
+    8 vars_def: DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO .
 
     $default  reduce using rule 8 (vars_def)
 
 
 state 69
 
-   86 @21: .
-   87 parametros_def: tipo . @21 params parametros_extra
+   86 $@21: .
+   87 parametros_def: tipo . $@21 params parametros_extra
 
-    $default  reduce using rule 86 (@21)
+    $default  reduce using rule 86 ($@21)
 
-    @21  go to state 95
+    $@21  go to state 95
 
 
 state 70
 
-   78 metodo_main: METHOD VOID MAIN @16 PAR_ABIERTO parametros . PAR_CERRADO DOS_PUNTOS metodo_body @17 END METHOD
+   78 metodo_main: METHOD VOID MAIN $@16 PAR_ABIERTO parametros . PAR_CERRADO DOS_PUNTOS metodo_body $@17 END METHOD
 
     PAR_CERRADO  shift, and go to state 96
 
@@ -1142,9 +1150,9 @@ state 72
    17     | . BOOLEAN
    18     | . DECIMAL
    19     | . VOID
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO . parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO . parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
    85 parametros: . parametros_def
-   87 parametros_def: . tipo @21 params parametros_extra
+   87 parametros_def: . tipo $@21 params parametros_extra
    88               | .  [PAR_CERRADO]
 
     INTEGER  shift, and go to state 21
@@ -1162,14 +1170,14 @@ state 72
 
 state 73
 
-   24 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER @6 . CORCHETE_CERRADO
+   24 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER $@6 . CORCHETE_CERRADO
 
     CORCHETE_CERRADO  shift, and go to state 98
 
 
 state 74
 
-   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER @7 . COMA CTE_INTEGER @8 CORCHETE_CERRADO
+   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER $@7 . COMA CTE_INTEGER $@8 CORCHETE_CERRADO
 
     COMA  shift, and go to state 99
 
@@ -1178,7 +1186,7 @@ state 75
 
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1186,16 +1194,16 @@ state 75
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
-   59       | PAR_ABIERTO @15 . expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
+   59       | PAR_ABIERTO $@15 . expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -1270,7 +1278,7 @@ state 79
 
 state 80
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1278,15 +1286,15 @@ state 80
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -1333,7 +1341,7 @@ state 80
 
 state 81
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1341,15 +1349,15 @@ state 81
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -1396,12 +1404,12 @@ state 81
 
 state 82
 
-   30 @9: .
-   31 funcion_matematica: math_choices PAR_ABIERTO . @9 exp PAR_CERRADO
+   30 $@9: .
+   31 funcion_matematica: math_choices PAR_ABIERTO . $@9 exp PAR_CERRADO
 
-    $default  reduce using rule 30 (@9)
+    $default  reduce using rule 30 ($@9)
 
-    @9  go to state 103
+    $@9  go to state 103
 
 
 state 83
@@ -1449,7 +1457,7 @@ state 88
 state 89
 
    29 expresion: exp operador_logico . exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1457,15 +1465,15 @@ state 89
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -1511,60 +1519,60 @@ state 89
 
 state 90
 
-   45 @10: .
-   46 exp: termino MAS . @10 exp
+   45 $@10: .
+   46 exp: termino MAS . $@10 exp
 
-    $default  reduce using rule 45 (@10)
+    $default  reduce using rule 45 ($@10)
 
-    @10  go to state 105
+    $@10  go to state 105
 
 
 state 91
 
-   47 @11: .
-   48 exp: termino MENOS . @11 exp
+   47 $@11: .
+   48 exp: termino MENOS . $@11 exp
 
-    $default  reduce using rule 47 (@11)
+    $default  reduce using rule 47 ($@11)
 
-    @11  go to state 106
+    $@11  go to state 106
 
 
 state 92
 
-   50 @12: .
-   51 termino: exponencial POR . @12 exp
+   50 $@12: .
+   51 termino: exponencial POR . $@12 exp
 
-    $default  reduce using rule 50 (@12)
+    $default  reduce using rule 50 ($@12)
 
-    @12  go to state 107
+    $@12  go to state 107
 
 
 state 93
 
-   52 @13: .
-   53 termino: exponencial DIVISION . @13 exp
+   52 $@13: .
+   53 termino: exponencial DIVISION . $@13 exp
 
-    $default  reduce using rule 52 (@13)
+    $default  reduce using rule 52 ($@13)
 
-    @13  go to state 108
+    $@13  go to state 108
 
 
 state 94
 
-   55 @14: .
-   56 exponencial: factor EXPONENCIAL . @14 exp
+   55 $@14: .
+   56 exponencial: factor EXPONENCIAL . $@14 exp
 
-    $default  reduce using rule 55 (@14)
+    $default  reduce using rule 55 ($@14)
 
-    @14  go to state 109
+    $@14  go to state 109
 
 
 state 95
 
    11 params: . APUNTADOR ID
    12       | . ID
-   14       | . ID @5 dimension_arreglo
-   87 parametros_def: tipo @21 . params parametros_extra
+   14       | . ID $@5 dimension_arreglo
+   87 parametros_def: tipo $@21 . params parametros_extra
 
     APUNTADOR  shift, and go to state 110
     ID         shift, and go to state 111
@@ -1574,35 +1582,35 @@ state 95
 
 state 96
 
-   78 metodo_main: METHOD VOID MAIN @16 PAR_ABIERTO parametros PAR_CERRADO . DOS_PUNTOS metodo_body @17 END METHOD
+   78 metodo_main: METHOD VOID MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO . DOS_PUNTOS metodo_body $@17 END METHOD
 
     DOS_PUNTOS  shift, and go to state 113
 
 
 state 97
 
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros . PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros . PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
 
     PAR_CERRADO  shift, and go to state 114
 
 
 state 98
 
-   24 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER @6 CORCHETE_CERRADO .
+   24 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER $@6 CORCHETE_CERRADO .
 
     $default  reduce using rule 24 (dimension_arreglo)
 
 
 state 99
 
-   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER @7 COMA . CTE_INTEGER @8 CORCHETE_CERRADO
+   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER $@7 COMA . CTE_INTEGER $@8 CORCHETE_CERRADO
 
     CTE_INTEGER  shift, and go to state 115
 
 
 state 100
 
-   59 factor: PAR_ABIERTO @15 expresion . PAR_CERRADO
+   59 factor: PAR_ABIERTO $@15 expresion . PAR_CERRADO
 
     PAR_CERRADO  shift, and go to state 116
 
@@ -1623,8 +1631,8 @@ state 102
 
 state 103
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
-   31                   | math_choices PAR_ABIERTO @9 . exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
+   31                   | math_choices PAR_ABIERTO $@9 . exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1632,15 +1640,15 @@ state 103
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -1693,7 +1701,7 @@ state 104
 
 state 105
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1701,16 +1709,16 @@ state 105
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   46    | termino MAS @10 . exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   46    | termino MAS $@10 . exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -1756,7 +1764,7 @@ state 105
 
 state 106
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1764,16 +1772,16 @@ state 106
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
-   48    | termino MENOS @11 . exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
+   48    | termino MENOS $@11 . exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -1819,7 +1827,7 @@ state 106
 
 state 107
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1827,16 +1835,16 @@ state 107
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   51        | exponencial POR @12 . exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   51        | exponencial POR $@12 . exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -1882,7 +1890,7 @@ state 107
 
 state 108
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1890,16 +1898,16 @@ state 108
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
-   53        | exponencial DIVISION @13 . exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
+   53        | exponencial DIVISION $@13 . exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -1945,7 +1953,7 @@ state 108
 
 state 109
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -1953,16 +1961,16 @@ state 109
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
-   56            | factor EXPONENCIAL @14 . exp
+   56            | . factor EXPONENCIAL $@14 exp
+   56            | factor EXPONENCIAL $@14 . exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -2016,18 +2024,18 @@ state 110
 state 111
 
    12 params: ID .  [PAR_CERRADO, COMA]
-   13 @5: .  [CORCHETE_ABIERTO]
-   14 params: ID . @5 dimension_arreglo
+   13 $@5: .  [CORCHETE_ABIERTO]
+   14 params: ID . $@5 dimension_arreglo
 
-    CORCHETE_ABIERTO  reduce using rule 13 (@5)
+    CORCHETE_ABIERTO  reduce using rule 13 ($@5)
     $default          reduce using rule 12 (params)
 
-    @5  go to state 126
+    $@5  go to state 126
 
 
 state 112
 
-   87 parametros_def: tipo @21 params . parametros_extra
+   87 parametros_def: tipo $@21 params . parametros_extra
    89 parametros_extra: . COMA parametros_def
    90                 | .  [PAR_CERRADO]
 
@@ -2040,7 +2048,7 @@ state 112
 
 state 113
 
-   78 metodo_main: METHOD VOID MAIN @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS . metodo_body @17 END METHOD
+   78 metodo_main: METHOD VOID MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS . metodo_body $@17 END METHOD
    83 metodo_body: . metodo_body body_code
    84            | .
 
@@ -2051,24 +2059,24 @@ state 113
 
 state 114
 
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO . DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO . DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD
 
     DOS_PUNTOS  shift, and go to state 130
 
 
 state 115
 
-   26 @8: .
-   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER @7 COMA CTE_INTEGER . @8 CORCHETE_CERRADO
+   26 $@8: .
+   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER $@7 COMA CTE_INTEGER . $@8 CORCHETE_CERRADO
 
-    $default  reduce using rule 26 (@8)
+    $default  reduce using rule 26 ($@8)
 
-    @8  go to state 131
+    $@8  go to state 131
 
 
 state 116
 
-   59 factor: PAR_ABIERTO @15 expresion PAR_CERRADO .
+   59 factor: PAR_ABIERTO $@15 expresion PAR_CERRADO .
 
     $default  reduce using rule 59 (factor)
 
@@ -2089,42 +2097,42 @@ state 118
 
 state 119
 
-   31 funcion_matematica: math_choices PAR_ABIERTO @9 exp . PAR_CERRADO
+   31 funcion_matematica: math_choices PAR_ABIERTO $@9 exp . PAR_CERRADO
 
     PAR_CERRADO  shift, and go to state 132
 
 
 state 120
 
-   46 exp: termino MAS @10 exp .
+   46 exp: termino MAS $@10 exp .
 
     $default  reduce using rule 46 (exp)
 
 
 state 121
 
-   48 exp: termino MENOS @11 exp .
+   48 exp: termino MENOS $@11 exp .
 
     $default  reduce using rule 48 (exp)
 
 
 state 122
 
-   51 termino: exponencial POR @12 exp .
+   51 termino: exponencial POR $@12 exp .
 
     $default  reduce using rule 51 (termino)
 
 
 state 123
 
-   53 termino: exponencial DIVISION @13 exp .
+   53 termino: exponencial DIVISION $@13 exp .
 
     $default  reduce using rule 53 (termino)
 
 
 state 124
 
-   56 exponencial: factor EXPONENCIAL @14 exp .
+   56 exponencial: factor EXPONENCIAL $@14 exp .
 
     $default  reduce using rule 56 (exponencial)
 
@@ -2138,9 +2146,9 @@ state 125
 
 state 126
 
-   14 params: ID @5 . dimension_arreglo
-   24 dimension_arreglo: . CORCHETE_ABIERTO CTE_INTEGER @6 CORCHETE_CERRADO
-   27                  | . CORCHETE_ABIERTO CTE_INTEGER @7 COMA CTE_INTEGER @8 CORCHETE_CERRADO
+   14 params: ID $@5 . dimension_arreglo
+   24 dimension_arreglo: . CORCHETE_ABIERTO CTE_INTEGER $@6 CORCHETE_CERRADO
+   27                  | . CORCHETE_ABIERTO CTE_INTEGER $@7 COMA CTE_INTEGER $@8 CORCHETE_CERRADO
 
     CORCHETE_ABIERTO  shift, and go to state 36
 
@@ -2154,7 +2162,7 @@ state 127
    17     | . BOOLEAN
    18     | . DECIMAL
    19     | . VOID
-   87 parametros_def: . tipo @21 params parametros_extra
+   87 parametros_def: . tipo $@21 params parametros_extra
    88               | .  [PAR_CERRADO]
    89 parametros_extra: COMA . parametros_def
 
@@ -2172,16 +2180,16 @@ state 127
 
 state 128
 
-   87 parametros_def: tipo @21 params parametros_extra .
+   87 parametros_def: tipo $@21 params parametros_extra .
 
     $default  reduce using rule 87 (parametros_def)
 
 
 state 129
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
-   77 @17: .  [END]
-   78 metodo_main: METHOD VOID MAIN @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body . @17 END METHOD
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
+   77 $@17: .  [END]
+   78 metodo_main: METHOD VOID MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body . $@17 END METHOD
    83 metodo_body: metodo_body . body_code
    91 body_code: . vars_def
    92          | . asignacion
@@ -2189,7 +2197,7 @@ state 129
    94          | . llamado PUNTO
    95          | . default_functions
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: . ID $@22 IGUAL $@23 expresion PUNTO
   100           | . array_assignment
   101 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -2203,9 +2211,9 @@ state 129
   112 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
   116 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | . read
-  118 read: . READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
-  126 default_choices: . PRINT
-  127                | . PRINTLINE
+  120 read: . READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
+  128 default_choices: . PRINT
+  129                | . PRINTLINE
 
     PRINT      shift, and go to state 135
     PRINTLINE  shift, and go to state 136
@@ -2217,10 +2225,10 @@ state 129
     SELECT     shift, and go to state 141
     ID         shift, and go to state 142
 
-    $default  reduce using rule 77 (@17)
+    $default  reduce using rule 77 ($@17)
 
     vars_def           go to state 143
-    @17                go to state 144
+    $@17               go to state 144
     body_code          go to state 145
     llamado            go to state 146
     asignacion         go to state 147
@@ -2237,7 +2245,7 @@ state 129
 
 state 130
 
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS . metodo_body @20 RETURN expresion PUNTO END METHOD
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS . metodo_body $@20 RETURN expresion PUNTO END METHOD
    83 metodo_body: . metodo_body body_code
    84            | .
 
@@ -2248,21 +2256,21 @@ state 130
 
 state 131
 
-   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER @7 COMA CTE_INTEGER @8 . CORCHETE_CERRADO
+   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER $@7 COMA CTE_INTEGER $@8 . CORCHETE_CERRADO
 
     CORCHETE_CERRADO  shift, and go to state 158
 
 
 state 132
 
-   31 funcion_matematica: math_choices PAR_ABIERTO @9 exp PAR_CERRADO .
+   31 funcion_matematica: math_choices PAR_ABIERTO $@9 exp PAR_CERRADO .
 
     $default  reduce using rule 31 (funcion_matematica)
 
 
 state 133
 
-   14 params: ID @5 dimension_arreglo .
+   14 params: ID $@5 dimension_arreglo .
 
     $default  reduce using rule 14 (params)
 
@@ -2276,23 +2284,26 @@ state 134
 
 state 135
 
-  126 default_choices: PRINT .
+  128 default_choices: PRINT .
 
-    $default  reduce using rule 126 (default_choices)
+    $default  reduce using rule 128 (default_choices)
 
 
 state 136
 
-  127 default_choices: PRINTLINE .
+  129 default_choices: PRINTLINE .
 
-    $default  reduce using rule 127 (default_choices)
+    $default  reduce using rule 129 (default_choices)
 
 
 state 137
 
-  118 read: READ . PAR_ABIERTO ID ids PAR_CERRADO PUNTO
+  118 $@24: .
+  120 read: READ . $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
 
-    PAR_ABIERTO  shift, and go to state 159
+    $default  reduce using rule 118 ($@24)
+
+    $@24  go to state 159
 
 
 state 138
@@ -2326,17 +2337,17 @@ state 141
 state 142
 
    96 llamado: ID . PAR_ABIERTO exp PAR_CERRADO
-   97 @22: .  [IGUAL]
-   99 asignacion: ID . @22 IGUAL @23 expresion PUNTO
+   97 $@22: .  [IGUAL]
+   99 asignacion: ID . $@22 IGUAL $@23 expresion PUNTO
   101 array_assignment: ID . CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | ID . CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
 
     PAR_ABIERTO       shift, and go to state 80
     CORCHETE_ABIERTO  shift, and go to state 164
 
-    $default  reduce using rule 97 (@22)
+    $default  reduce using rule 97 ($@22)
 
-    @22  go to state 165
+    $@22  go to state 165
 
 
 state 143
@@ -2348,7 +2359,7 @@ state 143
 
 state 144
 
-   78 metodo_main: METHOD VOID MAIN @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 . END METHOD
+   78 metodo_main: METHOD VOID MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 . END METHOD
 
     END  shift, and go to state 166
 
@@ -2439,9 +2450,9 @@ state 156
 
 state 157
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
-   81 @20: .  [RETURN]
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body . @20 RETURN expresion PUNTO END METHOD
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
+   81 $@20: .  [RETURN]
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body . $@20 RETURN expresion PUNTO END METHOD
    83 metodo_body: metodo_body . body_code
    91 body_code: . vars_def
    92          | . asignacion
@@ -2449,7 +2460,7 @@ state 157
    94          | . llamado PUNTO
    95          | . default_functions
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: . ID $@22 IGUAL $@23 expresion PUNTO
   100           | . array_assignment
   101 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -2463,9 +2474,9 @@ state 157
   112 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
   116 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | . read
-  118 read: . READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
-  126 default_choices: . PRINT
-  127                | . PRINTLINE
+  120 read: . READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
+  128 default_choices: . PRINT
+  129                | . PRINTLINE
 
     PRINT      shift, and go to state 135
     PRINTLINE  shift, and go to state 136
@@ -2477,10 +2488,10 @@ state 157
     SELECT     shift, and go to state 141
     ID         shift, and go to state 142
 
-    $default  reduce using rule 81 (@20)
+    $default  reduce using rule 81 ($@20)
 
     vars_def           go to state 143
-    @20                go to state 169
+    $@20               go to state 169
     body_code          go to state 145
     llamado            go to state 146
     asignacion         go to state 147
@@ -2497,16 +2508,16 @@ state 157
 
 state 158
 
-   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER @7 COMA CTE_INTEGER @8 CORCHETE_CERRADO .
+   27 dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER $@7 COMA CTE_INTEGER $@8 CORCHETE_CERRADO .
 
     $default  reduce using rule 27 (dimension_arreglo)
 
 
 state 159
 
-  118 read: READ PAR_ABIERTO . ID ids PAR_CERRADO PUNTO
+  120 read: READ $@24 . PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
 
-    ID  shift, and go to state 170
+    PAR_ABIERTO  shift, and go to state 170
 
 
 state 160
@@ -2520,7 +2531,7 @@ state 161
 
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -2528,15 +2539,15 @@ state 161
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -2586,7 +2597,7 @@ state 162
 
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -2594,15 +2605,15 @@ state 162
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -2657,7 +2668,7 @@ state 163
 
 state 164
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -2665,15 +2676,15 @@ state 164
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -2721,14 +2732,14 @@ state 164
 
 state 165
 
-   99 asignacion: ID @22 . IGUAL @23 expresion PUNTO
+   99 asignacion: ID $@22 . IGUAL $@23 expresion PUNTO
 
     IGUAL  shift, and go to state 176
 
 
 state 166
 
-   78 metodo_main: METHOD VOID MAIN @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 END . METHOD
+   78 metodo_main: METHOD VOID MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 END . METHOD
 
     METHOD  shift, and go to state 177
 
@@ -2744,7 +2755,7 @@ state 168
 
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -2752,15 +2763,15 @@ state 168
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -2777,8 +2788,8 @@ state 168
    73    | . FALSO
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
   116 default_functions: default_choices PAR_ABIERTO . default_function_input_def default_function_input PAR_CERRADO PUNTO
-  124 default_function_input_def: . expresion
-  125                           | . COMILLAS CTE_STRING COMILLAS
+  126 default_function_input_def: . expresion
+  127                           | . COMILLAS CTE_STRING COMILLAS
 
     FALSO        shift, and go to state 43
     VERDADERO    shift, and go to state 44
@@ -2812,29 +2823,21 @@ state 168
 
 state 169
 
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 . RETURN expresion PUNTO END METHOD
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 . RETURN expresion PUNTO END METHOD
 
     RETURN  shift, and go to state 181
 
 
 state 170
 
-  118 read: READ PAR_ABIERTO ID . ids PAR_CERRADO PUNTO
-  119 ids: . ids_def ids
-  120    | .  [PAR_CERRADO]
-  121 ids_def: . COMA ID
+  120 read: READ $@24 PAR_ABIERTO . ID $@25 ids PAR_CERRADO PUNTO
 
-    COMA  shift, and go to state 182
-
-    $default  reduce using rule 120 (ids)
-
-    ids      go to state 183
-    ids_def  go to state 184
+    ID  shift, and go to state 182
 
 
 state 171
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -2842,15 +2845,15 @@ state 171
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -2886,7 +2889,7 @@ state 171
 
     funcion_matematica  go to state 59
     math_choices        go to state 60
-    exp                 go to state 185
+    exp                 go to state 183
     termino             go to state 62
     exponencial         go to state 63
     factor              go to state 64
@@ -2899,21 +2902,21 @@ state 172
 
   111 while_statement: WHILE PAR_ABIERTO expresion . PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
 
-    PAR_CERRADO  shift, and go to state 186
+    PAR_CERRADO  shift, and go to state 184
 
 
 state 173
 
   107 if_statement: IF PAR_ABIERTO expresion . PAR_CERRADO DOS_PUNTOS metodo_body ELSE DOS_PUNTOS metodo_body END IF
 
-    PAR_CERRADO  shift, and go to state 187
+    PAR_CERRADO  shift, and go to state 185
 
 
 state 174
 
   112 select_statement: SELECT ID DOS_PUNTOS . CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
 
-    CASE  shift, and go to state 188
+    CASE  shift, and go to state 186
 
 
 state 175
@@ -2921,59 +2924,59 @@ state 175
   101 array_assignment: ID CORCHETE_ABIERTO exp . CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | ID CORCHETE_ABIERTO exp . COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
 
-    COMA              shift, and go to state 189
-    CORCHETE_CERRADO  shift, and go to state 190
+    COMA              shift, and go to state 187
+    CORCHETE_CERRADO  shift, and go to state 188
 
 
 state 176
 
-   98 @23: .
-   99 asignacion: ID @22 IGUAL . @23 expresion PUNTO
+   98 $@23: .
+   99 asignacion: ID $@22 IGUAL . $@23 expresion PUNTO
 
-    $default  reduce using rule 98 (@23)
+    $default  reduce using rule 98 ($@23)
 
-    @23  go to state 191
+    $@23  go to state 189
 
 
 state 177
 
-   78 metodo_main: METHOD VOID MAIN @16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @17 END METHOD .
+   78 metodo_main: METHOD VOID MAIN $@16 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@17 END METHOD .
 
     $default  reduce using rule 78 (metodo_main)
 
 
 state 178
 
-  125 default_function_input_def: COMILLAS . CTE_STRING COMILLAS
+  127 default_function_input_def: COMILLAS . CTE_STRING COMILLAS
 
-    CTE_STRING  shift, and go to state 192
+    CTE_STRING  shift, and go to state 190
 
 
 state 179
 
-  124 default_function_input_def: expresion .
+  126 default_function_input_def: expresion .
 
-    $default  reduce using rule 124 (default_function_input_def)
+    $default  reduce using rule 126 (default_function_input_def)
 
 
 state 180
 
   116 default_functions: default_choices PAR_ABIERTO default_function_input_def . default_function_input PAR_CERRADO PUNTO
-  122 default_function_input: . MAS default_function_input_def default_function_input
-  123                       | .  [PAR_CERRADO]
+  124 default_function_input: . MAS default_function_input_def default_function_input
+  125                       | .  [PAR_CERRADO]
 
-    MAS  shift, and go to state 193
+    MAS  shift, and go to state 191
 
-    $default  reduce using rule 123 (default_function_input)
+    $default  reduce using rule 125 (default_function_input)
 
-    default_function_input  go to state 194
+    default_function_input  go to state 192
 
 
 state 181
 
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -2981,15 +2984,15 @@ state 181
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -3004,7 +3007,7 @@ state 181
    71    | . CTE_DECIMAL
    72    | . VERDADERO
    73    | . FALSO
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN . expresion PUNTO END METHOD
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN . expresion PUNTO END METHOD
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
 
     FALSO        shift, and go to state 43
@@ -3023,7 +3026,7 @@ state 181
     CTE_DECIMAL  shift, and go to state 56
     CTE_INTEGER  shift, and go to state 57
 
-    expresion           go to state 195
+    expresion           go to state 193
     funcion_matematica  go to state 59
     math_choices        go to state 60
     exp                 go to state 61
@@ -3037,64 +3040,45 @@ state 181
 
 state 182
 
-  121 ids_def: COMA . ID
+  119 $@25: .
+  120 read: READ $@24 PAR_ABIERTO ID . $@25 ids PAR_CERRADO PUNTO
 
-    ID  shift, and go to state 196
+    $default  reduce using rule 119 ($@25)
+
+    $@25  go to state 194
 
 
 state 183
 
-  118 read: READ PAR_ABIERTO ID ids . PAR_CERRADO PUNTO
+  108 for_statement: FOR ID IGUAL exp . TO exp for_step END FOR
 
-    PAR_CERRADO  shift, and go to state 197
+    TO  shift, and go to state 195
 
 
 state 184
 
-  119 ids: . ids_def ids
-  119    | ids_def . ids
-  120    | .  [PAR_CERRADO]
-  121 ids_def: . COMA ID
+  111 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO . DOS_PUNTOS metodo_body END WHILE
 
-    COMA  shift, and go to state 182
-
-    $default  reduce using rule 120 (ids)
-
-    ids      go to state 198
-    ids_def  go to state 184
+    DOS_PUNTOS  shift, and go to state 196
 
 
 state 185
 
-  108 for_statement: FOR ID IGUAL exp . TO exp for_step END FOR
+  107 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO . DOS_PUNTOS metodo_body ELSE DOS_PUNTOS metodo_body END IF
 
-    TO  shift, and go to state 199
+    DOS_PUNTOS  shift, and go to state 197
 
 
 state 186
 
-  111 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO . DOS_PUNTOS metodo_body END WHILE
+  112 select_statement: SELECT ID DOS_PUNTOS CASE . DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
 
-    DOS_PUNTOS  shift, and go to state 200
+    DEFAULT  shift, and go to state 198
 
 
 state 187
 
-  107 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO . DOS_PUNTOS metodo_body ELSE DOS_PUNTOS metodo_body END IF
-
-    DOS_PUNTOS  shift, and go to state 201
-
-
-state 188
-
-  112 select_statement: SELECT ID DOS_PUNTOS CASE . DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-
-    DEFAULT  shift, and go to state 202
-
-
-state 189
-
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -3102,15 +3086,15 @@ state 189
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -3146,7 +3130,7 @@ state 189
 
     funcion_matematica  go to state 59
     math_choices        go to state 60
-    exp                 go to state 203
+    exp                 go to state 199
     termino             go to state 62
     exponencial         go to state 63
     factor              go to state 64
@@ -3155,18 +3139,18 @@ state 189
     llamado             go to state 67
 
 
-state 190
+state 188
 
   101 array_assignment: ID CORCHETE_ABIERTO exp CORCHETE_CERRADO . IGUAL expresion PUNTO
 
-    IGUAL  shift, and go to state 204
+    IGUAL  shift, and go to state 200
 
 
-state 191
+state 189
 
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -3174,15 +3158,15 @@ state 191
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -3198,7 +3182,7 @@ state 191
    72    | . VERDADERO
    73    | . FALSO
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: ID @22 IGUAL @23 . expresion PUNTO
+   99 asignacion: ID $@22 IGUAL $@23 . expresion PUNTO
 
     FALSO        shift, and go to state 43
     VERDADERO    shift, and go to state 44
@@ -3216,7 +3200,7 @@ state 191
     CTE_DECIMAL  shift, and go to state 56
     CTE_INTEGER  shift, and go to state 57
 
-    expresion           go to state 205
+    expresion           go to state 201
     funcion_matematica  go to state 59
     math_choices        go to state 60
     exp                 go to state 61
@@ -3228,18 +3212,18 @@ state 191
     llamado             go to state 67
 
 
-state 192
+state 190
 
-  125 default_function_input_def: COMILLAS CTE_STRING . COMILLAS
+  127 default_function_input_def: COMILLAS CTE_STRING . COMILLAS
 
-    COMILLAS  shift, and go to state 206
+    COMILLAS  shift, and go to state 202
 
 
-state 193
+state 191
 
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -3247,15 +3231,15 @@ state 193
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -3271,9 +3255,9 @@ state 193
    72    | . VERDADERO
    73    | . FALSO
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-  122 default_function_input: MAS . default_function_input_def default_function_input
-  124 default_function_input_def: . expresion
-  125                           | . COMILLAS CTE_STRING COMILLAS
+  124 default_function_input: MAS . default_function_input_def default_function_input
+  126 default_function_input_def: . expresion
+  127                           | . COMILLAS CTE_STRING COMILLAS
 
     FALSO        shift, and go to state 43
     VERDADERO    shift, and go to state 44
@@ -3302,47 +3286,41 @@ state 193
     factor_alterno              go to state 65
     var                         go to state 66
     llamado                     go to state 67
-    default_function_input_def  go to state 207
+    default_function_input_def  go to state 203
+
+
+state 192
+
+  116 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input . PAR_CERRADO PUNTO
+
+    PAR_CERRADO  shift, and go to state 204
+
+
+state 193
+
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion . PUNTO END METHOD
+
+    PUNTO  shift, and go to state 205
 
 
 state 194
 
-  116 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input . PAR_CERRADO PUNTO
+  120 read: READ $@24 PAR_ABIERTO ID $@25 . ids PAR_CERRADO PUNTO
+  121 ids: . ids_def ids
+  122    | .  [PAR_CERRADO]
+  123 ids_def: . COMA ID
 
-    PAR_CERRADO  shift, and go to state 208
+    COMA  shift, and go to state 206
+
+    $default  reduce using rule 122 (ids)
+
+    ids      go to state 207
+    ids_def  go to state 208
 
 
 state 195
 
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion . PUNTO END METHOD
-
-    PUNTO  shift, and go to state 209
-
-
-state 196
-
-  121 ids_def: COMA ID .
-
-    $default  reduce using rule 121 (ids_def)
-
-
-state 197
-
-  118 read: READ PAR_ABIERTO ID ids PAR_CERRADO . PUNTO
-
-    PUNTO  shift, and go to state 210
-
-
-state 198
-
-  119 ids: ids_def ids .
-
-    $default  reduce using rule 119 (ids)
-
-
-state 199
-
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -3350,15 +3328,15 @@ state 199
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -3394,7 +3372,7 @@ state 199
 
     funcion_matematica  go to state 59
     math_choices        go to state 60
-    exp                 go to state 211
+    exp                 go to state 209
     termino             go to state 62
     exponencial         go to state 63
     factor              go to state 64
@@ -3403,7 +3381,7 @@ state 199
     llamado             go to state 67
 
 
-state 200
+state 196
 
    83 metodo_body: . metodo_body body_code
    84            | .
@@ -3411,10 +3389,10 @@ state 200
 
     $default  reduce using rule 84 (metodo_body)
 
-    metodo_body  go to state 212
+    metodo_body  go to state 210
 
 
-state 201
+state 197
 
    83 metodo_body: . metodo_body body_code
    84            | .
@@ -3422,28 +3400,28 @@ state 201
 
     $default  reduce using rule 84 (metodo_body)
 
-    metodo_body  go to state 213
+    metodo_body  go to state 211
 
 
-state 202
+state 198
 
   112 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT . DOS_PUNTOS metodo_body END CASE case_statement END SELECT
 
-    DOS_PUNTOS  shift, and go to state 214
+    DOS_PUNTOS  shift, and go to state 212
 
 
-state 203
+state 199
 
   102 array_assignment: ID CORCHETE_ABIERTO exp COMA exp . CORCHETE_CERRADO IGUAL expresion PUNTO
 
-    CORCHETE_CERRADO  shift, and go to state 215
+    CORCHETE_CERRADO  shift, and go to state 213
 
 
-state 204
+state 200
 
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -3451,15 +3429,15 @@ state 204
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -3493,7 +3471,7 @@ state 204
     CTE_DECIMAL  shift, and go to state 56
     CTE_INTEGER  shift, and go to state 57
 
-    expresion           go to state 216
+    expresion           go to state 214
     funcion_matematica  go to state 59
     math_choices        go to state 60
     exp                 go to state 61
@@ -3505,69 +3483,91 @@ state 204
     llamado             go to state 67
 
 
-state 205
+state 201
 
-   99 asignacion: ID @22 IGUAL @23 expresion . PUNTO
+   99 asignacion: ID $@22 IGUAL $@23 expresion . PUNTO
+
+    PUNTO  shift, and go to state 215
+
+
+state 202
+
+  127 default_function_input_def: COMILLAS CTE_STRING COMILLAS .
+
+    $default  reduce using rule 127 (default_function_input_def)
+
+
+state 203
+
+  124 default_function_input: . MAS default_function_input_def default_function_input
+  124                       | MAS default_function_input_def . default_function_input
+  125                       | .  [PAR_CERRADO]
+
+    MAS  shift, and go to state 191
+
+    $default  reduce using rule 125 (default_function_input)
+
+    default_function_input  go to state 216
+
+
+state 204
+
+  116 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO . PUNTO
 
     PUNTO  shift, and go to state 217
 
 
+state 205
+
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO . END METHOD
+
+    END  shift, and go to state 218
+
+
 state 206
 
-  125 default_function_input_def: COMILLAS CTE_STRING COMILLAS .
+  123 ids_def: COMA . ID
 
-    $default  reduce using rule 125 (default_function_input_def)
+    ID  shift, and go to state 219
 
 
 state 207
 
-  122 default_function_input: . MAS default_function_input_def default_function_input
-  122                       | MAS default_function_input_def . default_function_input
-  123                       | .  [PAR_CERRADO]
+  120 read: READ $@24 PAR_ABIERTO ID $@25 ids . PAR_CERRADO PUNTO
 
-    MAS  shift, and go to state 193
-
-    $default  reduce using rule 123 (default_function_input)
-
-    default_function_input  go to state 218
+    PAR_CERRADO  shift, and go to state 220
 
 
 state 208
 
-  116 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO . PUNTO
+  121 ids: . ids_def ids
+  121    | ids_def . ids
+  122    | .  [PAR_CERRADO]
+  123 ids_def: . COMA ID
 
-    PUNTO  shift, and go to state 219
+    COMA  shift, and go to state 206
+
+    $default  reduce using rule 122 (ids)
+
+    ids      go to state 221
+    ids_def  go to state 208
 
 
 state 209
-
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO . END METHOD
-
-    END  shift, and go to state 220
-
-
-state 210
-
-  118 read: READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO .
-
-    $default  reduce using rule 118 (read)
-
-
-state 211
 
   108 for_statement: FOR ID IGUAL exp TO exp . for_step END FOR
   109 for_step: . DOS_PUNTOS metodo_body
   110         | . STEP exp DOS_PUNTOS metodo_body
 
-    STEP        shift, and go to state 221
-    DOS_PUNTOS  shift, and go to state 222
+    STEP        shift, and go to state 222
+    DOS_PUNTOS  shift, and go to state 223
 
-    for_step  go to state 223
+    for_step  go to state 224
 
 
-state 212
+state 210
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
    83 metodo_body: metodo_body . body_code
    91 body_code: . vars_def
    92          | . asignacion
@@ -3575,7 +3575,7 @@ state 212
    94          | . llamado PUNTO
    95          | . default_functions
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: . ID $@22 IGUAL $@23 expresion PUNTO
   100           | . array_assignment
   101 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -3590,15 +3590,15 @@ state 212
   112 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
   116 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | . read
-  118 read: . READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
-  126 default_choices: . PRINT
-  127                | . PRINTLINE
+  120 read: . READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
+  128 default_choices: . PRINT
+  129                | . PRINTLINE
 
     PRINT      shift, and go to state 135
     PRINTLINE  shift, and go to state 136
     READ       shift, and go to state 137
     DEFINE     shift, and go to state 8
-    END        shift, and go to state 224
+    END        shift, and go to state 225
     FOR        shift, and go to state 138
     WHILE      shift, and go to state 139
     IF         shift, and go to state 140
@@ -3620,9 +3620,9 @@ state 212
     default_choices    go to state 156
 
 
-state 213
+state 211
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
    83 metodo_body: metodo_body . body_code
    91 body_code: . vars_def
    92          | . asignacion
@@ -3630,7 +3630,7 @@ state 213
    94          | . llamado PUNTO
    95          | . default_functions
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: . ID $@22 IGUAL $@23 expresion PUNTO
   100           | . array_assignment
   101 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -3645,9 +3645,9 @@ state 213
   112 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
   116 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | . read
-  118 read: . READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
-  126 default_choices: . PRINT
-  127                | . PRINTLINE
+  120 read: . READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
+  128 default_choices: . PRINT
+  129                | . PRINTLINE
 
     PRINT      shift, and go to state 135
     PRINTLINE  shift, and go to state 136
@@ -3657,7 +3657,7 @@ state 213
     WHILE      shift, and go to state 139
     IF         shift, and go to state 140
     SELECT     shift, and go to state 141
-    ELSE       shift, and go to state 225
+    ELSE       shift, and go to state 226
     ID         shift, and go to state 142
 
     vars_def           go to state 143
@@ -3675,7 +3675,7 @@ state 213
     default_choices    go to state 156
 
 
-state 214
+state 212
 
    83 metodo_body: . metodo_body body_code
    84            | .
@@ -3683,54 +3683,75 @@ state 214
 
     $default  reduce using rule 84 (metodo_body)
 
-    metodo_body  go to state 226
+    metodo_body  go to state 227
+
+
+state 213
+
+  102 array_assignment: ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO . IGUAL expresion PUNTO
+
+    IGUAL  shift, and go to state 228
+
+
+state 214
+
+  101 array_assignment: ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion . PUNTO
+
+    PUNTO  shift, and go to state 229
 
 
 state 215
 
-  102 array_assignment: ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO . IGUAL expresion PUNTO
-
-    IGUAL  shift, and go to state 227
-
-
-state 216
-
-  101 array_assignment: ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion . PUNTO
-
-    PUNTO  shift, and go to state 228
-
-
-state 217
-
-   99 asignacion: ID @22 IGUAL @23 expresion PUNTO .
+   99 asignacion: ID $@22 IGUAL $@23 expresion PUNTO .
 
     $default  reduce using rule 99 (asignacion)
 
 
-state 218
+state 216
 
-  122 default_function_input: MAS default_function_input_def default_function_input .
+  124 default_function_input: MAS default_function_input_def default_function_input .
 
-    $default  reduce using rule 122 (default_function_input)
+    $default  reduce using rule 124 (default_function_input)
 
 
-state 219
+state 217
 
   116 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO .
 
     $default  reduce using rule 116 (default_functions)
 
 
+state 218
+
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END . METHOD
+
+    METHOD  shift, and go to state 230
+
+
+state 219
+
+  123 ids_def: COMA ID .
+
+    $default  reduce using rule 123 (ids_def)
+
+
 state 220
 
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END . METHOD
+  120 read: READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO . PUNTO
 
-    METHOD  shift, and go to state 229
+    PUNTO  shift, and go to state 231
 
 
 state 221
 
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+  121 ids: ids_def ids .
+
+    $default  reduce using rule 121 (ids)
+
+
+state 222
+
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -3738,15 +3759,15 @@ state 221
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -3782,7 +3803,7 @@ state 221
 
     funcion_matematica  go to state 59
     math_choices        go to state 60
-    exp                 go to state 230
+    exp                 go to state 232
     termino             go to state 62
     exponencial         go to state 63
     factor              go to state 64
@@ -3791,7 +3812,7 @@ state 221
     llamado             go to state 67
 
 
-state 222
+state 223
 
    83 metodo_body: . metodo_body body_code
    84            | .
@@ -3799,33 +3820,33 @@ state 222
 
     $default  reduce using rule 84 (metodo_body)
 
-    metodo_body  go to state 231
-
-
-state 223
-
-  108 for_statement: FOR ID IGUAL exp TO exp for_step . END FOR
-
-    END  shift, and go to state 232
+    metodo_body  go to state 233
 
 
 state 224
 
-  111 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END . WHILE
+  108 for_statement: FOR ID IGUAL exp TO exp for_step . END FOR
 
-    WHILE  shift, and go to state 233
+    END  shift, and go to state 234
 
 
 state 225
 
-  107 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body ELSE . DOS_PUNTOS metodo_body END IF
+  111 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END . WHILE
 
-    DOS_PUNTOS  shift, and go to state 234
+    WHILE  shift, and go to state 235
 
 
 state 226
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+  107 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body ELSE . DOS_PUNTOS metodo_body END IF
+
+    DOS_PUNTOS  shift, and go to state 236
+
+
+state 227
+
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
    83 metodo_body: metodo_body . body_code
    91 body_code: . vars_def
    92          | . asignacion
@@ -3833,7 +3854,7 @@ state 226
    94          | . llamado PUNTO
    95          | . default_functions
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: . ID $@22 IGUAL $@23 expresion PUNTO
   100           | . array_assignment
   101 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -3848,15 +3869,15 @@ state 226
   112                 | SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body . END CASE case_statement END SELECT
   116 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | . read
-  118 read: . READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
-  126 default_choices: . PRINT
-  127                | . PRINTLINE
+  120 read: . READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
+  128 default_choices: . PRINT
+  129                | . PRINTLINE
 
     PRINT      shift, and go to state 135
     PRINTLINE  shift, and go to state 136
     READ       shift, and go to state 137
     DEFINE     shift, and go to state 8
-    END        shift, and go to state 235
+    END        shift, and go to state 237
     FOR        shift, and go to state 138
     WHILE      shift, and go to state 139
     IF         shift, and go to state 140
@@ -3878,11 +3899,11 @@ state 226
     default_choices    go to state 156
 
 
-state 227
+state 228
 
    28 expresion: . exp
    29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   31 funcion_matematica: . math_choices PAR_ABIERTO $@9 exp PAR_CERRADO
    32 math_choices: . ABS
    33             | . COS
    34             | . SIN
@@ -3890,15 +3911,15 @@ state 227
    36             | . TAN
    37             | . SQRT
    44 exp: . termino
-   46    | . termino MAS @10 exp
-   48    | . termino MENOS @11 exp
+   46    | . termino MAS $@10 exp
+   48    | . termino MENOS $@11 exp
    49 termino: . exponencial
-   51        | . exponencial POR @12 exp
-   53        | . exponencial DIVISION @13 exp
+   51        | . exponencial POR $@12 exp
+   53        | . exponencial DIVISION $@13 exp
    54 exponencial: . factor
-   56            | . factor EXPONENCIAL @14 exp
+   56            | . factor EXPONENCIAL $@14 exp
    57 factor: . var
-   59       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   59       | . PAR_ABIERTO $@15 expresion PAR_CERRADO
    60       | . MAS CTE_INTEGER
    61       | . MAS CTE_DECIMAL
    62       | . MENOS CTE_INTEGER
@@ -3932,7 +3953,7 @@ state 227
     CTE_DECIMAL  shift, and go to state 56
     CTE_INTEGER  shift, and go to state 57
 
-    expresion           go to state 236
+    expresion           go to state 238
     funcion_matematica  go to state 59
     math_choices        go to state 60
     exp                 go to state 61
@@ -3944,30 +3965,37 @@ state 227
     llamado             go to state 67
 
 
-state 228
+state 229
 
   101 array_assignment: ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO .
 
     $default  reduce using rule 101 (array_assignment)
 
 
-state 229
+state 230
 
-   82 metodo_def: METHOD tipo @18 ID @19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body @20 RETURN expresion PUNTO END METHOD .
+   82 metodo_def: METHOD tipo $@18 ID $@19 PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body $@20 RETURN expresion PUNTO END METHOD .
 
     $default  reduce using rule 82 (metodo_def)
 
 
-state 230
+state 231
+
+  120 read: READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO .
+
+    $default  reduce using rule 120 (read)
+
+
+state 232
 
   110 for_step: STEP exp . DOS_PUNTOS metodo_body
 
-    DOS_PUNTOS  shift, and go to state 237
+    DOS_PUNTOS  shift, and go to state 239
 
 
-state 231
+state 233
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
    83 metodo_body: metodo_body . body_code
    91 body_code: . vars_def
    92          | . asignacion
@@ -3975,7 +4003,7 @@ state 231
    94          | . llamado PUNTO
    95          | . default_functions
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: . ID $@22 IGUAL $@23 expresion PUNTO
   100           | . array_assignment
   101 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -3990,9 +4018,9 @@ state 231
   112 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
   116 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | . read
-  118 read: . READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
-  126 default_choices: . PRINT
-  127                | . PRINTLINE
+  120 read: . READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
+  128 default_choices: . PRINT
+  129                | . PRINTLINE
 
     PRINT      shift, and go to state 135
     PRINTLINE  shift, and go to state 136
@@ -4021,21 +4049,21 @@ state 231
     default_choices    go to state 156
 
 
-state 232
+state 234
 
   108 for_statement: FOR ID IGUAL exp TO exp for_step END . FOR
 
-    FOR  shift, and go to state 238
+    FOR  shift, and go to state 240
 
 
-state 233
+state 235
 
   111 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE .
 
     $default  reduce using rule 111 (while_statement)
 
 
-state 234
+state 236
 
    83 metodo_body: . metodo_body body_code
    84            | .
@@ -4043,24 +4071,24 @@ state 234
 
     $default  reduce using rule 84 (metodo_body)
 
-    metodo_body  go to state 239
-
-
-state 235
-
-  112 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END . CASE case_statement END SELECT
-
-    CASE  shift, and go to state 240
-
-
-state 236
-
-  102 array_assignment: ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion . PUNTO
-
-    PUNTO  shift, and go to state 241
+    metodo_body  go to state 241
 
 
 state 237
+
+  112 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END . CASE case_statement END SELECT
+
+    CASE  shift, and go to state 242
+
+
+state 238
+
+  102 array_assignment: ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion . PUNTO
+
+    PUNTO  shift, and go to state 243
+
+
+state 239
 
    83 metodo_body: . metodo_body body_code
    84            | .
@@ -4068,19 +4096,19 @@ state 237
 
     $default  reduce using rule 84 (metodo_body)
 
-    metodo_body  go to state 242
+    metodo_body  go to state 244
 
 
-state 238
+state 240
 
   108 for_statement: FOR ID IGUAL exp TO exp for_step END FOR .
 
     $default  reduce using rule 108 (for_statement)
 
 
-state 239
+state 241
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
    83 metodo_body: metodo_body . body_code
    91 body_code: . vars_def
    92          | . asignacion
@@ -4088,7 +4116,7 @@ state 239
    94          | . llamado PUNTO
    95          | . default_functions
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: . ID $@22 IGUAL $@23 expresion PUNTO
   100           | . array_assignment
   101 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -4103,15 +4131,15 @@ state 239
   112 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
   116 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | . read
-  118 read: . READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
-  126 default_choices: . PRINT
-  127                | . PRINTLINE
+  120 read: . READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
+  128 default_choices: . PRINT
+  129                | . PRINTLINE
 
     PRINT      shift, and go to state 135
     PRINTLINE  shift, and go to state 136
     READ       shift, and go to state 137
     DEFINE     shift, and go to state 8
-    END        shift, and go to state 243
+    END        shift, and go to state 245
     FOR        shift, and go to state 138
     WHILE      shift, and go to state 139
     IF         shift, and go to state 140
@@ -4133,31 +4161,31 @@ state 239
     default_choices    go to state 156
 
 
-state 240
+state 242
 
   112 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE . case_statement END SELECT
   113 case_statement: . case_statement_def case_statement
   114               | .  [END]
   115 case_statement_def: . CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
 
-    CASE  shift, and go to state 244
+    CASE  shift, and go to state 246
 
     $default  reduce using rule 114 (case_statement)
 
-    case_statement      go to state 245
-    case_statement_def  go to state 246
+    case_statement      go to state 247
+    case_statement_def  go to state 248
 
 
-state 241
+state 243
 
   102 array_assignment: ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO .
 
     $default  reduce using rule 102 (array_assignment)
 
 
-state 242
+state 244
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
    83 metodo_body: metodo_body . body_code
    91 body_code: . vars_def
    92          | . asignacion
@@ -4165,7 +4193,7 @@ state 242
    94          | . llamado PUNTO
    95          | . default_functions
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: . ID $@22 IGUAL $@23 expresion PUNTO
   100           | . array_assignment
   101 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -4180,9 +4208,9 @@ state 242
   112 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
   116 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | . read
-  118 read: . READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
-  126 default_choices: . PRINT
-  127                | . PRINTLINE
+  120 read: . READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
+  128 default_choices: . PRINT
+  129                | . PRINTLINE
 
     PRINT      shift, and go to state 135
     PRINTLINE  shift, and go to state 136
@@ -4211,71 +4239,71 @@ state 242
     default_choices    go to state 156
 
 
-state 243
+state 245
 
   107 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body ELSE DOS_PUNTOS metodo_body END . IF
 
-    IF  shift, and go to state 247
-
-
-state 244
-
-  115 case_statement_def: CASE . CTE_INTEGER DOS_PUNTOS metodo_body END CASE
-
-    CTE_INTEGER  shift, and go to state 248
-
-
-state 245
-
-  112 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement . END SELECT
-
-    END  shift, and go to state 249
+    IF  shift, and go to state 249
 
 
 state 246
+
+  115 case_statement_def: CASE . CTE_INTEGER DOS_PUNTOS metodo_body END CASE
+
+    CTE_INTEGER  shift, and go to state 250
+
+
+state 247
+
+  112 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement . END SELECT
+
+    END  shift, and go to state 251
+
+
+state 248
 
   113 case_statement: . case_statement_def case_statement
   113               | case_statement_def . case_statement
   114               | .  [END]
   115 case_statement_def: . CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
 
-    CASE  shift, and go to state 244
+    CASE  shift, and go to state 246
 
     $default  reduce using rule 114 (case_statement)
 
-    case_statement      go to state 250
-    case_statement_def  go to state 246
+    case_statement      go to state 252
+    case_statement_def  go to state 248
 
 
-state 247
+state 249
 
   107 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body ELSE DOS_PUNTOS metodo_body END IF .
 
     $default  reduce using rule 107 (if_statement)
 
 
-state 248
+state 250
 
   115 case_statement_def: CASE CTE_INTEGER . DOS_PUNTOS metodo_body END CASE
 
-    DOS_PUNTOS  shift, and go to state 251
+    DOS_PUNTOS  shift, and go to state 253
 
 
-state 249
+state 251
 
   112 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END . SELECT
 
-    SELECT  shift, and go to state 252
+    SELECT  shift, and go to state 254
 
 
-state 250
+state 252
 
   113 case_statement: case_statement_def case_statement .
 
     $default  reduce using rule 113 (case_statement)
 
 
-state 251
+state 253
 
    83 metodo_body: . metodo_body body_code
    84            | .
@@ -4283,19 +4311,19 @@ state 251
 
     $default  reduce using rule 84 (metodo_body)
 
-    metodo_body  go to state 253
+    metodo_body  go to state 255
 
 
-state 252
+state 254
 
   112 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT .
 
     $default  reduce using rule 112 (select_statement)
 
 
-state 253
+state 255
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+    8 vars_def: . DEFINE declaracion $@3 AS tipo $@4 asignacion_var PUNTO
    83 metodo_body: metodo_body . body_code
    91 body_code: . vars_def
    92          | . asignacion
@@ -4303,7 +4331,7 @@ state 253
    94          | . llamado PUNTO
    95          | . default_functions
    96 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-   99 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+   99 asignacion: . ID $@22 IGUAL $@23 expresion PUNTO
   100           | . array_assignment
   101 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
   102                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
@@ -4318,15 +4346,15 @@ state 253
   115 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body . END CASE
   116 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
   117                  | . read
-  118 read: . READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
-  126 default_choices: . PRINT
-  127                | . PRINTLINE
+  120 read: . READ $@24 PAR_ABIERTO ID $@25 ids PAR_CERRADO PUNTO
+  128 default_choices: . PRINT
+  129                | . PRINTLINE
 
     PRINT      shift, and go to state 135
     PRINTLINE  shift, and go to state 136
     READ       shift, and go to state 137
     DEFINE     shift, and go to state 8
-    END        shift, and go to state 254
+    END        shift, and go to state 256
     FOR        shift, and go to state 138
     WHILE      shift, and go to state 139
     IF         shift, and go to state 140
@@ -4348,14 +4376,14 @@ state 253
     default_choices    go to state 156
 
 
-state 254
+state 256
 
   115 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END . CASE
 
-    CASE  shift, and go to state 255
+    CASE  shift, and go to state 257
 
 
-state 255
+state 257
 
   115 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE .
 

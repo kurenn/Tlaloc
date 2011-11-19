@@ -257,24 +257,24 @@
 	case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
 				  ;
 				
-	default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO | read
+	default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO { remove_from_StackOper(); } | read
 				     ;
 	
-	read: READ PAR_ABIERTO ID ids PAR_CERRADO PUNTO
+	read: READ { insert_to_StackOper(215); } PAR_ABIERTO ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); }  ids PAR_CERRADO PUNTO { remove_from_StackOper(); }
 		;
 	
 	ids: ids_def ids | 
 	   ;
 	
-	ids_def: COMA ID
+	ids_def: COMA ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); } 
 		   ;
 	 
 	default_function_input: MAS default_function_input_def default_function_input | 
 					      ;
 					
-	default_function_input_def: expresion | COMILLAS CTE_STRING COMILLAS
+	default_function_input_def: expresion { generate_exp_quadruples(); } | COMILLAS CTE_STRING COMILLAS
 						      ;
 	
-	default_choices: PRINT | PRINTLINE;
+	default_choices: PRINT { insert_to_StackOper(213); } | PRINTLINE { insert_to_StackOper(228); };
 	
 %%
