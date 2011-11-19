@@ -10,6 +10,7 @@ void insert_cte_string_to_StackO(int cte_integer);
 void insert_cte_decimal_to_StackO(int cte_integer);
 void insert_to_StackOper(int oper);
 void remove_from_StackOper();
+void remove_from_StackO();
 int get_var_virtual_address(char *id);
 void reset_temp_vars();
 void generate_exp_quadruples();

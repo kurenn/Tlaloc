@@ -98,7 +98,8 @@
 	vars_def: DEFINE declaracion {name = yylval.str;} AS tipo { 
                 var_type = yylval.str; 
                 set_dimension();
-            } asignacion_var PUNTO
+                insert_id_to_StackO(name);
+            } asignacion_var PUNTO { remove_from_StackO(); } // Retira el id en caso de no tener asignacion alguna
 		    ;
 	
 	declaracion: APUNTADOR ID
@@ -117,7 +118,7 @@
 		  | VOID
 		  ;
 	
-	asignacion_var: IGUAL expresion
+	asignacion_var: IGUAL { insert_to_StackOper('='); } expresion { generate_exp_quadruples(); reset_temp_vars(); }
                     | dimension_arreglo
 	                |   
 			        ;
