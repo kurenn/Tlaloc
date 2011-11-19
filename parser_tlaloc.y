@@ -248,7 +248,7 @@
 			  | STEP exp DOS_PUNTOS metodo_body 
 		    ; 
 	
-	while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
+	while_statement: WHILE PAR_ABIERTO{push_cont_to_stack_jumps();} expresion PAR_CERRADO DOS_PUNTOS{generate_while_gotoF_quadruple();} metodo_body END WHILE {fill_while();}
 				   ;
 	
 	select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT

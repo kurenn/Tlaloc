@@ -189,37 +189,41 @@ Grammar
   115 for_step: DOS_PUNTOS metodo_body
   116         | STEP exp DOS_PUNTOS metodo_body
 
-  117 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
+  117 @26: /* empty */
 
-  118 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  118 @27: /* empty */
 
-  119 case_statement: case_statement_def case_statement
-  120               | /* empty */
+  119 while_statement: WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
 
-  121 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
+  120 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
 
-  122 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | read
+  121 case_statement: case_statement_def case_statement
+  122               | /* empty */
 
-  124 @26: /* empty */
+  123 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
 
-  125 @27: /* empty */
+  124 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | read
 
-  126 read: READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
+  126 @28: /* empty */
 
-  127 ids: ids_def ids
-  128    | /* empty */
+  127 @29: /* empty */
 
-  129 ids_def: COMA ID
+  128 read: READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
 
-  130 default_function_input: MAS default_function_input_def default_function_input
-  131                       | /* empty */
+  129 ids: ids_def ids
+  130    | /* empty */
 
-  132 default_function_input_def: expresion
-  133                           | COMILLAS CTE_STRING COMILLAS
+  131 ids_def: COMA ID
 
-  134 default_choices: PRINT
-  135                | PRINTLINE
+  132 default_function_input: MAS default_function_input_def default_function_input
+  133                       | /* empty */
+
+  134 default_function_input_def: expresion
+  135                           | COMILLAS CTE_STRING COMILLAS
+
+  136 default_choices: PRINT
+  137                | PRINTLINE
 
 
 Terminals, with rules where they appear
@@ -228,11 +232,11 @@ $end (0) 0
 error (256)
 PROGRAM (258) 3
 METHOD (259) 80 84
-PRINT (260) 134
-PRINTLINE (261) 135
-READ (262) 126
-CASE (263) 118 121
-DEFAULT (264) 118
+PRINT (260) 136
+PRINTLINE (261) 137
+READ (262) 128
+CASE (263) 120 123
+DEFAULT (264) 120
 DEFINE (265) 8
 AS (266) 8
 TO (267) 114
@@ -242,7 +246,7 @@ DECIMAL (270) 18
 MAIN (271) 80
 STRING (272) 16
 BOOLEAN (273) 17
-END (274) 3 80 84 110 114 117 118 121
+END (274) 3 80 84 110 114 119 120 123
 FALSO (275) 75
 VERDADERO (276) 74
 VOID (277) 19 80
@@ -256,14 +260,14 @@ LOG (284) 35
 TAN (285) 36
 SQRT (286) 37
 FOR (287) 114
-WHILE (288) 117
+WHILE (288) 119
 IF (289) 110
-SELECT (290) 118
+SELECT (290) 120
 ELSE (291) 112
-PAR_ABIERTO (292) 31 61 80 84 98 110 117 122 126
-PAR_CERRADO (293) 31 61 80 84 98 110 117 122 126
-COMA (294) 27 91 104 129
-DOS_PUNTOS (295) 3 80 84 110 112 115 116 117 118 121
+PAR_ABIERTO (292) 31 61 80 84 98 110 119 124 128
+PAR_CERRADO (293) 31 61 80 84 98 110 119 124 128
+COMA (294) 27 91 104 131
+DOS_PUNTOS (295) 3 80 84 110 112 115 116 119 120 123
 CORCHETE_ABIERTO (296) 24 27 69 103 104
 CORCHETE_CERRADO (297) 24 27 69 103 104
 IGUAL (298) 20 101 103 104 114
@@ -272,19 +276,19 @@ MENOR_QUE (300) 41
 MAYOR_QUE (301) 40
 DIFERENTE (302) 42
 POR (303) 53
-MAS (304) 48 62 63 130
+MAS (304) 48 62 63 132
 MENOS (305) 50 64 65
 DIVISION (306) 55
 MAYOR_IGUAL (307) 44
 MENOR_IGUAL (308) 45
 EXPONENCIAL (309) 58
-PUNTO (310) 8 84 96 101 103 104 122 126
+PUNTO (310) 8 84 96 101 103 104 124 128
 APUNTADOR (311) 9 11
-COMILLAS (312) 133
-ID (313) 3 9 10 11 12 14 69 70 84 98 101 103 104 114 118 126 129
-CTE_STRING (314) 72 133
+COMILLAS (312) 135
+ID (313) 3 9 10 11 12 14 69 70 84 98 101 103 104 114 120 128 131
+CTE_STRING (314) 72 135
 CTE_DECIMAL (315) 63 65 73
-CTE_INTEGER (316) 24 27 62 64 71 121
+CTE_INTEGER (316) 24 27 62 64 71 123
 
 
 Nonterminals, with rules where they appear
@@ -324,7 +328,7 @@ dimension_arreglo (75)
 @8 (78)
     on left: 26, on right: 27
 expresion (79)
-    on left: 28 29, on right: 20 61 84 101 103 104 110 117 132
+    on left: 28 29, on right: 20 61 84 101 103 104 110 119 134
 funcion_matematica (80)
     on left: 31, on right: 68
 @9 (81)
@@ -375,7 +379,7 @@ metodo_def (100)
 @20 (103)
     on left: 83, on right: 84
 metodo_body (104)
-    on left: 85 86, on right: 80 84 85 110 112 115 116 117 118 121
+    on left: 85 86, on right: 80 84 85 110 112 115 116 119 120 123
 parametros (105)
     on left: 87, on right: 80 84
 parametros_def (106)
@@ -411,31 +415,35 @@ for_statement (120)
 for_step (121)
     on left: 115 116, on right: 114
 while_statement (122)
-    on left: 117, on right: 107
-select_statement (123)
-    on left: 118, on right: 108
-case_statement (124)
-    on left: 119 120, on right: 118 119
-case_statement_def (125)
-    on left: 121, on right: 119
-default_functions (126)
-    on left: 122 123, on right: 97
-read (127)
-    on left: 126, on right: 123
-@26 (128)
-    on left: 124, on right: 126
-@27 (129)
-    on left: 125, on right: 126
-ids (130)
-    on left: 127 128, on right: 126 127
-ids_def (131)
-    on left: 129, on right: 127
-default_function_input (132)
-    on left: 130 131, on right: 122 130
-default_function_input_def (133)
-    on left: 132 133, on right: 122 130
-default_choices (134)
-    on left: 134 135, on right: 122
+    on left: 119, on right: 107
+@26 (123)
+    on left: 117, on right: 119
+@27 (124)
+    on left: 118, on right: 119
+select_statement (125)
+    on left: 120, on right: 108
+case_statement (126)
+    on left: 121 122, on right: 120 121
+case_statement_def (127)
+    on left: 123, on right: 121
+default_functions (128)
+    on left: 124 125, on right: 97
+read (129)
+    on left: 128, on right: 125
+@28 (130)
+    on left: 126, on right: 128
+@29 (131)
+    on left: 127, on right: 128
+ids (132)
+    on left: 129 130, on right: 128 129
+ids_def (133)
+    on left: 131, on right: 129
+default_function_input (134)
+    on left: 132 133, on right: 124 132
+default_function_input_def (135)
+    on left: 134 135, on right: 124 132
+default_choices (136)
+    on left: 136 137, on right: 124
 
 
 state 0
@@ -2242,13 +2250,13 @@ state 131
   108         | . select_statement
   110 if_statement: . IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF
   114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
-  117 while_statement: . WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
-  118 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-  122 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | . read
-  126 read: . READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
-  134 default_choices: . PRINT
-  135                | . PRINTLINE
+  119 while_statement: . WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
+  120 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  124 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | . read
+  128 read: . READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
+  136 default_choices: . PRINT
+  137                | . PRINTLINE
 
     PRINT      shift, and go to state 137
     PRINTLINE  shift, and go to state 138
@@ -2319,26 +2327,26 @@ state 136
 
 state 137
 
-  134 default_choices: PRINT .
+  136 default_choices: PRINT .
 
-    $default  reduce using rule 134 (default_choices)
+    $default  reduce using rule 136 (default_choices)
 
 
 state 138
 
-  135 default_choices: PRINTLINE .
+  137 default_choices: PRINTLINE .
 
-    $default  reduce using rule 135 (default_choices)
+    $default  reduce using rule 137 (default_choices)
 
 
 state 139
 
-  124 @26: .
-  126 read: READ . @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
+  126 @28: .
+  128 read: READ . @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
 
-    $default  reduce using rule 124 (@26)
+    $default  reduce using rule 126 (@28)
 
-    @26  go to state 161
+    @28  go to state 161
 
 
 state 140
@@ -2350,7 +2358,7 @@ state 140
 
 state 141
 
-  117 while_statement: WHILE . PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
+  119 while_statement: WHILE . PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
 
     PAR_ABIERTO  shift, and go to state 163
 
@@ -2364,7 +2372,7 @@ state 142
 
 state 143
 
-  118 select_statement: SELECT . ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  120 select_statement: SELECT . ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
 
     ID  shift, and go to state 165
 
@@ -2471,14 +2479,14 @@ state 156
 
 state 157
 
-  123 default_functions: read .
+  125 default_functions: read .
 
-    $default  reduce using rule 123 (default_functions)
+    $default  reduce using rule 125 (default_functions)
 
 
 state 158
 
-  122 default_functions: default_choices . PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  124 default_functions: default_choices . PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
 
     PAR_ABIERTO  shift, and go to state 170
 
@@ -2505,13 +2513,13 @@ state 159
   108         | . select_statement
   110 if_statement: . IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF
   114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
-  117 while_statement: . WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
-  118 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-  122 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | . read
-  126 read: . READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
-  134 default_choices: . PRINT
-  135                | . PRINTLINE
+  119 while_statement: . WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
+  120 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  124 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | . read
+  128 read: . READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
+  136 default_choices: . PRINT
+  137                | . PRINTLINE
 
     PRINT      shift, and go to state 137
     PRINTLINE  shift, and go to state 138
@@ -2550,7 +2558,7 @@ state 160
 
 state 161
 
-  126 read: READ @26 . PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
+  128 read: READ @28 . PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
 
     PAR_ABIERTO  shift, and go to state 172
 
@@ -2564,68 +2572,12 @@ state 162
 
 state 163
 
-   28 expresion: . exp
-   29          | . exp operador_logico exp
-   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
-   32 math_choices: . ABS
-   33             | . COS
-   34             | . SIN
-   35             | . LOG
-   36             | . TAN
-   37             | . SQRT
-   46 exp: . termino
-   48    | . termino MAS @10 exp
-   50    | . termino MENOS @11 exp
-   51 termino: . exponencial
-   53        | . exponencial POR @12 exp
-   55        | . exponencial DIVISION @13 exp
-   56 exponencial: . factor
-   58            | . factor EXPONENCIAL @14 exp
-   59 factor: . var
-   61       | . PAR_ABIERTO @15 expresion PAR_CERRADO
-   62       | . MAS CTE_INTEGER
-   63       | . MAS CTE_DECIMAL
-   64       | . MENOS CTE_INTEGER
-   65       | . MENOS CTE_DECIMAL
-   66       | . factor_alterno
-   67 factor_alterno: . llamado
-   68               | . funcion_matematica
-   69               | . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO
-   70 var: . ID
-   71    | . CTE_INTEGER
-   72    | . CTE_STRING
-   73    | . CTE_DECIMAL
-   74    | . VERDADERO
-   75    | . FALSO
-   98 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-  117 while_statement: WHILE PAR_ABIERTO . expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
+  117 @26: .
+  119 while_statement: WHILE PAR_ABIERTO . @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
 
-    FALSO        shift, and go to state 43
-    VERDADERO    shift, and go to state 44
-    ABS          shift, and go to state 45
-    COS          shift, and go to state 46
-    SIN          shift, and go to state 47
-    LOG          shift, and go to state 48
-    TAN          shift, and go to state 49
-    SQRT         shift, and go to state 50
-    PAR_ABIERTO  shift, and go to state 51
-    MAS          shift, and go to state 52
-    MENOS        shift, and go to state 53
-    ID           shift, and go to state 54
-    CTE_STRING   shift, and go to state 55
-    CTE_DECIMAL  shift, and go to state 56
-    CTE_INTEGER  shift, and go to state 57
+    $default  reduce using rule 117 (@26)
 
-    expresion           go to state 174
-    funcion_matematica  go to state 59
-    math_choices        go to state 60
-    exp                 go to state 61
-    termino             go to state 62
-    exponencial         go to state 63
-    factor              go to state 64
-    factor_alterno      go to state 65
-    var                 go to state 66
-    llamado             go to state 67
+    @26  go to state 174
 
 
 state 164
@@ -2696,7 +2648,7 @@ state 164
 
 state 165
 
-  118 select_statement: SELECT ID . DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  120 select_statement: SELECT ID . DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
 
     DOS_PUNTOS  shift, and go to state 176
 
@@ -2822,9 +2774,9 @@ state 170
    74    | . VERDADERO
    75    | . FALSO
    98 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-  122 default_functions: default_choices PAR_ABIERTO . default_function_input_def default_function_input PAR_CERRADO PUNTO
-  132 default_function_input_def: . expresion
-  133                           | . COMILLAS CTE_STRING COMILLAS
+  124 default_functions: default_choices PAR_ABIERTO . default_function_input_def default_function_input PAR_CERRADO PUNTO
+  134 default_function_input_def: . expresion
+  135                           | . COMILLAS CTE_STRING COMILLAS
 
     FALSO        shift, and go to state 43
     VERDADERO    shift, and go to state 44
@@ -2865,7 +2817,7 @@ state 171
 
 state 172
 
-  126 read: READ @26 PAR_ABIERTO . ID @27 ids PAR_CERRADO PUNTO
+  128 read: READ @28 PAR_ABIERTO . ID @29 ids PAR_CERRADO PUNTO
 
     ID  shift, and go to state 184
 
@@ -2935,9 +2887,68 @@ state 173
 
 state 174
 
-  117 while_statement: WHILE PAR_ABIERTO expresion . PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
+   28 expresion: . exp
+   29          | . exp operador_logico exp
+   31 funcion_matematica: . math_choices PAR_ABIERTO @9 exp PAR_CERRADO
+   32 math_choices: . ABS
+   33             | . COS
+   34             | . SIN
+   35             | . LOG
+   36             | . TAN
+   37             | . SQRT
+   46 exp: . termino
+   48    | . termino MAS @10 exp
+   50    | . termino MENOS @11 exp
+   51 termino: . exponencial
+   53        | . exponencial POR @12 exp
+   55        | . exponencial DIVISION @13 exp
+   56 exponencial: . factor
+   58            | . factor EXPONENCIAL @14 exp
+   59 factor: . var
+   61       | . PAR_ABIERTO @15 expresion PAR_CERRADO
+   62       | . MAS CTE_INTEGER
+   63       | . MAS CTE_DECIMAL
+   64       | . MENOS CTE_INTEGER
+   65       | . MENOS CTE_DECIMAL
+   66       | . factor_alterno
+   67 factor_alterno: . llamado
+   68               | . funcion_matematica
+   69               | . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO
+   70 var: . ID
+   71    | . CTE_INTEGER
+   72    | . CTE_STRING
+   73    | . CTE_DECIMAL
+   74    | . VERDADERO
+   75    | . FALSO
+   98 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
+  119 while_statement: WHILE PAR_ABIERTO @26 . expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
 
-    PAR_CERRADO  shift, and go to state 186
+    FALSO        shift, and go to state 43
+    VERDADERO    shift, and go to state 44
+    ABS          shift, and go to state 45
+    COS          shift, and go to state 46
+    SIN          shift, and go to state 47
+    LOG          shift, and go to state 48
+    TAN          shift, and go to state 49
+    SQRT         shift, and go to state 50
+    PAR_ABIERTO  shift, and go to state 51
+    MAS          shift, and go to state 52
+    MENOS        shift, and go to state 53
+    ID           shift, and go to state 54
+    CTE_STRING   shift, and go to state 55
+    CTE_DECIMAL  shift, and go to state 56
+    CTE_INTEGER  shift, and go to state 57
+
+    expresion           go to state 186
+    funcion_matematica  go to state 59
+    math_choices        go to state 60
+    exp                 go to state 61
+    termino             go to state 62
+    exponencial         go to state 63
+    factor              go to state 64
+    factor_alterno      go to state 65
+    var                 go to state 66
+    llamado             go to state 67
 
 
 state 175
@@ -2949,7 +2960,7 @@ state 175
 
 state 176
 
-  118 select_statement: SELECT ID DOS_PUNTOS . CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  120 select_statement: SELECT ID DOS_PUNTOS . CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
 
     CASE  shift, and go to state 188
 
@@ -2982,27 +2993,27 @@ state 179
 
 state 180
 
-  133 default_function_input_def: COMILLAS . CTE_STRING COMILLAS
+  135 default_function_input_def: COMILLAS . CTE_STRING COMILLAS
 
     CTE_STRING  shift, and go to state 192
 
 
 state 181
 
-  132 default_function_input_def: expresion .
+  134 default_function_input_def: expresion .
 
-    $default  reduce using rule 132 (default_function_input_def)
+    $default  reduce using rule 134 (default_function_input_def)
 
 
 state 182
 
-  122 default_functions: default_choices PAR_ABIERTO default_function_input_def . default_function_input PAR_CERRADO PUNTO
-  130 default_function_input: . MAS default_function_input_def default_function_input
-  131                       | .  [PAR_CERRADO]
+  124 default_functions: default_choices PAR_ABIERTO default_function_input_def . default_function_input PAR_CERRADO PUNTO
+  132 default_function_input: . MAS default_function_input_def default_function_input
+  133                       | .  [PAR_CERRADO]
 
     MAS  shift, and go to state 193
 
-    $default  reduce using rule 131 (default_function_input)
+    $default  reduce using rule 133 (default_function_input)
 
     default_function_input  go to state 194
 
@@ -3075,12 +3086,12 @@ state 183
 
 state 184
 
-  125 @27: .
-  126 read: READ @26 PAR_ABIERTO ID . @27 ids PAR_CERRADO PUNTO
+  127 @29: .
+  128 read: READ @28 PAR_ABIERTO ID . @29 ids PAR_CERRADO PUNTO
 
-    $default  reduce using rule 125 (@27)
+    $default  reduce using rule 127 (@29)
 
-    @27  go to state 196
+    @29  go to state 196
 
 
 state 185
@@ -3092,9 +3103,9 @@ state 185
 
 state 186
 
-  117 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO . DOS_PUNTOS metodo_body END WHILE
+  119 while_statement: WHILE PAR_ABIERTO @26 expresion . PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
 
-    DOS_PUNTOS  shift, and go to state 198
+    PAR_CERRADO  shift, and go to state 198
 
 
 state 187
@@ -3106,7 +3117,7 @@ state 187
 
 state 188
 
-  118 select_statement: SELECT ID DOS_PUNTOS CASE . DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  120 select_statement: SELECT ID DOS_PUNTOS CASE . DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
 
     DEFAULT  shift, and go to state 200
 
@@ -3249,7 +3260,7 @@ state 191
 
 state 192
 
-  133 default_function_input_def: COMILLAS CTE_STRING . COMILLAS
+  135 default_function_input_def: COMILLAS CTE_STRING . COMILLAS
 
     COMILLAS  shift, and go to state 204
 
@@ -3290,9 +3301,9 @@ state 193
    74    | . VERDADERO
    75    | . FALSO
    98 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-  130 default_function_input: MAS . default_function_input_def default_function_input
-  132 default_function_input_def: . expresion
-  133                           | . COMILLAS CTE_STRING COMILLAS
+  132 default_function_input: MAS . default_function_input_def default_function_input
+  134 default_function_input_def: . expresion
+  135                           | . COMILLAS CTE_STRING COMILLAS
 
     FALSO        shift, and go to state 43
     VERDADERO    shift, and go to state 44
@@ -3326,7 +3337,7 @@ state 193
 
 state 194
 
-  122 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input . PAR_CERRADO PUNTO
+  124 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input . PAR_CERRADO PUNTO
 
     PAR_CERRADO  shift, and go to state 206
 
@@ -3340,14 +3351,14 @@ state 195
 
 state 196
 
-  126 read: READ @26 PAR_ABIERTO ID @27 . ids PAR_CERRADO PUNTO
-  127 ids: . ids_def ids
-  128    | .  [PAR_CERRADO]
-  129 ids_def: . COMA ID
+  128 read: READ @28 PAR_ABIERTO ID @29 . ids PAR_CERRADO PUNTO
+  129 ids: . ids_def ids
+  130    | .  [PAR_CERRADO]
+  131 ids_def: . COMA ID
 
     COMA  shift, and go to state 208
 
-    $default  reduce using rule 128 (ids)
+    $default  reduce using rule 130 (ids)
 
     ids      go to state 209
     ids_def  go to state 210
@@ -3418,13 +3429,9 @@ state 197
 
 state 198
 
-   85 metodo_body: . metodo_body body_code
-   86            | .
-  117 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS . metodo_body END WHILE
+  119 while_statement: WHILE PAR_ABIERTO @26 expresion PAR_CERRADO . DOS_PUNTOS @27 metodo_body END WHILE
 
-    $default  reduce using rule 86 (metodo_body)
-
-    metodo_body  go to state 212
+    DOS_PUNTOS  shift, and go to state 212
 
 
 state 199
@@ -3439,7 +3446,7 @@ state 199
 
 state 200
 
-  118 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT . DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  120 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT . DOS_PUNTOS metodo_body END CASE case_statement END SELECT
 
     DOS_PUNTOS  shift, and go to state 214
 
@@ -3526,27 +3533,27 @@ state 203
 
 state 204
 
-  133 default_function_input_def: COMILLAS CTE_STRING COMILLAS .
+  135 default_function_input_def: COMILLAS CTE_STRING COMILLAS .
 
-    $default  reduce using rule 133 (default_function_input_def)
+    $default  reduce using rule 135 (default_function_input_def)
 
 
 state 205
 
-  130 default_function_input: . MAS default_function_input_def default_function_input
-  130                       | MAS default_function_input_def . default_function_input
-  131                       | .  [PAR_CERRADO]
+  132 default_function_input: . MAS default_function_input_def default_function_input
+  132                       | MAS default_function_input_def . default_function_input
+  133                       | .  [PAR_CERRADO]
 
     MAS  shift, and go to state 193
 
-    $default  reduce using rule 131 (default_function_input)
+    $default  reduce using rule 133 (default_function_input)
 
     default_function_input  go to state 218
 
 
 state 206
 
-  122 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO . PUNTO
+  124 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO . PUNTO
 
     PUNTO  shift, and go to state 219
 
@@ -3560,28 +3567,28 @@ state 207
 
 state 208
 
-  129 ids_def: COMA . ID
+  131 ids_def: COMA . ID
 
     ID  shift, and go to state 221
 
 
 state 209
 
-  126 read: READ @26 PAR_ABIERTO ID @27 ids . PAR_CERRADO PUNTO
+  128 read: READ @28 PAR_ABIERTO ID @29 ids . PAR_CERRADO PUNTO
 
     PAR_CERRADO  shift, and go to state 222
 
 
 state 210
 
-  127 ids: . ids_def ids
-  127    | ids_def . ids
-  128    | .  [PAR_CERRADO]
-  129 ids_def: . COMA ID
+  129 ids: . ids_def ids
+  129    | ids_def . ids
+  130    | .  [PAR_CERRADO]
+  131 ids_def: . COMA ID
 
     COMA  shift, and go to state 208
 
-    $default  reduce using rule 128 (ids)
+    $default  reduce using rule 130 (ids)
 
     ids      go to state 223
     ids_def  go to state 210
@@ -3601,57 +3608,12 @@ state 211
 
 state 212
 
-    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
-   85 metodo_body: metodo_body . body_code
-   93 body_code: . vars_def
-   94          | . asignacion
-   95          | . estatuto
-   96          | . llamado PUNTO
-   97          | . default_functions
-   98 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
-  101 asignacion: . ID @22 IGUAL @23 expresion PUNTO
-  102           | . array_assignment
-  103 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
-  104                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
-  105 estatuto: . if_statement
-  106         | . for_statement
-  107         | . while_statement
-  108         | . select_statement
-  110 if_statement: . IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF
-  114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
-  117 while_statement: . WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
-  117                | WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body . END WHILE
-  118 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-  122 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | . read
-  126 read: . READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
-  134 default_choices: . PRINT
-  135                | . PRINTLINE
+  118 @27: .
+  119 while_statement: WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS . @27 metodo_body END WHILE
 
-    PRINT      shift, and go to state 137
-    PRINTLINE  shift, and go to state 138
-    READ       shift, and go to state 139
-    DEFINE     shift, and go to state 8
-    END        shift, and go to state 227
-    FOR        shift, and go to state 140
-    WHILE      shift, and go to state 141
-    IF         shift, and go to state 142
-    SELECT     shift, and go to state 143
-    ID         shift, and go to state 144
+    $default  reduce using rule 118 (@27)
 
-    vars_def           go to state 145
-    body_code          go to state 147
-    llamado            go to state 148
-    asignacion         go to state 149
-    array_assignment   go to state 150
-    estatuto           go to state 151
-    if_statement       go to state 152
-    for_statement      go to state 153
-    while_statement    go to state 154
-    select_statement   go to state 155
-    default_functions  go to state 156
-    read               go to state 157
-    default_choices    go to state 158
+    @27  go to state 227
 
 
 state 213
@@ -3669,7 +3631,7 @@ state 214
 
    85 metodo_body: . metodo_body body_code
    86            | .
-  118 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS . metodo_body END CASE case_statement END SELECT
+  120 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS . metodo_body END CASE case_statement END SELECT
 
     $default  reduce using rule 86 (metodo_body)
 
@@ -3699,16 +3661,16 @@ state 217
 
 state 218
 
-  130 default_function_input: MAS default_function_input_def default_function_input .
+  132 default_function_input: MAS default_function_input_def default_function_input .
 
-    $default  reduce using rule 130 (default_function_input)
+    $default  reduce using rule 132 (default_function_input)
 
 
 state 219
 
-  122 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO .
+  124 default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO .
 
-    $default  reduce using rule 122 (default_functions)
+    $default  reduce using rule 124 (default_functions)
 
 
 state 220
@@ -3720,23 +3682,23 @@ state 220
 
 state 221
 
-  129 ids_def: COMA ID .
+  131 ids_def: COMA ID .
 
-    $default  reduce using rule 129 (ids_def)
+    $default  reduce using rule 131 (ids_def)
 
 
 state 222
 
-  126 read: READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO . PUNTO
+  128 read: READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO . PUNTO
 
     PUNTO  shift, and go to state 233
 
 
 state 223
 
-  127 ids: ids_def ids .
+  129 ids: ids_def ids .
 
-    $default  reduce using rule 127 (ids)
+    $default  reduce using rule 129 (ids)
 
 
 state 224
@@ -3822,9 +3784,13 @@ state 226
 
 state 227
 
-  117 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END . WHILE
+   85 metodo_body: . metodo_body body_code
+   86            | .
+  119 while_statement: WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 . metodo_body END WHILE
 
-    WHILE  shift, and go to state 237
+    $default  reduce using rule 86 (metodo_body)
+
+    metodo_body  go to state 237
 
 
 state 228
@@ -3850,13 +3816,13 @@ state 228
   112 else_statement: . ELSE DOS_PUNTOS @25 metodo_body
   113               | .  [END]
   114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
-  117 while_statement: . WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
-  118 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-  122 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | . read
-  126 read: . READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
-  134 default_choices: . PRINT
-  135                | . PRINTLINE
+  119 while_statement: . WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
+  120 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  124 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | . read
+  128 read: . READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
+  136 default_choices: . PRINT
+  137                | . PRINTLINE
 
     PRINT      shift, and go to state 137
     PRINTLINE  shift, and go to state 138
@@ -3907,14 +3873,14 @@ state 229
   108         | . select_statement
   110 if_statement: . IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF
   114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
-  117 while_statement: . WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
-  118 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-  118                 | SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body . END CASE case_statement END SELECT
-  122 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | . read
-  126 read: . READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
-  134 default_choices: . PRINT
-  135                | . PRINTLINE
+  119 while_statement: . WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
+  120 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  120                 | SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body . END CASE case_statement END SELECT
+  124 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | . read
+  128 read: . READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
+  136 default_choices: . PRINT
+  137                | . PRINTLINE
 
     PRINT      shift, and go to state 137
     PRINTLINE  shift, and go to state 138
@@ -4024,9 +3990,9 @@ state 232
 
 state 233
 
-  126 read: READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO .
+  128 read: READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO .
 
-    $default  reduce using rule 126 (read)
+    $default  reduce using rule 128 (read)
 
 
 state 234
@@ -4057,13 +4023,13 @@ state 235
   110 if_statement: . IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF
   114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
   115 for_step: DOS_PUNTOS metodo_body .  [END]
-  117 while_statement: . WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
-  118 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-  122 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | . read
-  126 read: . READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
-  134 default_choices: . PRINT
-  135                | . PRINTLINE
+  119 while_statement: . WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
+  120 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  124 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | . read
+  128 read: . READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
+  136 default_choices: . PRINT
+  137                | . PRINTLINE
 
     PRINT      shift, and go to state 137
     PRINTLINE  shift, and go to state 138
@@ -4101,37 +4067,85 @@ state 236
 
 state 237
 
-  117 while_statement: WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE .
+    8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
+   85 metodo_body: metodo_body . body_code
+   93 body_code: . vars_def
+   94          | . asignacion
+   95          | . estatuto
+   96          | . llamado PUNTO
+   97          | . default_functions
+   98 llamado: . ID PAR_ABIERTO exp PAR_CERRADO
+  101 asignacion: . ID @22 IGUAL @23 expresion PUNTO
+  102           | . array_assignment
+  103 array_assignment: . ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
+  104                 | . ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
+  105 estatuto: . if_statement
+  106         | . for_statement
+  107         | . while_statement
+  108         | . select_statement
+  110 if_statement: . IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF
+  114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
+  119 while_statement: . WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
+  119                | WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body . END WHILE
+  120 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  124 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | . read
+  128 read: . READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
+  136 default_choices: . PRINT
+  137                | . PRINTLINE
 
-    $default  reduce using rule 117 (while_statement)
+    PRINT      shift, and go to state 137
+    PRINTLINE  shift, and go to state 138
+    READ       shift, and go to state 139
+    DEFINE     shift, and go to state 8
+    END        shift, and go to state 244
+    FOR        shift, and go to state 140
+    WHILE      shift, and go to state 141
+    IF         shift, and go to state 142
+    SELECT     shift, and go to state 143
+    ID         shift, and go to state 144
+
+    vars_def           go to state 145
+    body_code          go to state 147
+    llamado            go to state 148
+    asignacion         go to state 149
+    array_assignment   go to state 150
+    estatuto           go to state 151
+    if_statement       go to state 152
+    for_statement      go to state 153
+    while_statement    go to state 154
+    select_statement   go to state 155
+    default_functions  go to state 156
+    read               go to state 157
+    default_choices    go to state 158
 
 
 state 238
 
   112 else_statement: ELSE . DOS_PUNTOS @25 metodo_body
 
-    DOS_PUNTOS  shift, and go to state 244
+    DOS_PUNTOS  shift, and go to state 245
 
 
 state 239
 
   110 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement . END IF
 
-    END  shift, and go to state 245
+    END  shift, and go to state 246
 
 
 state 240
 
-  118 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END . CASE case_statement END SELECT
+  120 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END . CASE case_statement END SELECT
 
-    CASE  shift, and go to state 246
+    CASE  shift, and go to state 247
 
 
 state 241
 
   104 array_assignment: ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion . PUNTO
 
-    PUNTO  shift, and go to state 247
+    PUNTO  shift, and go to state 248
 
 
 state 242
@@ -4142,7 +4156,7 @@ state 242
 
     $default  reduce using rule 86 (metodo_body)
 
-    metodo_body  go to state 248
+    metodo_body  go to state 249
 
 
 state 243
@@ -4154,44 +4168,51 @@ state 243
 
 state 244
 
+  119 while_statement: WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END . WHILE
+
+    WHILE  shift, and go to state 250
+
+
+state 245
+
   111 @25: .
   112 else_statement: ELSE DOS_PUNTOS . @25 metodo_body
 
     $default  reduce using rule 111 (@25)
 
-    @25  go to state 249
-
-
-state 245
-
-  110 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END . IF
-
-    IF  shift, and go to state 250
+    @25  go to state 251
 
 
 state 246
 
-  118 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE . case_statement END SELECT
-  119 case_statement: . case_statement_def case_statement
-  120               | .  [END]
-  121 case_statement_def: . CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
+  110 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END . IF
 
-    CASE  shift, and go to state 251
-
-    $default  reduce using rule 120 (case_statement)
-
-    case_statement      go to state 252
-    case_statement_def  go to state 253
+    IF  shift, and go to state 252
 
 
 state 247
+
+  120 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE . case_statement END SELECT
+  121 case_statement: . case_statement_def case_statement
+  122               | .  [END]
+  123 case_statement_def: . CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
+
+    CASE  shift, and go to state 253
+
+    $default  reduce using rule 122 (case_statement)
+
+    case_statement      go to state 254
+    case_statement_def  go to state 255
+
+
+state 248
 
   104 array_assignment: ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO .
 
     $default  reduce using rule 104 (array_assignment)
 
 
-state 248
+state 249
 
     8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
    85 metodo_body: metodo_body . body_code
@@ -4212,13 +4233,13 @@ state 248
   110 if_statement: . IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF
   114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
   116 for_step: STEP exp DOS_PUNTOS metodo_body .  [END]
-  117 while_statement: . WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
-  118 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-  122 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | . read
-  126 read: . READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
-  134 default_choices: . PRINT
-  135                | . PRINTLINE
+  119 while_statement: . WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
+  120 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  124 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | . read
+  128 read: . READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
+  136 default_choices: . PRINT
+  137                | . PRINTLINE
 
     PRINT      shift, and go to state 137
     PRINTLINE  shift, and go to state 138
@@ -4247,7 +4268,14 @@ state 248
     default_choices    go to state 158
 
 
-state 249
+state 250
+
+  119 while_statement: WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE .
+
+    $default  reduce using rule 119 (while_statement)
+
+
+state 251
 
    85 metodo_body: . metodo_body body_code
    86            | .
@@ -4255,46 +4283,46 @@ state 249
 
     $default  reduce using rule 86 (metodo_body)
 
-    metodo_body  go to state 254
+    metodo_body  go to state 256
 
 
-state 250
+state 252
 
   110 if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF .
 
     $default  reduce using rule 110 (if_statement)
 
 
-state 251
-
-  121 case_statement_def: CASE . CTE_INTEGER DOS_PUNTOS metodo_body END CASE
-
-    CTE_INTEGER  shift, and go to state 255
-
-
-state 252
-
-  118 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement . END SELECT
-
-    END  shift, and go to state 256
-
-
 state 253
 
-  119 case_statement: . case_statement_def case_statement
-  119               | case_statement_def . case_statement
-  120               | .  [END]
-  121 case_statement_def: . CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
+  123 case_statement_def: CASE . CTE_INTEGER DOS_PUNTOS metodo_body END CASE
 
-    CASE  shift, and go to state 251
-
-    $default  reduce using rule 120 (case_statement)
-
-    case_statement      go to state 257
-    case_statement_def  go to state 253
+    CTE_INTEGER  shift, and go to state 257
 
 
 state 254
+
+  120 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement . END SELECT
+
+    END  shift, and go to state 258
+
+
+state 255
+
+  121 case_statement: . case_statement_def case_statement
+  121               | case_statement_def . case_statement
+  122               | .  [END]
+  123 case_statement_def: . CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
+
+    CASE  shift, and go to state 253
+
+    $default  reduce using rule 122 (case_statement)
+
+    case_statement      go to state 259
+    case_statement_def  go to state 255
+
+
+state 256
 
     8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
    85 metodo_body: metodo_body . body_code
@@ -4315,13 +4343,13 @@ state 254
   110 if_statement: . IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF
   112 else_statement: ELSE DOS_PUNTOS @25 metodo_body .  [END]
   114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
-  117 while_statement: . WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
-  118 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-  122 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | . read
-  126 read: . READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
-  134 default_choices: . PRINT
-  135                | . PRINTLINE
+  119 while_statement: . WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
+  120 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  124 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | . read
+  128 read: . READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
+  136 default_choices: . PRINT
+  137                | . PRINTLINE
 
     PRINT      shift, and go to state 137
     PRINTLINE  shift, and go to state 138
@@ -4350,46 +4378,46 @@ state 254
     default_choices    go to state 158
 
 
-state 255
-
-  121 case_statement_def: CASE CTE_INTEGER . DOS_PUNTOS metodo_body END CASE
-
-    DOS_PUNTOS  shift, and go to state 258
-
-
-state 256
-
-  118 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END . SELECT
-
-    SELECT  shift, and go to state 259
-
-
 state 257
 
-  119 case_statement: case_statement_def case_statement .
+  123 case_statement_def: CASE CTE_INTEGER . DOS_PUNTOS metodo_body END CASE
 
-    $default  reduce using rule 119 (case_statement)
+    DOS_PUNTOS  shift, and go to state 260
 
 
 state 258
 
-   85 metodo_body: . metodo_body body_code
-   86            | .
-  121 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS . metodo_body END CASE
+  120 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END . SELECT
 
-    $default  reduce using rule 86 (metodo_body)
-
-    metodo_body  go to state 260
+    SELECT  shift, and go to state 261
 
 
 state 259
 
-  118 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT .
+  121 case_statement: case_statement_def case_statement .
 
-    $default  reduce using rule 118 (select_statement)
+    $default  reduce using rule 121 (case_statement)
 
 
 state 260
+
+   85 metodo_body: . metodo_body body_code
+   86            | .
+  123 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS . metodo_body END CASE
+
+    $default  reduce using rule 86 (metodo_body)
+
+    metodo_body  go to state 262
+
+
+state 261
+
+  120 select_statement: SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT .
+
+    $default  reduce using rule 120 (select_statement)
+
+
+state 262
 
     8 vars_def: . DEFINE declaracion @3 AS tipo @4 asignacion_var PUNTO
    85 metodo_body: metodo_body . body_code
@@ -4409,20 +4437,20 @@ state 260
   108         | . select_statement
   110 if_statement: . IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS @24 metodo_body else_statement END IF
   114 for_statement: . FOR ID IGUAL exp TO exp for_step END FOR
-  117 while_statement: . WHILE PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS metodo_body END WHILE
-  118 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
-  121 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body . END CASE
-  122 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
-  123                  | . read
-  126 read: . READ @26 PAR_ABIERTO ID @27 ids PAR_CERRADO PUNTO
-  134 default_choices: . PRINT
-  135                | . PRINTLINE
+  119 while_statement: . WHILE PAR_ABIERTO @26 expresion PAR_CERRADO DOS_PUNTOS @27 metodo_body END WHILE
+  120 select_statement: . SELECT ID DOS_PUNTOS CASE DEFAULT DOS_PUNTOS metodo_body END CASE case_statement END SELECT
+  123 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body . END CASE
+  124 default_functions: . default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO
+  125                  | . read
+  128 read: . READ @28 PAR_ABIERTO ID @29 ids PAR_CERRADO PUNTO
+  136 default_choices: . PRINT
+  137                | . PRINTLINE
 
     PRINT      shift, and go to state 137
     PRINTLINE  shift, and go to state 138
     READ       shift, and go to state 139
     DEFINE     shift, and go to state 8
-    END        shift, and go to state 261
+    END        shift, and go to state 263
     FOR        shift, and go to state 140
     WHILE      shift, and go to state 141
     IF         shift, and go to state 142
@@ -4444,15 +4472,15 @@ state 260
     default_choices    go to state 158
 
 
-state 261
+state 263
 
-  121 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END . CASE
+  123 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END . CASE
 
-    CASE  shift, and go to state 262
+    CASE  shift, and go to state 264
 
 
-state 262
+state 264
 
-  121 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE .
+  123 case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE .
 
-    $default  reduce using rule 121 (case_statement_def)
+    $default  reduce using rule 123 (case_statement_def)

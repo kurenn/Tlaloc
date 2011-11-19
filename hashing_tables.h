@@ -23,3 +23,5 @@ void print_quadruples_array_to_file();
 void generate_gotoF_if_quadruple();
 void generate_goto_if_quadruple();
 void fill_if();
+void generate_while_gotoF_quadruple();
+void push_cont_to_stack_jumps();

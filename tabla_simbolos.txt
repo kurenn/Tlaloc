@@ -7,7 +7,7 @@ printline			228
 read					215
 return				224
 and						197
-or						225
+or						198
 abs						212
 cos						214
 sin						225
