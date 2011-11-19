@@ -383,11 +383,15 @@ void generate_exp_quadruples(){
     first_oper = g_queue_pop_tail(StackO);          // Solo sacamos el primer_oper en caso de que sea math_function
     if (operator == 212 || operator == 214 || operator == 225 || // 'as' 'cs' 'sn'    // Generacion de Math_function
         operator == 211 || operator == 226 || operator == 231) { // 'lg' 'tn' 'st'
-		insert_quadruple_to_array(operator, second_oper, first_oper, temp_decimals_count);
+		insert_quadruple_to_array(operator, first_oper, 0, temp_decimals_count);
         printf("Cuadruplo: %d\t%d\t %d\t\t %d\n", ++quadruple_index, operator, first_oper, temp_decimals_count);
         g_queue_push_tail(StackO, (gpointer)temp_decimals_count);   // Se da push al temp que guarda el valor de la fn
         g_queue_push_tail(StackTypes, (gpointer)"decimal");         // Se da push al tipo decimal que sera igual para todos
         temp_decimals_count = temp_decimals_count + 1;              // Se incrementa en uno el temp de decimales
+    } else if (operator == 213 || operator == 228) {    // if para default_functions
+		insert_quadruple_to_array(operator, first_oper, 0, 0);
+        printf("Cuadruplo: %d\t%d\t %d\n", ++quadruple_index, operator, first_oper);        
+        g_queue_push_tail(StackOper, (gpointer)operator);
     } else {    // Genera cuadruplos para asignacion o el resto de tipo de cuadruplos (que no son math_functions)
         second_oper = g_queue_pop_tail(StackO);         // Saca el siguiente operando para hacer las operaciones
         first_type = g_queue_pop_tail(StackTypes);      // Saca primer operando

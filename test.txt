@@ -22,6 +22,7 @@ method integer test(integer a[4,5], boolean j[100]):
     algo = x * x ^ x * x.
     algo = _kuri.
     _kuri = abs(algo * algo) + 3 + algo + cos(35).
+    printline(algo + "algo").
 	
     return 0.
 
