@@ -396,8 +396,45 @@ void fill_if() {
 
 }
 
+// Mete a pila de saltos el cuadruplo al que saltara (para seguir haciendo el ciclo) y rellenar con el salto de direccion
 void push_cont_to_stack_jumps(){
 	g_queue_push_tail(StackJumps, (gpointer)(quadruple_index + 1)); // Guarda a posicion del cuadruplo al cual ira Goto - Mantiene ciclo vivo
+}
+
+void generate_for_limit_quadruple(){
+    int exp_address, id;
+    id = g_queue_pop_tail(StackO);
+    exp_address = g_queue_pop_tail(StackO);
+    insert_quadruple_to_array(LT, id, exp_address, const_booleans_count);   // Guardamos en constantes booleanas
+    //g_queue_push_tail(StackTypes, (gpointer)"boolean");                     // ya que la comparacion devolvera un boolean
+    g_queue_push_tail(StackO, (gpointer)const_booleans_count);              // Se agrega resultado y su tipo a las pilas
+    const_booleans_count = const_booleans_count + 1;                        
+    ++quadruple_index;
+}
+
+void generate_gotoF_for_quadruple(){
+	int result;
+    result = g_queue_pop_tail(StackO);
+    insert_quadruple_to_array(GOTOF, result, 0, 0); //GOTOF
+    ++quadruple_index;
+    g_queue_push_tail(StackJumps, (gpointer)(quadruple_index - 1)); // Guarda la posicion del cuadruplo al cual ira GotoF
+}
+
+void fill_for(){
+    int __return;
+	int __false;
+	char *t_return = (char *)malloc(sizeof(int));
+	char *t_false = (char *)malloc(sizeof(int));
+	__false = g_queue_pop_tail(StackJumps);
+	__return = g_queue_pop_tail(StackJumps);
+	sprintf(t_return, "%d", __return);
+	insert_quadruple_to_array(GOTO, 0, 0, __return); //GOTO
+	++quadruple_index;
+	quad_struct *t_quadruple = g_slice_new(quad_struct);
+	
+	sprintf(t_false, "%d", (quadruple_index + 1));
+	t_quadruple = g_ptr_array_index(QuadruplesList,__false);
+	t_quadruple->result = t_false;
 }
 
 void generate_while_gotoF_quadruple() {
@@ -497,7 +534,6 @@ void generate_exp_quadruples(){
 				//Si es un operador logico, mete un tipo booleano a la pila de tipos
 				if(operator == LT || operator == GT || operator == G_EQUAL_T || operator == L_EQUAL_T) {
 					g_queue_push_tail(StackTypes, (gpointer)"boolean");
-					printf("Added\n");
 				}
                 *temp_count = *temp_count + 1;
             }   

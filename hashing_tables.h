@@ -26,3 +26,6 @@ void generate_goto_if_quadruple();
 void fill_if();
 void generate_while_gotoF_quadruple();
 void push_cont_to_stack_jumps();
+void generate_for_limit_quadruple();
+void generate_gotoF_for_quadruple();
+void fill_for();

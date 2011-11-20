@@ -4,17 +4,19 @@ program edo:
             define r as integer.
             define edo as integer = 666. 
             define _kuri as integer = 10.
-            define leido as integer.  
+            define a as integer.  
             define alguien as string.
             define algo as integer = 2.         
             edo = log(180).
 
-            while (algo < 5):
-                printline(algo).
-                algo = algo + 1.
-            end while
+        for a = 3 to 8:
+            for _kuri = 2 to 9:
+                printline(_kuri).
+            end for
+            printline(a).
+            a=a+1.
+		end for
         
-        printline("random").
 	end method
 
 end program
