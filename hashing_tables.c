@@ -115,9 +115,7 @@ void create_stacks_and_queues(){
 // Inicializa variables temporales para operaciones dentro de cada funcion
 void reset_temp_vars(){
     temp_integers_count = TINTEGERS, temp_strings_count = TSTRINGS,
-    temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS,
-    const_integers_count = CINTEGERS, const_strings_count = CSTRINGS,
-    const_booleans_count = CBOOLEANS, const_decimals_count = CDECIMALS;
+    temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS;
 }
 
 // Inicializa variables locales a 0 para cada nuevo procedimiento
@@ -271,7 +269,7 @@ void insert_id_to_StackO(char *id){
 }
 
 void insert_cte_int_to_StackO(int cte){
-    if(cte != NULL){ 
+//    if(cte != NULL){ 
         char *cte_integer = (char *)malloc(sizeof(int));
         sprintf (cte_integer, "%d", cte);
         vars_memory *temp_memory = g_slice_new(vars_memory);
@@ -285,7 +283,7 @@ void insert_cte_int_to_StackO(int cte){
         g_queue_push_tail(StackO, (gpointer)temp_memory->virtual_address);
         g_queue_push_tail(StackTypes, (gpointer)"integer"); 
         const_integers_count = const_integers_count + 1;    
-    }        
+//    }        
 }
 
 void insert_cte_decimal_to_StackO(float cte){
@@ -307,7 +305,7 @@ void insert_cte_decimal_to_StackO(float cte){
 //}
 
 void insert_cte_string_to_StackO(char *c_string){
-    if(c_string != NULL){
+//    if(c_string != NULL){
         char cte_string[] = "'";
         strcat(cte_string, c_string);
         strcat(cte_string, "'");
@@ -323,7 +321,7 @@ void insert_cte_string_to_StackO(char *c_string){
         g_queue_push_tail(StackO, (gpointer)temp_memory->virtual_address);
         g_queue_push_tail(StackTypes, (gpointer)"string"); 
         const_strings_count = const_strings_count + 1;    
-    }         
+//    }         
 }
 
 // Inserta operador en pila de operadores para la jerarquía de operaciones
@@ -525,6 +523,21 @@ void print_hash_table(){
 	g_hash_table_foreach(proc_table, (GHFunc)print_hash, NULL);
 }
 
+static void print_constants(char *key, vars_memory *value, gpointer user_data){
+	printf("%s : %s : %d\n", key, value->type, value->virtual_address);
+
+	if (middle_code = fopen("tlaloc.txt", "a+")){
+		fprintf(middle_code, "%s\t%s\t%d\n", key, value->type, value->virtual_address);
+		fclose(middle_code);
+	}else{
+		printf("Error al abrir tlaloc.txt\n");
+	}
+}
+
+void print_constants_table(){
+	g_hash_table_foreach(constants_table, (GHFunc)print_constants, NULL);
+}
+
 void print_hash_var_table(char *key, vars_memory *value, gpointer user_data){
 	printf("\t%s : %s : %d\n", key, value->type, value->virtual_address);
 }
@@ -538,22 +551,28 @@ void print_var_table(char *function){
 
 static void print_array(quad_struct *quadruple, gpointer user_data){
 	
-	if (middle_code = fopen("tlaloc.obj", "a+")){
+	if (middle_code = fopen("tlaloc.txt", "a+")){
 		fprintf(middle_code, "%s\t%s\t%s\t%s\n", quadruple->operator, quadruple->second_oper, quadruple->first_oper, quadruple->result);
 		fclose(middle_code);
 	}else{
-		printf("Error opening d:/website.txt\n");
+		printf("Error al abrir tlaloc.txt\n");
 	}
 	
 	printf("%d\t%c\t%s\t%s\t%s\n", quadruple_index++, atoi(quadruple->operator), quadruple->second_oper, quadruple->first_oper, quadruple->result);
 }
 
-void print_quadruples_array_to_file(){
+void print_to_file(){
 	printf("---\n");
-	quadruple_index = 1;
-	g_ptr_array_foreach(QuadruplesList, (GFunc)print_array, NULL);
-	middle_code = fopen("tlaloc.obj", "a+");
-	fprintf(middle_code, "END");
+	quadruple_index = 1;    // Reseteamos contador a uno para poder imprimir el index de cada cuadruplo
+    middle_code = fopen("tlaloc.txt", "w"); // Abrimos el archivo en modo de escritura
+    fclose(middle_code);                    // Cerramos el archivo inmediatamente para borrar su contenido
+    print_constants_table();
+	middle_code = fopen("tlaloc.txt", "a+");
+	fprintf(middle_code, "$\n");
+	fclose(middle_code);	
+    g_ptr_array_foreach(QuadruplesList, (GFunc)print_array, NULL);
+	middle_code = fopen("tlaloc.txt", "a+");
+	fprintf(middle_code, "$$");
 	fclose(middle_code);
 	printf("END\n");
 }

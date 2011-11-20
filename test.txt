@@ -1,73 +1,12 @@
 program edo:
 
-    define _kuri as integer = 5.
-    define algo as integer = 18283.
-    define raya as string.
-    define arreglo as string [10,5].
-    define random as integer.
-    define arreglo2 as integer [5].
-    define asjhd as integer [4].
-    define b as boolean [20].
-    define d as decimal.
-    define otroarray as string [20]. 
-	
-method integer test(integer a[4,5], boolean j[100]):
-
-    define x as integer = 5.
-    define arregloo as integer [5].
-    define t as integer = 666.
-    define booly as boolean.
-   
-
-    _kuri = _kuri + 3 + (2 ^ 3 + (algo + algo + (algo * algo + _kuri))).
-    algo = x * x ^ x * x.
-    algo = _kuri.
-    _kuri = abs(algo * algo) + 3 + algo + cos(35).
-    read(_kuri, algo).
-		print(_kuri + 2).
-		printline(_kuri).
-    return 0.
-
-end method
-
-method string lopez():
-    define l as integer.
-
-        l = raya.
-
-				if(l < raya):
-					if(_kuri >= raya):
-						algo = _kuri.
-						else:
-						_kuri = algo.
-					end if
-					else:
-						algo = l.
-				end if
-				
-				if(l > raya):
-					if(_kuri >= raya):
-						algo = _kuri.
-						else:
-						_kuri = algo.
-					end if
-					else:
-						algo = l.
-				end if
-				
-				algo = algo.
-				
-				while(l < _kuri):
-					algo = _kuri.
-					_kuri = algo.
-				end while
-				
-				algo = algo.
-    return 0.
-end method
-
 	method void main():
-        define r as integer.
+            define r as integer.
+            define edo as integer = 666. 
+            define _kuri as integer = 10.  
+            define algo as integer = 2.         
+            edo = cos(180).
+            printline(edo).
 	end method
 
 end program

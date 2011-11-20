@@ -59,8 +59,10 @@
         create_stacks_and_queues();
 		create_quadruples_array();
 		yyparse();
-		print_quadruples_array_to_file();
+		print_to_file();
 		print_hash_table();
+        printf("---------------------------\n\n");
+        system("ruby VMTlaloc/init.rb");    // Ejecuta maquina virtual con comando en consola
 	}
 	
 	

@@ -4,5 +4,5 @@ TLALOC_ROOT = File.dirname(__FILE__)
 $:.unshift(File.join(TLALOC_ROOT, 'lib'))
 require 'vm'
 
-vm = VirtualMachine.new("test.txt")
+vm = VirtualMachine.new("tlaloc.txt")
 vm.launch!

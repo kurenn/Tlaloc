@@ -20,7 +20,7 @@ void generate_exponential_quadruple();
 void generate_relational_quadruple();
 void create_constants_table();
 void create_quadruples_array();
-void print_quadruples_array_to_file();
+void print_to_file();
 void generate_gotoF_if_quadruple();
 void generate_goto_if_quadruple();
 void fill_if();
