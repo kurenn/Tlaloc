@@ -4,7 +4,8 @@ Simbolo				Valor
 
 print					213 
 printline			228
-read					215
+readint					215
+readline                216
 return				224
 and						197
 or						198

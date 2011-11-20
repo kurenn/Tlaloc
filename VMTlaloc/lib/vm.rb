@@ -1,42 +1,37 @@
 class VirtualMachine
   
   def initialize(input_file)
-    file = File.new(input_file, "r")
+    file_lines = IO.readlines(input_file) # Convierte la lectura del archivo en lineas tipo string como arreglo
     @procedures = []
     @quadruples = []
     @global_memory = [85000]  # Casillas asignadas para la memoria del programa
+    i = 0   # Index de lineas leidas
     
-    while(line = file.gets || file.gets == "$")
-      value, type, address = line.chomp.split(" ")
+    until file_lines[i] == "$\n"
+      value, type, address = file_lines[i].chomp("\n").split("\t")
       @global_memory[address.to_i] = value.to_i if type == "integer"
       @global_memory[address.to_i] = value.to_f if type == "decimal"
-      @global_memory[address.to_i] = value if type == "string"
+      @global_memory[address.to_i] = value.to_s if type == "string"
+      i += 1
     end
-    file.close
 
-    file = File.open(input_file)
-
-    while(line = file.gets || file.gets == "$$")
-      unless line == "$"      
-        @quadruples << line.to_s
-      end
-    end
-    
-    file.close
+    @quadruples = file_lines.drop_while { |l| l != "$\n" }
     
   end
   
   def launch!
-    @quadruples.each do |quadruple|
-      operator, first_oper, second_oper, result = quadruple.chomp.split(" ")
-
+    i = 0
+    while @quadruples[i] != nil and @quadruples[i] != "$$"
+      operator, first_oper, second_oper, result = @quadruples[i].chomp("\n").split("\t")
       case operator.to_i
         when 213 # print()
           print @global_memory[first_oper.to_i]
         when 228 # printline()
           puts @global_memory[first_oper.to_i]
-        when 215 # read()
-          puts "read"
+        when 215 # readint()
+          @global_memory[first_oper.to_i] = gets.to_i
+        when 216 # readline()
+          @global_memory[first_oper.to_i] = gets.to_s
         when 224 # return
           puts "return"
         when 197 # and
@@ -61,24 +56,30 @@ class VirtualMachine
           puts "true"
         when 203 # false
           puts "false"
-        when 205 # gotoF
-          puts "gotoF"
-        when 206 # goto
-          puts "goto"
-        when 207 # gotoV
-          puts "gotoV"
+        when 205 # gotoF  gotoF de los estatutos if, while y for
+          i = result.to_i - 1 if @global_memory[first_oper.to_i] == false          
+        when 206 # goto de if. Se va hasta el final del if cuando es true
+          i = result.to_i - 1
+        when 207 # gotoWhile
+          puts "gotoW"
+        when 208 # gotoFor
+          puts "gotoW"
         when 61 # =
           @global_memory[first_oper.to_i] = @global_memory[result.to_i]
         when 122 # ==
-          puts "=="
+          @global_memory[result.to_i] = @global_memory[first_oper.to_i] == @global_memory[second_oper.to_i]
         when 60 # <
-          puts "<"
+          @global_memory[result.to_i] = @global_memory[first_oper.to_i] < @global_memory[second_oper.to_i]
         when 62 # >
-          puts ">"
+          @global_memory[result.to_i] = @global_memory[first_oper.to_i] > @global_memory[second_oper.to_i]
         when 123 # <>
-          puts "<>"
+          @global_memory[result.to_i] = @global_memory[first_oper.to_i] != @global_memory[second_oper.to_i]
         when 43 # +
-          @global_memory[result.to_i] = @global_memory[first_oper.to_i] + @global_memory[second_oper.to_i]
+          if @global_memory[first_oper.to_i].class == String or @global_memory[second_oper.to_i].class == String
+            @global_memory[result.to_i] = ("#{@global_memory[first_oper.to_i]}" + "#{@global_memory[second_oper.to_i]}").to_s  
+          else
+            @global_memory[result.to_i] = @global_memory[first_oper.to_i] + @global_memory[second_oper.to_i]                    
+          end
         when 45 # -
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] - @global_memory[second_oper.to_i]
         when 42 # *
@@ -92,10 +93,11 @@ class VirtualMachine
         when 33 # !
           puts "!"
         when 124 # >=
-          puts ">="
+          @global_memory[result.to_i] = @global_memory[first_oper.to_i] >= @global_memory[second_oper.to_i]
         when 125 # <=
-          puts "<="
+          @global_memory[result.to_i] = @global_memory[first_oper.to_i] <= @global_memory[second_oper.to_i]
       end
+    i += 1
     end
   end
   

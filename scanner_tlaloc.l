@@ -12,7 +12,8 @@
 "method" 	{ return METHOD; }
 "print" 	{ return PRINT; }
 "printline" { return PRINTLINE; }
-"read" 		{ return READ; }
+"readint"   { return READINT; }
+"readline" 	{ return READLINE; }
 "case" 		{ return CASE; }
 "default" 	{ return DEFAULT; }
 "define" 	{ return DEFINE; }
@@ -75,7 +76,7 @@
 [a-zA-Z_][a-zA-Z0-9_]*     { yylval.str = strdup(yytext); return ID; }
 [0-9]+ 					   { yylval.integer = atoi(yytext); return CTE_INTEGER; }
 [0-9]+\.[0-9]+ 			   { yylval.decimal = atof(yytext); return CTE_DECIMAL; }
-\".*\"             		   { return CTE_STRING; }
+\".*\"             		   { yylval.str = strdup(yytext); return CTE_STRING; }
 \n
 .
 %%

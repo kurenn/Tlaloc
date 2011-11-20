@@ -11,6 +11,9 @@
     int first_dim;          // Primera dimension de un arreglo bidimensional. Usado para obtener dimension entera.
     int equals_var;         // Guarda la direccion de la variable a la cual se le asignara una expresion
 
+    // Constantes para la identificacion de operadores en la generacion de cuadruplos
+    enum symbols {PRINT_S=213, PRINTLINE_S=228, READINT_S=215, READLINE_S=216, RETURN_S=224, AND_S=197, OR_S=198, ABS_S=212,    COS_S=214, SIN_S=225, LOG_S=211, TAN_S=226, SQRT_S=231, RET_S=166, __TRUE_S=217, __FALSE_S=203, GOTOF_S=205, GOTO_S=206, GOTOV_S=207, EQUALS_S=61, SAME_S=122, LT_S=60, GT_S=62, DIFF_S=123, TIMES_S=42, PLUS_S=43, MINUS_S=45, DIV_S=47, EXP_S=94, POINTER_S=107, G_EQUAL_T_S=124, L_EQUAL_T_S=125, OPEN_BRACKET_S=91, GOTOFOR_S=208, GOTOWHILE_S=207};
+
     // Dimensiones para cada tipo de variable, si es que se declaran arreglos
     int integer_dimension = 0, string_dimension = 0, boolean_dimension = 0, decimal_dimension = 0;
 	
@@ -61,8 +64,8 @@
 		yyparse();
 		print_to_file();
 		print_hash_table();
-        printf("---------------------------\n\n");
-        system("ruby VMTlaloc/init.rb");    // Ejecuta maquina virtual con comando en consola
+        //printf("---------------------------\n\n");
+        //system("ruby VMTlaloc/init.rb");    // Ejecuta maquina virtual con comando en consola
 	}
 	
 	
@@ -74,7 +77,7 @@
 	float decimal;
 }
 
-%token PROGRAM METHOD PRINT PRINTLINE READ CASE DEFAULT DEFINE AS TO STEP INTEGER DECIMAL MAIN
+%token PROGRAM METHOD PRINT PRINTLINE READINT READLINE CASE DEFAULT DEFINE AS TO STEP INTEGER DECIMAL MAIN
 %token STRING
 %token BOOLEAN END FALSO VERDADERO VOID RETURN AND OR ABS COS SIN LOG TAN SQRT
 %token FOR WHILE
@@ -120,7 +123,7 @@
 		  | VOID
 		  ;
 	
-	asignacion_var: IGUAL { insert_to_StackOper('='); } expresion { generate_exp_quadruples(); reset_temp_vars(); }
+	asignacion_var: IGUAL { insert_to_StackOper(EQUALS_S); } expresion { generate_exp_quadruples(); reset_temp_vars(); }
                     | dimension_arreglo
 	                |   
 			        ;
@@ -135,45 +138,45 @@
 	          | exp operador_logico exp { generate_relational_quadruple(); }
 			  ;
 	
-	funcion_matematica: math_choices PAR_ABIERTO { insert_to_StackOper('['); } exp 
+	funcion_matematica: math_choices PAR_ABIERTO { insert_to_StackOper(OPEN_BRACKET_S); } exp 
                                      PAR_CERRADO { remove_from_StackOper(); generate_exp_quadruples(); }
 					  ;
 	
-	math_choices: ABS { insert_to_StackOper(212); } 
-		          | COS { insert_to_StackOper(214); } 
-			      | SIN { insert_to_StackOper(225); } 
-			      | LOG { insert_to_StackOper(211); } 
-			      | TAN { insert_to_StackOper(225); } 
-			      | SQRT { insert_to_StackOper(231); } 
+	math_choices: ABS { insert_to_StackOper(ABS_S); } 
+		          | COS { insert_to_StackOper(COS_S); } 
+			      | SIN { insert_to_StackOper(SIN_S); } 
+			      | LOG { insert_to_StackOper(LOG_S); } 
+			      | TAN { insert_to_StackOper(TAN_S); } 
+			      | SQRT { insert_to_StackOper(SQRT_S); } 
 				  ;
 	
-	operador_logico: AND { insert_to_StackOper('a'); }
-				     | OR { insert_to_StackOper('o'); }
-				     | MAYOR_QUE { insert_to_StackOper('>'); }
-					 | MENOR_QUE { insert_to_StackOper('<'); }
-					 | DIFERENTE { insert_to_StackOper('!'); }
-					 | IGUAL_IGUAL { insert_to_StackOper('i'); }
-					 | MAYOR_IGUAL { insert_to_StackOper(124); }
-					 | MENOR_IGUAL { insert_to_StackOper(125); }
+	operador_logico: AND { insert_to_StackOper(AND_S); }
+				     | OR { insert_to_StackOper(OR_S); }
+				     | MAYOR_QUE { insert_to_StackOper(GT_S); }
+					 | MENOR_QUE { insert_to_StackOper(LT_S); }
+					 | DIFERENTE { insert_to_StackOper(DIFF_S); }
+					 | IGUAL_IGUAL { insert_to_StackOper(SAME_S); }
+					 | MAYOR_IGUAL { insert_to_StackOper(G_EQUAL_T_S); }
+					 | MENOR_IGUAL { insert_to_StackOper(L_EQUAL_T_S); }
 				     ;
 				
 	exp: termino { generate_add_sust_quadruple(); }
-		 | termino MAS { insert_to_StackOper('+'); } exp { generate_add_sust_quadruple(); }
-		 | termino MENOS { insert_to_StackOper('-'); } exp { generate_add_sust_quadruple(); }
+		 | termino MAS { insert_to_StackOper(PLUS_S); } exp { generate_add_sust_quadruple(); }
+		 | termino MENOS { insert_to_StackOper(MINUS_S); } exp { generate_add_sust_quadruple(); }
 	     ;
 	
 	termino: exponencial { generate_mult_div_quadruple(); }
-	         | exponencial POR { insert_to_StackOper('*'); } exp { generate_mult_div_quadruple(); }
-	  		 | exponencial DIVISION { insert_to_StackOper('/'); } exp { generate_mult_div_quadruple(); }
+	         | exponencial POR { insert_to_StackOper(TIMES_S); } exp { generate_mult_div_quadruple(); }
+	  		 | exponencial DIVISION { insert_to_StackOper(DIV_S); } exp { generate_mult_div_quadruple(); }
 		     ;
 		
 	exponencial: factor { generate_exponential_quadruple(); }
-	  		     | factor EXPONENCIAL { insert_to_StackOper('^'); } exp { generate_exponential_quadruple(); }
+	  		     | factor EXPONENCIAL { insert_to_StackOper(EXP_S); } exp { generate_exponential_quadruple(); }
 			     ;
 	
     // Inserta corchete para distinguir de parentesis como fondo falso 91 = [ -- 93 = ]
 	factor: var
-	 	    | PAR_ABIERTO { insert_to_StackOper('['); } expresion PAR_CERRADO { remove_from_StackOper(); }
+	 	    | PAR_ABIERTO { insert_to_StackOper(OPEN_BRACKET_S); } expresion PAR_CERRADO { remove_from_StackOper(); }
             | MAS CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); } // Acepta enteros y decimales negativos
             | MAS CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.integer); }
             | MENOS CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer * -1); }
@@ -225,7 +228,7 @@
 		   ;
 	
     // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
-	asignacion: ID { insert_id_to_StackO(yylval.str); } IGUAL { insert_to_StackOper('='); } expresion PUNTO { generate_exp_quadruples(); reset_temp_vars(); }
+	asignacion: ID { insert_id_to_StackO(yylval.str); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO { generate_exp_quadruples(); reset_temp_vars(); }
 				| array_assignment
 			    ;
 	
@@ -263,11 +266,14 @@
 	case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
 				  ;
 				
-	default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO { remove_from_StackOper(); } | read
+	default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO { remove_from_StackOper(); } | readint | readline
 				     ;
 	
-	read: READ { insert_to_StackOper(215); } PAR_ABIERTO ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); }  ids PAR_CERRADO PUNTO { remove_from_StackOper(); }
+	readint: READINT { insert_to_StackOper(READINT_S); } PAR_ABIERTO ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); }  ids PAR_CERRADO PUNTO { remove_from_StackOper(); }
 		;
+
+	readline: READLINE { insert_to_StackOper(READLINE_S); } PAR_ABIERTO ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); }  ids PAR_CERRADO PUNTO { remove_from_StackOper(); }
+        ;
 	
 	ids: ids_def ids | 
 	   ;
@@ -281,6 +287,6 @@
 	default_function_input_def: expresion { generate_exp_quadruples(); } | COMILLAS CTE_STRING COMILLAS
 						      ;
 	
-	default_choices: PRINT { insert_to_StackOper(213); } | PRINTLINE { insert_to_StackOper(228); };
+	default_choices: PRINT { insert_to_StackOper(PRINT_S); } | PRINTLINE { insert_to_StackOper(PRINTLINE_S); };
 	
 %%

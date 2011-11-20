@@ -3,10 +3,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-enum symbols {PRINT=213, PRINTLINE=228, READ=215, RETURN=224, AND=197, OR=198, ABS=212, COS=214, SIN=225,
-	 		  LOG=211, TAN=226, SQRT=231, RET=166, __TRUE=217, __FALSE=203, GOTOF=205, GOTO=206, GOTOV=207,
+enum symbols {PRINT=213, PRINTLINE=228, READINT=215, READLINE=216, RETURN=224, AND=197, OR=198, ABS=212, COS=214, SIN=225,
+	 		  LOG=211, TAN=226, SQRT=231, RET=166, __TRUE=217, __FALSE=203, GOTOF=205, GOTO=206,
 	 		  EQUALS=61, SAME=122, LT=60, GT=62, DIFF=123, TIMES=42, PLUS=43, MINUS=45, DIV=47, EXP=94,
-	  		  POINTER=107, G_EQUAL_T=124, L_EQUAL_T=125};
+	  		  POINTER=107, G_EQUAL_T=124, L_EQUAL_T=125, OPEN_BRACKET=91, GOTOWHILE=207, GOTOFOR=208};
 
 static GHashTable *proc_table; // HashTable de procedimientos (key) leidos. (value) apunta a type_table
 static GHashTable *constants_table;  //HashTable con las constantes usadas en todo el programa
@@ -304,11 +304,8 @@ void insert_cte_decimal_to_StackO(float cte){
     }      
 //}
 
-void insert_cte_string_to_StackO(char *c_string){
+void insert_cte_string_to_StackO(char *cte_string){
 //    if(c_string != NULL){
-        char cte_string[] = "'";
-        strcat(cte_string, c_string);
-        strcat(cte_string, "'");
         printf("%s\n", cte_string);
         vars_memory *temp_memory = g_slice_new(vars_memory);
         if (g_hash_table_lookup(constants_table, (gpointer)cte_string) != NULL) { // ya existe la constante
@@ -382,8 +379,8 @@ void generate_gotoF_if_quadruple(){
 }
 
 void generate_goto_if_quadruple(){
-	insert_quadruple_to_array(GOTOV, 0, 0, 0);
-	printf("Cuadruplo: %d\t%d\t %d\n", ++quadruple_index, GOTOV, 0);
+	insert_quadruple_to_array(GOTO, 0, 0, 0);
+	printf("Cuadruplo: %d\t%d\t %d\n", ++quadruple_index, GOTO, 0);
 	fill_if();
 	g_queue_push_tail(StackJumps, (gpointer)(quadruple_index - 1));
 }
@@ -474,8 +471,8 @@ void generate_exp_quadruples(){
         g_queue_push_tail(StackO, (gpointer)temp_decimals_count);   // Se da push al temp que guarda el valor de la fn
         g_queue_push_tail(StackTypes, (gpointer)"decimal");         // Se da push al tipo decimal que sera igual para todos
         temp_decimals_count = temp_decimals_count + 1;              // Se incrementa en uno el temp de decimales
-    } else if (operator == PRINT || operator == PRINTLINE || operator == READ) {  // Para default_functions 'print' 'printline' 'read'
-		insert_quadruple_to_array(operator, first_oper, 0, 0);
+    } else if (operator == PRINT || operator == PRINTLINE || operator == READINT || operator == READLINE) {  //default_functions
+        insert_quadruple_to_array(operator, first_oper, 0, 0);
         printf("Cuadruplo: %d\t%d\t %d\n", ++quadruple_index, operator, first_oper);        
         g_queue_push_tail(StackOper, (gpointer)operator);
     } else {    // Genera cuadruplos para asignacion o el resto de tipo de cuadruplos (que no son math_functions)
@@ -524,7 +521,7 @@ void print_hash_table(){
 }
 
 static void print_constants(char *key, vars_memory *value, gpointer user_data){
-	printf("%s : %s : %d\n", key, value->type, value->virtual_address);
+	//printf("%s : %s : %d\n", key, value->type, value->virtual_address);
 
 	if (middle_code = fopen("tlaloc.txt", "a+")){
 		fprintf(middle_code, "%s\t%s\t%d\n", key, value->type, value->virtual_address);
@@ -558,7 +555,7 @@ static void print_array(quad_struct *quadruple, gpointer user_data){
 		printf("Error al abrir tlaloc.txt\n");
 	}
 	
-	printf("%d\t%c\t%s\t%s\t%s\n", quadruple_index++, atoi(quadruple->operator), quadruple->second_oper, quadruple->first_oper, quadruple->result);
+	//printf("%d\t%c\t%s\t%s\t%s\n", quadruple_index++, atoi(quadruple->operator), quadruple->second_oper, quadruple->first_oper, quadruple->result);
 }
 
 void print_to_file(){
