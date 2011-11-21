@@ -1,4 +1,7 @@
+require 'string'
+
 class VirtualMachine
+
   
   def initialize(input_file)
     file_lines = IO.readlines(input_file) # Convierte la lectura del archivo en lineas tipo string como arreglo
@@ -25,9 +28,9 @@ class VirtualMachine
       operator, first_oper, second_oper, result = @quadruples[i].chomp("\n").split("\t")
       case operator.to_i
         when 213 # print()
-          print @global_memory[first_oper.to_i]
+          print @global_memory[first_oper.to_i].rchomp
         when 228 # printline()
-          puts @global_memory[first_oper.to_i]
+          puts @global_memory[first_oper.to_i].rchomp
         when 215 # readint()
           @global_memory[first_oper.to_i] = gets.to_i
         when 216 # readline()
@@ -60,8 +63,6 @@ class VirtualMachine
           i = result.to_i - 1 if @global_memory[first_oper.to_i] == false          
         when 206 # goto de if. Se va hasta el final del if cuando es true
           i = result.to_i - 1
-        when 207 # gotoWhile
-          puts "gotoW"
         when 208 # gotoFor
           @global_memory[first_oper.to_i] += second_oper.to_i   # suma si es que tiene step
           i = result.to_i - 1
@@ -79,7 +80,8 @@ class VirtualMachine
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] != @global_memory[second_oper.to_i]
         when 43 # +
           if @global_memory[first_oper.to_i].class == String or @global_memory[second_oper.to_i].class == String
-            @global_memory[result.to_i] = ("#{@global_memory[first_oper.to_i]}" + "#{@global_memory[second_oper.to_i]}").to_s  
+            @global_memory[result.to_i] = @global_memory[first_oper.to_i].to_s.rchomp + 
+                                          @global_memory[second_oper.to_i].to_s.rchomp
           else
             @global_memory[result.to_i] = @global_memory[first_oper.to_i] + @global_memory[second_oper.to_i]                    
           end

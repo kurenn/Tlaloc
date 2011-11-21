@@ -285,7 +285,7 @@
 	default_function_input: MAS default_function_input_def default_function_input | 
 					      ;
 					
-	default_function_input_def: expresion { generate_exp_quadruples(); } | COMILLAS CTE_STRING COMILLAS
+	default_function_input_def: expresion { generate_exp_quadruples(); } | COMILLAS expresion{ generate_exp_quadruples(); }  COMILLAS
 						      ;
 	
 	default_choices: PRINT { insert_to_StackOper(PRINT_S); } | PRINTLINE { insert_to_StackOper(PRINTLINE_S); };
