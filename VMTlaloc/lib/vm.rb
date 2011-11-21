@@ -14,7 +14,7 @@ class VirtualMachine
       value, type, address = file_lines[i].chomp("\n").split("\t")
       @global_memory[address.to_i] = value.to_i if type == "integer"
       @global_memory[address.to_i] = value.to_f if type == "decimal"
-      @global_memory[address.to_i] = value.to_s if type == "string"
+      @global_memory[address.to_i] = value.to_s.rchomp if type == "string"
       i += 1
     end
 
@@ -28,13 +28,11 @@ class VirtualMachine
       operator, first_oper, second_oper, result = @quadruples[i].chomp("\n").split("\t")
       case operator.to_i
         when 213 # print()
-          print @global_memory[first_oper.to_i] if second_oper.to_i == 0 #.rchomp
+          print @global_memory[first_oper.to_i] if second_oper.to_i == 0
           print @global_memory[second_oper.to_i + @global_memory[first_oper.to_i].to_i] if second_oper.to_i != 0
-          #print @global_memory[first_oper.to_i] if second_oper.to_i == 0
         when 228 # printline()
-          puts @global_memory[first_oper.to_i] if second_oper.to_i == 0 #.rchomp
+          puts @global_memory[first_oper.to_i] if second_oper.to_i == 0
           puts @global_memory[second_oper.to_i + @global_memory[first_oper.to_i].to_i] if second_oper.to_i != 0
-          #puts @global_memory[first_oper.to_i] if second_oper.to_i == 0
         when 215 # readint()
           @global_memory[first_oper.to_i] = gets.to_i
         when 216 # readline()
@@ -84,8 +82,8 @@ class VirtualMachine
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] != @global_memory[second_oper.to_i]
         when 43 # +
           if @global_memory[first_oper.to_i].class == String or @global_memory[second_oper.to_i].class == String
-            @global_memory[result.to_i] = @global_memory[first_oper.to_i].to_s.rchomp + 
-                                          @global_memory[second_oper.to_i].to_s.rchomp
+            @global_memory[result.to_i] = @global_memory[first_oper.to_i].to_s + 
+                                          @global_memory[second_oper.to_i].to_s
           else
             @global_memory[result.to_i] = @global_memory[first_oper.to_i] + @global_memory[second_oper.to_i]                    
           end
@@ -106,7 +104,7 @@ class VirtualMachine
         when 125 # <=
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] <= @global_memory[second_oper.to_i]
         when 100 # VERifica para arrs
-          puts "RANGE =)" if (second_oper.to_i..result.to_i).cover?(@global_memory[first_oper.to_i])
+          puts "not range =(" if !(second_oper.to_i..result.to_i).cover?(@global_memory[first_oper.to_i])
         when 501 # asignacion de arrs
           @global_memory[first_oper.to_i + @global_memory[second_oper.to_i]] = @global_memory[result.to_i]
       end

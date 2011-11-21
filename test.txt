@@ -2,13 +2,14 @@ program edo:
 
 	method void main():
         define arr as integer [10].
-        define a as integer = 100.
+        define a as integer = 0.
 
-        arr[2+3] = a.
-        printline(arr[2+3]).
-        printline(a).
-        printline("Hola Mundo").
-        readint(a).
+        while (a < 10):
+            arr[a] = a.
+            printline(arr[a]).
+            a = a + 1.
+        end while
+        printline("done!").
         
 	end method
 
