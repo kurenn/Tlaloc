@@ -1,17 +1,14 @@
 program edo:
 
-define global as integer = 2.
-
 	method void main():
-        define a as integer = 2.
-        define b as integer = 10.
-        define i as integer.
-		while(a<b):
-			for i = 3 to 9 step 3:
-                printline("Hola mundo joto" + (a + i)).
-		     end for
-        a = a + 2.
-		end while
+        define arr as integer [10].
+        define a as integer = 100.
+
+        arr[2+3] = a.
+        printline(arr[2+3]).
+        printline(a).
+        printline("Hola Mundo").
+        readint(a).
         
 	end method
 

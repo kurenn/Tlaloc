@@ -28,9 +28,13 @@ class VirtualMachine
       operator, first_oper, second_oper, result = @quadruples[i].chomp("\n").split("\t")
       case operator.to_i
         when 213 # print()
-          print @global_memory[first_oper.to_i].rchomp
+          print @global_memory[first_oper.to_i] if second_oper.to_i == 0 #.rchomp
+          print @global_memory[second_oper.to_i + @global_memory[first_oper.to_i].to_i] if second_oper.to_i != 0
+          #print @global_memory[first_oper.to_i] if second_oper.to_i == 0
         when 228 # printline()
-          puts @global_memory[first_oper.to_i].rchomp
+          puts @global_memory[first_oper.to_i] if second_oper.to_i == 0 #.rchomp
+          puts @global_memory[second_oper.to_i + @global_memory[first_oper.to_i].to_i] if second_oper.to_i != 0
+          #puts @global_memory[first_oper.to_i] if second_oper.to_i == 0
         when 215 # readint()
           @global_memory[first_oper.to_i] = gets.to_i
         when 216 # readline()
@@ -61,7 +65,7 @@ class VirtualMachine
           puts "false"
         when 205 # gotoF  gotoF de los estatutos if, while y for
           i = result.to_i - 1 if @global_memory[first_oper.to_i] == false          
-        when 206 # goto de if. Se va hasta el final del if cuando es true
+        when 206 # goto de if/while. Se va hasta el final del if cuando es true. Se va al inicio del while.
           i = result.to_i - 1
         when 208 # gotoFor
           @global_memory[first_oper.to_i] += second_oper.to_i   # suma si es que tiene step
@@ -101,6 +105,10 @@ class VirtualMachine
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] >= @global_memory[second_oper.to_i]
         when 125 # <=
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] <= @global_memory[second_oper.to_i]
+        when 100 # VERifica para arrs
+          puts "RANGE =)" if (second_oper.to_i..result.to_i).cover?(@global_memory[first_oper.to_i])
+        when 501 # asignacion de arrs
+          @global_memory[first_oper.to_i + @global_memory[second_oper.to_i]] = @global_memory[result.to_i]
       end
     i += 1
     end

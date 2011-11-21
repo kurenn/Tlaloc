@@ -13,7 +13,7 @@
     int step_presence = 1;      // Identificador de si existe o no step en el for
 
     // Constantes para la identificacion de operadores en la generacion de cuadruplos
-    enum symbols {PRINT_S=213, PRINTLINE_S=228, READINT_S=215, READLINE_S=216, RETURN_S=224, AND_S=197, OR_S=198, ABS_S=212,    COS_S=214, SIN_S=225, LOG_S=211, TAN_S=226, SQRT_S=231, RET_S=166, __TRUE_S=217, __FALSE_S=203, GOTOF_S=205, GOTO_S=206, GOTOV_S=207, EQUALS_S=61, SAME_S=122, LT_S=60, GT_S=62, DIFF_S=123, TIMES_S=42, PLUS_S=43, MINUS_S=45, DIV_S=47, EXP_S=94, POINTER_S=107, G_EQUAL_T_S=124, L_EQUAL_T_S=125, OPEN_BRACKET_S=91, GOTOFOR_S=208, GOTOWHILE_S=207};
+    enum symbols {PRINT_S=213, PRINTLINE_S=228, READINT_S=215, READLINE_S=216, RETURN_S=224, AND_S=197, OR_S=198, ABS_S=212,    COS_S=214, SIN_S=225, LOG_S=211, TAN_S=226, SQRT_S=231, RET_S=166, __TRUE_S=217, __FALSE_S=203, GOTOF_S=205, GOTO_S=206, GOTOV_S=207, EQUALS_S=61, SAME_S=122, LT_S=60, GT_S=62, DIFF_S=123, TIMES_S=42, PLUS_S=43, MINUS_S=45, DIV_S=47, EXP_S=94, POINTER_S=107, G_EQUAL_T_S=124, L_EQUAL_T_S=125, OPEN_BRACKET_S=91, GOTOFOR_S=208, GOTOWHILE_S=207, INDEX_S=500, ARRAY_S=501 };
 
     // Dimensiones para cada tipo de variable, si es que se declaran arreglos
     int integer_dimension = 0, string_dimension = 0, boolean_dimension = 0, decimal_dimension = 0;
@@ -55,6 +55,7 @@
         if (strcmp(var_type, "string") == 0) string_dimension = constant - 1;
         if (strcmp(var_type, "boolean") == 0) boolean_dimension = constant - 1;
         if (strcmp(var_type, "decimal") == 0) decimal_dimension = constant - 1;
+        set_var_dimension(constant, name); // Asigna la dimension despues de guardar la constante
     }
     
 	main(int argc, char **argv) {
@@ -131,7 +132,7 @@
 
     dimension_arreglo: CORCHETE_ABIERTO CTE_INTEGER {
                        get_constant(yylval.integer);
-                    } CORCHETE_CERRADO 
+                    } CORCHETE_CERRADO
 	                | CORCHETE_ABIERTO CTE_INTEGER { first_dim = yylval.integer; } COMA CTE_INTEGER { get_constant(yylval.integer * first_dim); } CORCHETE_CERRADO
                     ;
 	
@@ -185,7 +186,7 @@
 			| factor_alterno
 	        ;
 	
-	factor_alterno: llamado | funcion_matematica | ID CORCHETE_ABIERTO exp CORCHETE_CERRADO;
+	factor_alterno: llamado | funcion_matematica | ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); /*remove_from_StackOper();*/ };
 	
 	var: ID { insert_id_to_StackO(yylval.str); }
 		| CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); }
@@ -230,12 +231,12 @@
 	
     // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
 	asignacion: ID { insert_id_to_StackO(yylval.str); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO { generate_exp_quadruples(); reset_temp_vars(); }
-				| array_assignment
+				| ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } array_assignment
 			    ;
 	
-	array_assignment: ID CORCHETE_ABIERTO exp CORCHETE_CERRADO IGUAL expresion PUNTO
-	 				| ID CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
-					;	
+    array_assignment: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(ARRAY_S); } expresion PUNTO { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
+                    | CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
+                                       ;	
 	
 	estatuto: if_statement 
 		      | for_statement
@@ -246,7 +247,7 @@
 	if_statement: IF PAR_ABIERTO expresion PAR_CERRADO DOS_PUNTOS {generate_gotoF_if_quadruple();} metodo_body else_statement END IF {fill_if();}
 				;
 	
-	else_statement: ELSE DOS_PUNTOS {generate_goto_if_quadruple();} metodo_body | 
+	else_statement: ELSE DOS_PUNTOS {generate_goto_if_quadruple();} metodo_body | ;
 	
 	for_statement: FOR ID { name = yylval.str; insert_id_to_StackO(name); } IGUAL { insert_to_StackOper(EQUALS_S); } exp { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); } TO { push_cont_to_stack_jumps(); } exp { insert_id_to_StackO(name); generate_for_limit_quadruple(); reset_temp_vars(); } for_step END FOR { fill_for(step_presence); reset_temp_vars(); step_presence = 1; }
 				 ;

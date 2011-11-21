@@ -5,8 +5,8 @@
 
 enum symbols {PRINT=213, PRINTLINE=228, READINT=215, READLINE=216, RETURN=224, AND=197, OR=198, ABS=212, COS=214, SIN=225,
 	 		  LOG=211, TAN=226, SQRT=231, RET=166, __TRUE=217, __FALSE=203, GOTOF=205, GOTO=206,
-	 		  EQUALS=61, SAME=122, LT=60, GT=62, DIFF=123, TIMES=42, PLUS=43, MINUS=45, DIV=47, EXP=94,
-	  		  POINTER=107, G_EQUAL_T=124, L_EQUAL_T=125, OPEN_BRACKET=91, GOTOWHILE=207, GOTOFOR=208, STEP=666};
+	 		  EQUALS=61, SAME=122, LT=60, GT=62, DIFF=123, TIMES=42, PLUS=43, MINUS=45, DIV=47, EXP=94, VER=100,
+	  		  POINTER=107, G_EQUAL_T=124, L_EQUAL_T=125, OPEN_BRACKET=91, GOTOWHILE=207, GOTOFOR=208, STEP=666, INDEX=500, ARRAY=501};
 
 static GHashTable *proc_table; // HashTable de procedimientos (key) leidos. (value) apunta a type_table
 static GHashTable *constants_table;  //HashTable con las constantes usadas en todo el programa
@@ -49,6 +49,7 @@ typedef struct {
 typedef struct {
     char *type;
     int virtual_address;
+    int var_dimension;
 }vars_memory;
 
 //Estructura para la insercion del cuadruplo en el arreglo de apuntadores
@@ -164,6 +165,41 @@ char *get_var_type(char *id){
     return this_type;
 }
 
+// get_var_dimension: devuelve la dimension de una variable que es arreglo
+int get_var_dimension(char *id) {
+    type_table *temp_t_table = g_slice_new(type_table);
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
+    vars_memory *v_table = g_slice_new(vars_memory);
+    v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    if (v_table == NULL){   // Si no encuentra en locales, busca en globales
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
+        v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    }
+    if (v_table == NULL){
+        printf("Variable '%s' no reconocida en locales ni globales\n", id);
+        exit(0);
+    }
+    int dimension = v_table->var_dimension;
+    return dimension;
+}
+
+// set_var_dimension: asigna la dimension que le corresponde al arreglo (o ID)
+void set_var_dimension(int dimension, char *id){
+    type_table *temp_t_table = g_slice_new(type_table);
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
+    vars_memory *v_table = g_slice_new(vars_memory);
+    v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    if (v_table == NULL){   // Si no encuentra en locales, busca en globales
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
+        v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    }
+    v_table->var_dimension = dimension - 1;     // Asigna la dimension a la variable que es arreglo
+    if (v_table == NULL){
+        printf("Variable '%s' no reconocida en locales ni globales\n", id);
+        exit(0);
+    }
+}
+
 /*
 @Method - insert_proc_to_table
 @Type - void
@@ -218,7 +254,6 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
                 if (strcmp(tipo, "integer") == 0) {
                         address = GINTEGERS + global_integers_count + dimension;                        
                         global_integers_count = global_integers_count + 1 + dimension;  
-                        
                 }
                 if (strcmp(tipo, "string") == 0) {
                         address = GSTRINGS + global_strings_count + dimension;                        
@@ -233,6 +268,7 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
                         global_decimals_count = global_decimals_count + 1 + dimension;                        
                 }
                 v_memory->virtual_address = address;
+                //v_memory->var_dimension = dimension;
             }                
             else {  // Si las variables son parte de un metodo
                 if (strcmp(tipo, "integer") == 0) {
@@ -252,6 +288,7 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
                         local_decimals_count = local_decimals_count + 1 + dimension;                        
                 }
                 v_memory->virtual_address = address;
+                //v_memory->var_dimension = dimension;
             }     
             g_hash_table_insert(temp_t_table->h_table, (gpointer)var, (gpointer)v_memory);
         }
@@ -270,6 +307,21 @@ void insert_id_to_StackO(char *id){
         g_queue_push_tail(StackO, (gpointer)get_var_virtual_address(id));
         g_queue_push_tail(StackTypes, (gpointer)get_var_type(id)); 
     }        
+}
+
+// Genera cuadruplo de verificacion y da push a variables a utilizar para asignacion de arreglo
+void insert_arr_index_to_StackO(char *id) {
+    if(id != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
+        int array_index, array_base_address, array_translation;
+        array_index = g_queue_pop_tail(StackO);  // Saca de la pila de operandos la variable temporal que guarda exp
+
+        insert_quadruple_to_array(VER, array_index, 0, get_var_dimension(id)); // cuadruplo de verificacion | * * linf lsup
+        ++quadruple_index;
+
+        // Mete a pila de StackO la dir del arreglo en su pos inicial
+        g_queue_push_tail(StackO, (gpointer)array_index);           // Mete direccion que guarda la posicion del arr a indexar
+        g_queue_push_tail(StackTypes, (gpointer)get_var_type(id));  // Mete el tipo para que no haya conflicto al generar quads.
+    }
 }
 
 void insert_cte_int_to_StackO(int cte){
@@ -536,7 +588,9 @@ void generate_exp_quadruples(){
     operator = (int)g_queue_pop_tail(StackOper);    // Saca primer operador de la pila de operadores
     first_oper = g_queue_pop_tail(StackO);          // Solo sacamos el primer_oper en caso de que sea math_function
 	
-    if (operator == ABS || operator == COS || operator == SIN || // 'as' 'cs' 'sn'    // Generacion de Math_function
+    if (operator == INDEX) {      // Si llega index de arreglos, mete para generar verificacion y meter desplazamiento
+        g_queue_push_tail(StackO, first_oper); 
+    } else if (operator == ABS || operator == COS || operator == SIN || // 'as' 'cs' 'sn'    // Generacion de Math_function
         operator == LOG || operator == TAN || operator == SQRT) { // 'lg' 'tn' 'st'
 		insert_quadruple_to_array(operator, first_oper, 0, temp_decimals_count);
         printf("Cuadruplo: %d\t%d\t %d\t\t %d\n", ++quadruple_index, operator, first_oper, temp_decimals_count);
@@ -544,12 +598,9 @@ void generate_exp_quadruples(){
         g_queue_push_tail(StackTypes, (gpointer)"decimal");         // Se da push al tipo decimal que sera igual para todos
         temp_decimals_count = temp_decimals_count + 1;              // Se incrementa en uno el temp de decimales
     } else if (operator == PRINT || operator == PRINTLINE || operator == READINT || operator == READLINE) {  //default_functions
-        insert_quadruple_to_array(operator, first_oper, 0, 0);
+        insert_quadruple_to_array(operator, first_oper, g_queue_pop_tail(StackO), 0);
         printf("Cuadruplo: %d\t%d\t %d\n", ++quadruple_index, operator, first_oper);        
         g_queue_push_tail(StackOper, (gpointer)operator);
-    //} else if (operator == 666) {
-    //    int prueba = g_queue_pop_tail(StackO); 
-    //    printf("prueba: %d\n", prueba);
     } else {    // Genera cuadruplos para asignacion o el resto de tipo de cuadruplos (que no son math_functions)
         second_oper = g_queue_pop_tail(StackO);         // Saca el siguiente operando para hacer las operaciones
         first_type = g_queue_pop_tail(StackTypes);      // Saca primer operando
@@ -559,13 +610,16 @@ void generate_exp_quadruples(){
             if (operator == EQUALS) { // || operator == 65) {   // '='  Igual para math_choices.
 				insert_quadruple_to_array(operator, second_oper, 0, first_oper);
                 printf("Cuadruplo: %d\t%d\t %d\t\t %d\n", ++quadruple_index, operator, second_oper, first_oper);
+            } else if (operator == ARRAY) { // En caso de ser un arreglo, la asignacion es diferente
+                insert_quadruple_to_array(operator, g_queue_pop_tail(StackO), second_oper, first_oper);
+                ++quadruple_index;
             } else {    // Asigna el tipo de dato a la variable que guardara el resultado de la operacion
                 if (valid_type == 1) { temp_count = &temp_integers_count; temp_type = "integer"; }
                 if (valid_type == 2) { temp_count = &temp_strings_count; temp_type = "string"; }
                 if (valid_type == 3) { temp_count = &temp_booleans_count; temp_type = "boolean"; }
                 if (valid_type == 4) { temp_count = &temp_decimals_count; temp_type = "decimal"; }
 				insert_quadruple_to_array(operator, second_oper, first_oper, *temp_count);
-                printf("Cuadruplo: %d\t%d\t %d\t %d\t %d\n", ++quadruple_index, operator, second_oper, first_oper, *temp_count);
+                ++quadruple_index;
                 // Mete el temporal a la pila para incluirse en las operaciones
                 g_queue_push_tail(StackO, (gpointer)*temp_count);  
                 g_queue_push_tail(StackTypes, (gpointer)temp_type);
@@ -610,7 +664,7 @@ void print_constants_table(){
 }
 
 void print_hash_var_table(char *key, vars_memory *value, gpointer user_data){
-	printf("\t%s : %s : %d\n", key, value->type, value->virtual_address);
+	printf("\t%s : %s : %d : %d\n", key, value->type, value->virtual_address, value->var_dimension);
 }
 
 void print_var_table(char *function){
