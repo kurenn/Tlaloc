@@ -6,15 +6,16 @@ program edo:
             define _kuri as integer = 10.
             define a as integer.  
             define alguien as string.
-            define algo as integer = 2.         
+            define algo as integer.         
             edo = log(180).
-
-        for a = 3 to 8:
-            for _kuri = 2 to 9:
-                printline(_kuri).
+        
+            r = 5 - 10.            
+            printline(r).
+        for a = 3 to 9 step 2:
+            for r = 1 to 10 step 2:
+                print(r).
             end for
-            printline(a).
-            a=a+1.
+            printline(a + " ").
 		end for
         
 	end method

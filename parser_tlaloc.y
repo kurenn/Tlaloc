@@ -247,11 +247,11 @@
 	
 	else_statement: ELSE DOS_PUNTOS {generate_goto_if_quadruple();} metodo_body | 
 	
-	for_statement: FOR ID { name = yylval.str; insert_id_to_StackO(name); } IGUAL { insert_to_StackOper(EQUALS_S); } exp { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); } TO { push_cont_to_stack_jumps(); } exp { insert_id_to_StackO(name); generate_for_limit_quadruple(); } for_step END FOR { fill_for(); /*rellenar el gotoF con direccion a saltar y generar goto*/}
+	for_statement: FOR ID { name = yylval.str; insert_id_to_StackO(name); } IGUAL { insert_to_StackOper(EQUALS_S); } exp { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); } TO { push_cont_to_stack_jumps(); } exp { insert_id_to_StackO(name); generate_for_limit_quadruple(); reset_temp_vars(); } for_step END FOR { fill_for(); reset_temp_vars();}
 				 ;
 	
 	for_step: DOS_PUNTOS { generate_gotoF_for_quadruple(); } metodo_body 
-			  | STEP exp DOS_PUNTOS { generate_gotoF_for_quadruple(); } metodo_body 
+			  | STEP exp { insert_id_to_StackO(name); generate_step_for_quadruple(); reset_temp_vars(); } DOS_PUNTOS { generate_gotoF_for_quadruple(); } metodo_body { fill_step(); }
 		    ; 
 	
 	while_statement: WHILE PAR_ABIERTO{push_cont_to_stack_jumps();} expresion PAR_CERRADO DOS_PUNTOS{generate_while_gotoF_quadruple();} metodo_body END WHILE {fill_while();}

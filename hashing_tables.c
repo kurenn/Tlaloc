@@ -58,6 +58,8 @@ typedef struct {
 	char* result;
 }quad_struct;
 
+quad_struct *step_struct;   // Estructura que almacena la exp step del for para agregarla al final de los cuadruplos
+
 // Inicializa tabla de procedimientos
 void create_proc_table(){
 	proc_table = g_hash_table_new(g_str_hash, g_str_equal); 
@@ -405,11 +407,30 @@ void generate_for_limit_quadruple(){
     int exp_address, id;
     id = g_queue_pop_tail(StackO);
     exp_address = g_queue_pop_tail(StackO);
-    insert_quadruple_to_array(LT, id, exp_address, const_booleans_count);   // Guardamos en constantes booleanas
-    //g_queue_push_tail(StackTypes, (gpointer)"boolean");                     // ya que la comparacion devolvera un boolean
+    insert_quadruple_to_array(L_EQUAL_T, id, exp_address, const_booleans_count);   // Guardamos en constantes booleanas
+    g_queue_push_tail(StackO, (gpointer)id);                                // ya que la comparacion devolvera un boolean
     g_queue_push_tail(StackO, (gpointer)const_booleans_count);              // Se agrega resultado y su tipo a las pilas
     const_booleans_count = const_booleans_count + 1;                        
     ++quadruple_index;
+}
+
+void generate_step_for_quadruple(){
+    int exp_address, id;
+    id = g_queue_pop_tail(StackO);
+    exp_address = g_queue_pop_tail(StackO);
+    step_struct = g_slice_new(quad_struct);
+
+	char *c_operator = (char *)malloc(sizeof(int));
+	char *c_first_oper = (char *)malloc(sizeof(int));
+	char *c_second_oper = (char *)malloc(sizeof(int));
+    sprintf (c_operator, "%d", 666);
+	sprintf (c_first_oper, "%d", id);
+	sprintf (c_second_oper, "%d", exp_address);     
+
+    step_struct->operator=c_operator;
+    step_struct->first_oper=c_second_oper;
+    step_struct->second_oper=c_first_oper;
+    step_struct->result=c_first_oper;  
 }
 
 void generate_gotoF_for_quadruple(){
@@ -418,23 +439,6 @@ void generate_gotoF_for_quadruple(){
     insert_quadruple_to_array(GOTOF, result, 0, 0); //GOTOF
     ++quadruple_index;
     g_queue_push_tail(StackJumps, (gpointer)(quadruple_index - 1)); // Guarda la posicion del cuadruplo al cual ira GotoF
-}
-
-void fill_for(){
-    int __return;
-	int __false;
-	char *t_return = (char *)malloc(sizeof(int));
-	char *t_false = (char *)malloc(sizeof(int));
-	__false = g_queue_pop_tail(StackJumps);
-	__return = g_queue_pop_tail(StackJumps);
-	sprintf(t_return, "%d", __return);
-	insert_quadruple_to_array(GOTO, 0, 0, __return); //GOTO
-	++quadruple_index;
-	quad_struct *t_quadruple = g_slice_new(quad_struct);
-	
-	sprintf(t_false, "%d", (quadruple_index + 1));
-	t_quadruple = g_ptr_array_index(QuadruplesList,__false);
-	t_quadruple->result = t_false;
 }
 
 void generate_while_gotoF_quadruple() {
@@ -455,6 +459,30 @@ void generate_while_gotoF_quadruple() {
 	
 }
 
+void fill_step(){
+    g_ptr_array_add(QuadruplesList, (gpointer)step_struct);     // Agrega estructura para el step
+    ++quadruple_index; 
+}
+
+// Genera direccion a ir del gotoF y genera cuadruplo para goto
+void fill_for(){
+    int __return, id;
+	int __false;
+	char *t_return = (char *)malloc(sizeof(int));
+	char *t_false = (char *)malloc(sizeof(int));
+	__false = g_queue_pop_tail(StackJumps);
+	__return = g_queue_pop_tail(StackJumps);
+    id = g_queue_pop_tail(StackO);
+	sprintf(t_return, "%d", __return);
+	insert_quadruple_to_array(GOTOFOR, id, 1, __return); //GOTOFOR con valor a agregar a result, es decir, step
+	++quadruple_index;
+	quad_struct *t_quadruple = g_slice_new(quad_struct);
+	
+	sprintf(t_false, "%d", (quadruple_index + 1));
+	t_quadruple = g_ptr_array_index(QuadruplesList,__false);
+	t_quadruple->result = t_false;
+}
+
 void fill_while(){
 	int __return;
 	int __false;
@@ -472,7 +500,7 @@ void fill_while(){
 	t_quadruple->result = t_false;
 }
 
-
+// Se inserta cuadruplo en forma de estructura en el arreglo de cuadruplos
 void insert_quadruple_to_array(int operator, int second_oper, int first_oper, int *count){
 	quad_struct *quadruple = g_slice_new(quad_struct);
 	char *c_operator = (char *)malloc(sizeof(int));
@@ -512,6 +540,9 @@ void generate_exp_quadruples(){
         insert_quadruple_to_array(operator, first_oper, 0, 0);
         printf("Cuadruplo: %d\t%d\t %d\n", ++quadruple_index, operator, first_oper);        
         g_queue_push_tail(StackOper, (gpointer)operator);
+    //} else if (operator == 666) {
+    //    int prueba = g_queue_pop_tail(StackO); 
+    //    printf("prueba: %d\n", prueba);
     } else {    // Genera cuadruplos para asignacion o el resto de tipo de cuadruplos (que no son math_functions)
         second_oper = g_queue_pop_tail(StackO);         // Saca el siguiente operando para hacer las operaciones
         first_type = g_queue_pop_tail(StackTypes);      // Saca primer operando
