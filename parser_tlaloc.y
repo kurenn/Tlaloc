@@ -10,6 +10,7 @@
 	char *proc;             // Procedimiento ejecutandose actualmente en memoria
     int first_dim;          // Primera dimension de un arreglo bidimensional. Usado para obtener dimension entera.
     int equals_var;         // Guarda la direccion de la variable a la cual se le asignara una expresion
+    int step_presence = 1;      // Identificador de si existe o no step en el for
 
     // Constantes para la identificacion de operadores en la generacion de cuadruplos
     enum symbols {PRINT_S=213, PRINTLINE_S=228, READINT_S=215, READLINE_S=216, RETURN_S=224, AND_S=197, OR_S=198, ABS_S=212,    COS_S=214, SIN_S=225, LOG_S=211, TAN_S=226, SQRT_S=231, RET_S=166, __TRUE_S=217, __FALSE_S=203, GOTOF_S=205, GOTO_S=206, GOTOV_S=207, EQUALS_S=61, SAME_S=122, LT_S=60, GT_S=62, DIFF_S=123, TIMES_S=42, PLUS_S=43, MINUS_S=45, DIV_S=47, EXP_S=94, POINTER_S=107, G_EQUAL_T_S=124, L_EQUAL_T_S=125, OPEN_BRACKET_S=91, GOTOFOR_S=208, GOTOWHILE_S=207};
@@ -247,11 +248,11 @@
 	
 	else_statement: ELSE DOS_PUNTOS {generate_goto_if_quadruple();} metodo_body | 
 	
-	for_statement: FOR ID { name = yylval.str; insert_id_to_StackO(name); } IGUAL { insert_to_StackOper(EQUALS_S); } exp { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); } TO { push_cont_to_stack_jumps(); } exp { insert_id_to_StackO(name); generate_for_limit_quadruple(); reset_temp_vars(); } for_step END FOR { fill_for(); reset_temp_vars();}
+	for_statement: FOR ID { name = yylval.str; insert_id_to_StackO(name); } IGUAL { insert_to_StackOper(EQUALS_S); } exp { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); } TO { push_cont_to_stack_jumps(); } exp { insert_id_to_StackO(name); generate_for_limit_quadruple(); reset_temp_vars(); } for_step END FOR { fill_for(step_presence); reset_temp_vars(); step_presence = 1; }
 				 ;
 	
 	for_step: DOS_PUNTOS { generate_gotoF_for_quadruple(); } metodo_body 
-			  | STEP exp { insert_id_to_StackO(name); generate_step_for_quadruple(); reset_temp_vars(); } DOS_PUNTOS { generate_gotoF_for_quadruple(); } metodo_body { fill_step(); }
+			  | STEP exp { insert_id_to_StackO(name); generate_step_for_quadruple(); reset_temp_vars(); } DOS_PUNTOS { generate_gotoF_for_quadruple(); } metodo_body { fill_step(); step_presence = 0; }
 		    ; 
 	
 	while_statement: WHILE PAR_ABIERTO{push_cont_to_stack_jumps();} expresion PAR_CERRADO DOS_PUNTOS{generate_while_gotoF_quadruple();} metodo_body END WHILE {fill_while();}

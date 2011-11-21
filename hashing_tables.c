@@ -6,7 +6,7 @@
 enum symbols {PRINT=213, PRINTLINE=228, READINT=215, READLINE=216, RETURN=224, AND=197, OR=198, ABS=212, COS=214, SIN=225,
 	 		  LOG=211, TAN=226, SQRT=231, RET=166, __TRUE=217, __FALSE=203, GOTOF=205, GOTO=206,
 	 		  EQUALS=61, SAME=122, LT=60, GT=62, DIFF=123, TIMES=42, PLUS=43, MINUS=45, DIV=47, EXP=94,
-	  		  POINTER=107, G_EQUAL_T=124, L_EQUAL_T=125, OPEN_BRACKET=91, GOTOWHILE=207, GOTOFOR=208};
+	  		  POINTER=107, G_EQUAL_T=124, L_EQUAL_T=125, OPEN_BRACKET=91, GOTOWHILE=207, GOTOFOR=208, STEP=666};
 
 static GHashTable *proc_table; // HashTable de procedimientos (key) leidos. (value) apunta a type_table
 static GHashTable *constants_table;  //HashTable con las constantes usadas en todo el programa
@@ -15,6 +15,7 @@ static GQueue *StackOper;
 static GQueue *StackTypes;
 static GQueue *Quadruples;
 static GQueue *StackJumps; 
+static GQueue *StackSteps;     // Pila para el control de steps en fors
 char *current_function;        // Variable que mantiene el nombre de la funcion actual
 char *global_function;         // Variable que mantiene el nombre del programa
 int quadruple_index = 0;       // Contador de cuadruplos
@@ -112,6 +113,7 @@ void create_stacks_and_queues(){
     StackTypes = g_queue_new(); 
     Quadruples = g_queue_new(); 
 	StackJumps = g_queue_new();
+    StackSteps = g_queue_new();
 }
 
 // Inicializa variables temporales para operaciones dentro de cada funcion
@@ -417,20 +419,24 @@ void generate_for_limit_quadruple(){
 void generate_step_for_quadruple(){
     int exp_address, id;
     id = g_queue_pop_tail(StackO);
+    printf("ID: %d\n", id);
     exp_address = g_queue_pop_tail(StackO);
+    printf("EXP: %d\n", exp_address);
     step_struct = g_slice_new(quad_struct);
 
 	char *c_operator = (char *)malloc(sizeof(int));
 	char *c_first_oper = (char *)malloc(sizeof(int));
 	char *c_second_oper = (char *)malloc(sizeof(int));
-    sprintf (c_operator, "%d", 666);
+    sprintf (c_operator, "%d", STEP);
 	sprintf (c_first_oper, "%d", id);
-	sprintf (c_second_oper, "%d", exp_address);     
+	sprintf (c_second_oper, "%d", exp_address);  
 
     step_struct->operator=c_operator;
     step_struct->first_oper=c_second_oper;
     step_struct->second_oper=c_first_oper;
-    step_struct->result=c_first_oper;  
+    step_struct->result=c_first_oper;
+    
+    g_queue_push_tail(StackSteps, (gpointer)step_struct);
 }
 
 void generate_gotoF_for_quadruple(){
@@ -460,12 +466,13 @@ void generate_while_gotoF_quadruple() {
 }
 
 void fill_step(){
-    g_ptr_array_add(QuadruplesList, (gpointer)step_struct);     // Agrega estructura para el step
-    ++quadruple_index; 
+    quad_struct *qs = g_queue_pop_tail(StackSteps);
+    g_ptr_array_add(QuadruplesList, (gpointer)qs);     // Agrega estructura para el step
+    ++quadruple_index;
 }
 
 // Genera direccion a ir del gotoF y genera cuadruplo para goto
-void fill_for(){
+void fill_for(int step){
     int __return, id;
 	int __false;
 	char *t_return = (char *)malloc(sizeof(int));
@@ -474,7 +481,7 @@ void fill_for(){
 	__return = g_queue_pop_tail(StackJumps);
     id = g_queue_pop_tail(StackO);
 	sprintf(t_return, "%d", __return);
-	insert_quadruple_to_array(GOTOFOR, id, 1, __return); //GOTOFOR con valor a agregar a result, es decir, step
+	insert_quadruple_to_array(GOTOFOR, id, step, __return); //GOTOFOR con valor a agregar a result, es decir, step
 	++quadruple_index;
 	quad_struct *t_quadruple = g_slice_new(quad_struct);
 	

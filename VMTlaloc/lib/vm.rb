@@ -63,7 +63,7 @@ class VirtualMachine
         when 207 # gotoWhile
           puts "gotoW"
         when 208 # gotoFor
-          @global_memory[first_oper.to_i] += second_oper.to_i   # suma de lo que tiene asignado step
+          @global_memory[first_oper.to_i] += second_oper.to_i   # suma si es que tiene step
           i = result.to_i - 1
         when 666 # step
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] + @global_memory[second_oper.to_i]
