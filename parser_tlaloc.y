@@ -10,14 +10,24 @@
 	char *proc;             // Procedimiento ejecutandose actualmente en memoria
     int first_dim;          // Primera dimension de un arreglo bidimensional. Usado para obtener dimension entera.
     int equals_var;         // Guarda la direccion de la variable a la cual se le asignara una expresion
-    int step_presence = 1;      // Identificador de si existe o no step en el for
+    int step_presence = 1;  // Identificador de si existe o no step en el for
 
     // Constantes para la identificacion de operadores en la generacion de cuadruplos
-    enum symbols {PRINT_S=213, PRINTLINE_S=228, READINT_S=215, READLINE_S=216, RETURN_S=224, AND_S=197, OR_S=198, ABS_S=212,    COS_S=214, SIN_S=225, LOG_S=211, TAN_S=226, SQRT_S=231, RET_S=166, __TRUE_S=217, __FALSE_S=203, GOTOF_S=205, GOTO_S=206, GOTOV_S=207, EQUALS_S=61, SAME_S=122, LT_S=60, GT_S=62, DIFF_S=123, TIMES_S=42, PLUS_S=43, MINUS_S=45, DIV_S=47, EXP_S=94, POINTER_S=107, G_EQUAL_T_S=124, L_EQUAL_T_S=125, OPEN_BRACKET_S=91, GOTOFOR_S=208, GOTOWHILE_S=207, INDEX_S=500, ARRAY_S=501 };
+    enum symbols {PRINT_S=213, PRINTLINE_S=228, READINT_S=215, READLINE_S=216, RETURN_S=224, AND_S=197, OR_S=198, ABS_S=212,    
+				  COS_S=214, SIN_S=225, LOG_S=211, TAN_S=226, SQRT_S=231, RET_S=166, __TRUE_S=217, __FALSE_S=203, GOTOF_S=205, 
+				  GOTO_S=206, GOTOV_S=207, EQUALS_S=61, SAME_S=122, LT_S=60, GT_S=62, DIFF_S=123, TIMES_S=42, PLUS_S=43, 
+				  MINUS_S=45, DIV_S=47, EXP_S=94, POINTER_S=107, G_EQUAL_T_S=124, L_EQUAL_T_S=125, OPEN_BRACKET_S=91, GOTOFOR_S=208, 
+				  GOTOWHILE_S=207, INDEX_S=500, ARRAY_S=501 };
 
     // Dimensiones para cada tipo de variable, si es que se declaran arreglos
     int integer_dimension = 0, string_dimension = 0, boolean_dimension = 0, decimal_dimension = 0;
 	
+	/**
+	#Nombre: yyerror
+	#Descripcion: Imprime el numero de linea en la cual ocurrio el error de sintaxis
+	#Parametros: - const char *message
+	#Salida: void
+	**/
 	void yyerror(const char *message)
 	{
 	  fprintf(stderr, "error: '%s' - LINE '%d'\n", message, yylineno);
@@ -30,7 +40,12 @@
         boolean_dimension = 0; decimal_dimension = 0; 
     }
 	
-    // Llama al metodo con la dimension que le corresponde a esta nueva nueva variable a agregar
+	/**
+	#Nombre: set_dimension
+	#Descripcion: Llama al metodo con la dimension que le corresponde a esta nueva nueva variable a agregar
+	#Parametros: -
+	#Salida: void
+	**/
     void set_dimension(){
         if (strcmp(var_type, "integer") == 0) {
                 insert_vars_to_proc_table(name, var_type, integer_dimension);
@@ -49,7 +64,13 @@
         }
     }
 
-    // Guarda dimension - 1 para manipular indexaciones de 0 a N-1
+	/**
+	#Nombre: set_dimension
+	#Descripcion: Guarda dimension - 1 para manipular indexaciones de 0 a N-1
+	#Parametros: -
+	#Salida: void
+	#Dependencias: set_var_dimension
+	**/
     void get_constant(int constant){
         if (strcmp(var_type, "integer") == 0) integer_dimension = constant - 1;
         if (strcmp(var_type, "string") == 0) string_dimension = constant - 1;
@@ -58,6 +79,13 @@
         set_var_dimension(constant, name); // Asigna la dimension despues de guardar la constante
     }
     
+	/**
+	#Nombre: main
+	#Descripcion: Metodo principal para la ejecucion de todo el programa
+	#Parametros: int argc, char **argv
+	#Salida: -
+	#Dependencias: create_proc_table, create_constants_table, create_stacks_and_queues, print_to_file, print_hash_table
+	**/
 	main(int argc, char **argv) {
 		create_proc_table();
         create_constants_table();
@@ -73,24 +101,22 @@
 	
 %}
 
+// manipulacion de tipos de daots o casting de estos en la sintaxis
 %union {
 	char *str;
 	int integer;
 	float decimal;
 }
 
+/**
+	Bloque de deficion de tokens
+**/
+
 %token PROGRAM METHOD PRINT PRINTLINE READINT READLINE CASE DEFAULT DEFINE AS TO STEP INTEGER DECIMAL MAIN
-%token STRING
-%token BOOLEAN END FALSO VERDADERO VOID RETURN AND OR ABS COS SIN LOG TAN SQRT
-%token FOR WHILE
-%token IF SELECT ELSE
-%token PAR_ABIERTO PAR_CERRADO COMA DOS_PUNTOS CORCHETE_ABIERTO CORCHETE_CERRADO
-%token IGUAL IGUAL_IGUAL MENOR_QUE MAYOR_QUE DIFERENTE POR MAS MENOS DIVISION MAYOR_IGUAL MENOR_IGUAL
-%token EXPONENCIAL PUNTO APUNTADOR COMILLAS
-%token ID
-%token CTE_STRING
-%token CTE_DECIMAL
-%token CTE_INTEGER
+%token STRING BOOLEAN END FALSO VERDADERO VOID RETURN AND OR ABS COS SIN LOG TAN SQRT CTE_INTEGER
+%token FOR WHILE IF SELECT ELSE PAR_ABIERTO PAR_CERRADO COMA DOS_PUNTOS CTE_STRING CTE_DECIMAL
+%token CORCHETE_ABIERTO CORCHETE_CERRADO IGUAL IGUAL_IGUAL MENOR_QUE MAYOR_QUE DIFERENTE POR MAS
+%token MENOS DIVISION MAYOR_IGUAL MENOR_IGUAL EXPONENCIAL PUNTO APUNTADOR COMILLAS ID
 %start tlaloc
 
 %%
@@ -192,7 +218,8 @@
             ;
 
     factor_arreglo: { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); }
-                    //| CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO 
+                    | CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO 
+				;
 	
 	var: ID { insert_id_to_StackO(yylval.str); }
 		| CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); }

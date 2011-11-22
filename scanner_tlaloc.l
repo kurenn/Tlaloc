@@ -38,17 +38,11 @@
 "tan" 		{ return TAN; }
 "sqrt" 		{ return SQRT; }
 "main"		{ yylval.str = strdup(yytext); return MAIN; }
-
-
 "for" 		{ return FOR; }
 "while" 	{ return WHILE; }
-
-
 "if" 		{ return IF; }
 "else" 		{ return ELSE; }
 "select" 	{ return SELECT; }
-
-
 "("    		{ return PAR_ABIERTO; }     
 ")"    		{ return PAR_CERRADO; }     
 ","    		{ return COMA;}             
@@ -70,9 +64,6 @@
 "\""		{ return COMILLAS; }
 ">="		{ return MAYOR_IGUAL; }
 "<="		{ return MENOR_IGUAL; }
-
-
-
 [a-zA-Z_][a-zA-Z0-9_]*     { yylval.str = strdup(yytext); return ID; }
 [0-9]+ 					   { yylval.integer = atoi(yytext); return CTE_INTEGER; }
 [0-9]+\.[0-9]+ 			   { yylval.decimal = atof(yytext); return CTE_DECIMAL; }

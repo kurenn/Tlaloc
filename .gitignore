@@ -4,5 +4,5 @@ parser_tlaloc.tab.c
 parser_tlaloc.tab.h
 y.tab.c
 y.tab.h
-tlaloc.obj
+tlaloc.txt
 tlaloc

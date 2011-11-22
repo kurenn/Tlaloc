@@ -19,7 +19,7 @@ program test:
         
       for i = 0 to 2 step 1:
         for j = 0 to 2 step 1:
-          print(matrix[i,j]).
+          printline(matrix[i,j]).
         end for
       end for
         
