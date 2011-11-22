@@ -78,5 +78,7 @@
 [0-9]+\.[0-9]+ 			   { yylval.decimal = atof(yytext); return CTE_DECIMAL; }
 \".*\"             		   { yylval.str = strdup(yytext); return CTE_STRING; }
 \n
+\b
+\t
 .
 %%

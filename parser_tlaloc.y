@@ -186,7 +186,13 @@
 			| factor_alterno
 	        ;
 	
-	factor_alterno: llamado | funcion_matematica | ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); /*remove_from_StackOper();*/ };
+	factor_alterno: llamado 
+                    | funcion_matematica 
+                    | ID factor_arreglo
+            ;
+
+    factor_arreglo: { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); }
+                    //| CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO 
 	
 	var: ID { insert_id_to_StackO(yylval.str); }
 		| CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); }
@@ -235,7 +241,7 @@
 			    ;
 	
     array_assignment: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(ARRAY_S); } expresion PUNTO { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
-                    | CORCHETE_ABIERTO exp COMA exp CORCHETE_CERRADO IGUAL expresion PUNTO
+                    | CORCHETE_ABIERTO exp { /*generate_exp_quadruples();*/ } COMA exp CORCHETE_CERRADO { /*generate_exp_quadruples(); insert_arr_index_to_StackO(name); remove_from_StackOper();*/ } IGUAL { /*insert_to_StackOper(ARRAY_S);*/ } expresion PUNTO { /*generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars();*/ }
                                        ;	
 	
 	estatuto: if_statement 
@@ -268,13 +274,14 @@
 	case_statement_def: CASE CTE_INTEGER DOS_PUNTOS metodo_body END CASE
 				  ;
 				
-	default_functions: default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO { remove_from_StackOper(); } | readint | readline
+    // Siempre remueve al final lo que hay en la pila de operandos para que no haya información en el siguiente renglon
+	default_functions: { remove_from_StackO(); } default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO { remove_from_StackOper(); remove_from_StackO(); } | readint | readline
 				     ;
 	
-	readint: READINT { insert_to_StackOper(READINT_S); } PAR_ABIERTO ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); }  ids PAR_CERRADO PUNTO { remove_from_StackOper(); }
+	readint: READINT { insert_to_StackOper(READINT_S); } PAR_ABIERTO ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); }  ids PAR_CERRADO PUNTO { remove_from_StackOper(); remove_from_StackO();}
 		;
 
-	readline: READLINE { insert_to_StackOper(READLINE_S); } PAR_ABIERTO ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); }  ids PAR_CERRADO PUNTO { remove_from_StackOper(); }
+	readline: READLINE { insert_to_StackOper(READLINE_S); } PAR_ABIERTO ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); }  ids PAR_CERRADO PUNTO { remove_from_StackOper(); remove_from_StackO();}
         ;
 	
 	ids: ids_def ids | 

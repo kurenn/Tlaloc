@@ -413,7 +413,8 @@ void generate_relational_quadruple() {
     if ((int)g_queue_peek_tail(StackOper) == AND || (int)g_queue_peek_tail(StackOper) == OR ||
         (int)g_queue_peek_tail(StackOper) == LT || (int)g_queue_peek_tail(StackOper) == GT ||
         (int)g_queue_peek_tail(StackOper) == 33 || (int)g_queue_peek_tail(StackOper) == DIFF ||
-		(int)g_queue_peek_tail(StackOper) == G_EQUAL_T || (int)g_queue_peek_tail(StackOper) == L_EQUAL_T) // 'ad', 'or', '<', '>', '!', <>, >=, <=        
+		(int)g_queue_peek_tail(StackOper) == G_EQUAL_T || (int)g_queue_peek_tail(StackOper) == L_EQUAL_T ||
+        (int)g_queue_peek_tail(StackOper) == SAME) // 'ad', 'or', '<', '>', '!', <>, >=, <=        
         generate_exp_quadruples();
 }
 
@@ -582,15 +583,16 @@ void generate_exp_quadruples(){
     first_oper = g_queue_pop_tail(StackO);          // Solo sacamos el primer_oper en caso de que sea math_function
 	
     if (operator == INDEX) {      // Si llega index de arreglos, mete para generar verificacion y meter desplazamiento
-        g_queue_push_tail(StackO, first_oper); 
+        g_queue_push_tail(StackO, first_oper);  
     } else if (operator == ABS || operator == COS || operator == SIN || // 'as' 'cs' 'sn'    // Generacion de Math_function
         operator == LOG || operator == TAN || operator == SQRT) { // 'lg' 'tn' 'st'
 		insert_quadruple_to_array(operator, first_oper, 0, temp_decimals_count);
         g_queue_push_tail(StackO, (gpointer)temp_decimals_count);   // Se da push al temp que guarda el valor de la fn
         g_queue_push_tail(StackTypes, (gpointer)"decimal");         // Se da push al tipo decimal que sera igual para todos
         temp_decimals_count = temp_decimals_count + 1;              // Se incrementa en uno el temp de decimales
-    } else if (operator == PRINT || operator == PRINTLINE || operator == READINT || operator == READLINE) {  //default_functions
-        insert_quadruple_to_array(operator, first_oper, g_queue_pop_tail(StackO), 0); // El pop es 0 para cuando no es arreglo     
+    } else if (operator == PRINT || operator == PRINTLINE || operator == READINT || operator == READLINE) {  
+        //default_functions     
+        insert_quadruple_to_array(operator, first_oper, g_queue_pop_tail(StackO), 0); // El pop es 0 para cuando no es arreglo.
         g_queue_push_tail(StackOper, (gpointer)operator);
     } else {    // Genera cuadruplos para asignacion o el resto de tipo de cuadruplos (que no son math_functions)
         second_oper = g_queue_pop_tail(StackO);         // Saca el siguiente operando para hacer las operaciones
@@ -612,7 +614,9 @@ void generate_exp_quadruples(){
                 g_queue_push_tail(StackO, (gpointer)*temp_count);  
                 g_queue_push_tail(StackTypes, (gpointer)temp_type);
 				//Si es un operador logico, mete un tipo booleano a la pila de tipos
-				if(operator == LT || operator == GT || operator == G_EQUAL_T || operator == L_EQUAL_T) {
+				if(operator == LT || operator == GT || operator == G_EQUAL_T ||
+                   operator == L_EQUAL_T || operator == SAME || operator == DIFF ||
+                   operator == AND || operator == OR) {
 					g_queue_push_tail(StackTypes, (gpointer)"boolean");
 				}
                 *temp_count = *temp_count + 1;
