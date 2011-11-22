@@ -1,6 +1,7 @@
-program edo:
+program test:
 
 	method void main():
+
         define arr as integer [10].
         define mat as integer [3,5].
         define algo as integer.
@@ -23,7 +24,6 @@ program edo:
             i = i + 1. 
 
 		  end for  
-
 	end method
 
 end program

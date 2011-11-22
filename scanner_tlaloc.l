@@ -42,8 +42,6 @@
 
 "for" 		{ return FOR; }
 "while" 	{ return WHILE; }
-
-
 "if" 		{ return IF; }
 "else" 		{ return ELSE; }
 "select" 	{ return SELECT; }
@@ -70,7 +68,6 @@
 "\""		{ return COMILLAS; }
 ">="		{ return MAYOR_IGUAL; }
 "<="		{ return MENOR_IGUAL; }
-
 
 
 [a-zA-Z_][a-zA-Z0-9_]*     { yylval.str = strdup(yytext); return ID; }
