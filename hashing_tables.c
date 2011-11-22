@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+//Bloque de identificacion de tokens
 enum symbols {PRINT=213, PRINTLINE=228, READINT=215, READLINE=216, RETURN=224, AND=197, OR=198, ABS=212, COS=214, SIN=225,
 	 		  LOG=211, TAN=226, SQRT=231, RET=166, __TRUE=217, __FALSE=203, GOTOF=205, GOTO=206,
 	 		  EQUALS=61, SAME=122, LT=60, GT=62, DIFF=123, TIMES=42, PLUS=43, MINUS=45, DIV=47, EXP=94, VER=100,
@@ -10,16 +11,20 @@ enum symbols {PRINT=213, PRINTLINE=228, READINT=215, READLINE=216, RETURN=224, A
 
 static GHashTable *proc_table; // HashTable de procedimientos (key) leidos. (value) apunta a type_table
 static GHashTable *constants_table;  //HashTable con las constantes usadas en todo el programa
+/**Bloque para declaracion de pilas **/
 static GQueue *StackO;
 static GQueue *StackOper;
 static GQueue *StackTypes;
 static GQueue *Quadruples;
 static GQueue *StackJumps; 
 static GQueue *StackSteps;     // Pila para el control de steps en fors
+/**Bloque para declaracion de pilas **/
+
 char *current_function;        // Variable que mantiene el nombre de la funcion actual
 char *global_function;         // Variable que mantiene el nombre del programa
 int quadruple_index = 0;       // Contador de cuadruplos
 FILE *middle_code;			   //Archivo de cuadruplos
+
 static GPtrArray *QuadruplesList; //lista de cuadruplos
 
 // Inicio de bloques de memoria para cada tipo de variables
@@ -27,6 +32,7 @@ enum memory_blocks {GINTEGERS=5000, GSTRINGS=10000, GBOOLEANS=15000, GDECIMALS=2
                     LINTEGERS=25000, LSTRINGS=30000, LBOOLEANS=35000, LDECIMALS=40000,
                     TINTEGERS=45000, TSTRINGS=50000, TBOOLEANS=55000, TDECIMALS=60000, 
                     CINTEGERS=65000, CSTRINGS=70000, CBOOLEANS=75000, CDECIMALS=80000};
+
 
 // Contadores que controlan el incremento de las direcciones virtuales para las variables
 int global_integers_count = 0, global_strings_count = 0,
@@ -43,6 +49,7 @@ typedef struct {
 	char *method_type;          // Tipo de retorno del metodo
 	GHashTable *h_table;        // Tabla de variables del metodo
 }type_table;
+
 
 // vars_memory: almacena el tipo de dato de la variable y su direccion virtual. 
 // Key de la hash table que apunta type_table
@@ -62,32 +69,53 @@ typedef struct {
 
 quad_struct *step_struct;   // Estructura que almacena la exp step del for para agregarla al final de los cuadruplos
 
-// Inicializa tabla de procedimientos
+/**
+#Nombre: create_proc_table
+#Descripcion: Inicializa la tabla de hashing de procedimientos
+#Parametros: -
+#Salida: void
+**/
 void create_proc_table(){
 	proc_table = g_hash_table_new(g_str_hash, g_str_equal); 
 }
 
-// Inicializa tabla de constantes del programa
+/**
+#Nombre: create_constants_table
+#Descripcion: Inicializa la tabla de constantes para todo el programa
+#Parametros: -
+#Salida: void
+**/
 void create_constants_table(){
 	constants_table = g_hash_table_new(g_str_hash, g_str_equal); // key: constante | value: vars_memory(struct)
 }
 
+/**
+#Nombre: create_quadruples_array
+#Descripcion: Inicializa un arreglo de apuntadores para el almacenamiento de los cuadruplos
+#Parametros: -
+#Salida: void
+**/
 void create_quadruples_array(){
 	QuadruplesList = g_ptr_array_new();
 	
 }
 
-// Tabla de validacion de tipos de datos
-// Opcion es 0 con tipos incompatibles. Opcion es 1 por default ya que los demas son validos. 
+/**
+#Nombre: valid_var_types
+#Descripcion: Devuelve un valor que se reconoce posteriormente sobre los tipos de operaciones 
+			  que se pueden llevar a cabo en el programa con distintos tipos de datos
+#Parametros: char *first_type, char *second_type
+#Salida: int option
+**/
 int valid_var_types(char *first_type, char *second_type){
+	// Opcion es 0 con tipos incompatibles. Opcion es 1 por default ya que los demas son validos. 
     int option;
-    //printf("Entre valido, %s, %s\n", first_type, second_type);
     if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"boolean") == 0
         || strcmp(first_type,"string") == 0 && strcmp(second_type,"boolean") == 0
         || strcmp(first_type,"boolean") == 0 && strcmp(second_type,"decimal") == 0
         || strcmp(first_type,"boolean") == 0 && strcmp(second_type,"integer") == 0
         || strcmp(first_type,"boolean") == 0 && strcmp(second_type,"string") == 0
-        || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"boolean") == 0) // Combinaciones invalidas
+        || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"boolean") == 0) 
         option = 0;
     else if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"integer") == 0)
         option = 1;
@@ -99,15 +127,20 @@ int valid_var_types(char *first_type, char *second_type){
         option = 2;
     else if (strcmp(first_type,"integer") == 0 && strcmp(second_type,"decimal") == 0
         || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"integer") == 0
-        || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"decimal") == 0) // Combinaciones invalidas
+        || strcmp(first_type,"decimal") == 0 && strcmp(second_type,"decimal") == 0)
         option = 4;
-    else if (strcmp(first_type,"boolean") == 0 && strcmp(second_type,"boolean") == 0) // Combinaciones invalidas
+    else if (strcmp(first_type,"boolean") == 0 && strcmp(second_type,"boolean") == 0)
         option = 3;
     
     return option;
 }
 
-// Inicializa filas y pilas
+/**
+#Nombre: create_stacks_and_queues
+#Descripcion: Inicializa todas las pilas a utilizar durante la generacion de cuadruplos
+#Parametros: -
+#Salida: void
+**/
 void create_stacks_and_queues(){
 	StackO = g_queue_new(); 
     StackOper = g_queue_new(); 
@@ -117,19 +150,34 @@ void create_stacks_and_queues(){
     StackSteps = g_queue_new();
 }
 
-// Inicializa variables temporales para operaciones dentro de cada funcion
+/**
+#Nombre: reset_temp_vars
+#Descripcion: Inicializa variables temporales para las operaciones dentro de cada funcion
+#Parametros: -
+#Salida: void
+**/
 void reset_temp_vars(){
     temp_integers_count = TINTEGERS, temp_strings_count = TSTRINGS,
     temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS;
 }
 
-// Inicializa variables locales a 0 para cada nuevo procedimiento
+/**
+#Nombre: reset_memory_counters
+#Descripcion: Inicializa variables locales a 0 para cada nuevo procedimiento
+#Parametros: -
+#Salida: void
+**/
 void reset_memory_counters(){
     local_integers_count = 0, local_strings_count = 0,
     local_booleans_count = 0, local_decimals_count = 0;
 }
 
-// get_var_virtual_address: devuelve direccion virtual de una variable (id) que viene de sintaxis
+/**
+#Nombre: get_var_virtual_address
+#Descripcion: Obtiene la direccion virtual de la tabla de hashing de un determinado id
+#Parametros: char *id
+#Salida: int address
+**/
 int get_var_virtual_address(char *id){
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
@@ -147,7 +195,12 @@ int get_var_virtual_address(char *id){
     return address;
 }
 
-// get_var_type: devuelve tipo de dato de una variable (id) que viene de sintaxis
+/**
+#Nombre: get_var_type
+#Descripcion: Devuelve el tipo de dato de una variable almacenada en su tabla de hashing
+#Parametros: char *id
+#Salida: char *this_type
+**/
 char *get_var_type(char *id){
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
@@ -165,7 +218,12 @@ char *get_var_type(char *id){
     return this_type;
 }
 
-// get_var_dimension: devuelve la dimension de una variable que es arreglo
+/**
+#Nombre: get_var_dimension
+#Descripcion: Obtiene la dimension de una variable (principalmente para el manejo de arreglos)
+#Parametros: char *id
+#Salida: int dimension
+**/
 int get_var_dimension(char *id) {
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
@@ -183,7 +241,12 @@ int get_var_dimension(char *id) {
     return dimension;
 }
 
-// set_var_dimension: asigna la dimension que le corresponde al arreglo (o ID)
+/**
+#Nombre: set_var_dimension
+#Descripcion: Establece la dimension para una variable (0 en caso de no ser arreglo)
+#Parametros: int dimension, char *id
+#Salida: void
+**/
 void set_var_dimension(int dimension, char *id){
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
@@ -200,11 +263,12 @@ void set_var_dimension(int dimension, char *id){
     }
 }
 
-/*
-@Method - insert_proc_to_table
-@Type - void
-@params - char *proc, char *tipo
-*/
+/**
+#Nombre: insert_proc_to_table
+#Descripcion: Inserta el procedimiento en la tabla de hashing de procedimientos
+#Parametros: char *proc, char *tipo
+#Salida: void
+**/
 void insert_proc_to_table(char *proc, char *tipo){
 	if (g_hash_table_lookup(proc_table, (gpointer)proc) != NULL){
 		printf("El metodo '%s' ya esta dado de alta\n", proc);
@@ -222,12 +286,12 @@ void insert_proc_to_table(char *proc, char *tipo){
 	}
 }
 
-
-/*
-@Method - insert_vars_to_proc_table
-@Type - void
-@params - char *proc, char *tipo
-*/
+/**
+#Nombre: insert_vars_to_proc_table
+#Descripcion: Inserta las variables a la tabla de hashing de variables que corresponde a cada procedimiento
+#Parametros: char *var, char *tipo, int dimension
+#Salida: void
+**/
 void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
 	 if (g_hash_table_lookup(proc_table, (gpointer)current_function) != NULL) {
 		type_table *temp_t_table = g_slice_new(type_table);
@@ -297,19 +361,25 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
     }
 }
 
-
-/* Bloque para agregar constantes
-    Agrega todas las constantes que encuentra en expresiones a la HashTable de constantes.
-    Si la variable ya existe, toma la direccion que ya le fue asignadas
-*/
+/**
+#Nombre: insert_id_to_StackO
+#Descripcion: Inserta el id o variable a la pila de operandos
+#Parametros: char *id
+#Salida: void
+**/
 void insert_id_to_StackO(char *id){
     if(id != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
         g_queue_push_tail(StackO, (gpointer)get_var_virtual_address(id));
         g_queue_push_tail(StackTypes, (gpointer)get_var_type(id)); 
     }        
 }
-
-// Genera cuadruplo de verificacion y da push a variables a utilizar para asignacion de arreglo
+ 
+/**
+#Nombre: insert_arr_index_to_StackO
+#Descripcion: Genera cuadruplo de verificacion y da push a variables a utilizar para asignacion de arreglo
+#Parametros: char *id
+#Salida: void
+**/
 void insert_arr_index_to_StackO(char *id) {
     if(id != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
         int array_index, array_base_address, array_translation;
@@ -323,6 +393,12 @@ void insert_arr_index_to_StackO(char *id) {
     }
 }
 
+/**
+#Nombre: insert_cte_int_to_StackO
+#Descripcion: Inserta una constante entera a la pila de operandos
+#Parametros: int cte
+#Salida: void
+**/
 void insert_cte_int_to_StackO(int cte){
 //    if(cte != NULL){ 
         char *cte_integer = (char *)malloc(sizeof(int));
@@ -341,6 +417,12 @@ void insert_cte_int_to_StackO(int cte){
 //    }        
 }
 
+/**
+#Nombre: insert_arr_decimal_to_StackO
+#Descripcion: Inserta una constante decimal a la pila de operandos
+#Parametros: float cte
+#Salida: void
+**/
 void insert_cte_decimal_to_StackO(float cte){
 //    if(cte != NULL){ 
         char *cte_decimal = (char *)malloc(sizeof(float));
@@ -359,6 +441,12 @@ void insert_cte_decimal_to_StackO(float cte){
     }      
 //}
 
+/**
+#Nombre: insert_arr_string_to_StackO
+#Descripcion: Inserta una constante string a la pila de operandos
+#Parametros: char *cte_string
+#Salida: void
+**/
 void insert_cte_string_to_StackO(char *cte_string){
 //    if(c_string != NULL){
         printf("%s\n", cte_string);
@@ -376,49 +464,90 @@ void insert_cte_string_to_StackO(char *cte_string){
 //    }         
 }
 
-// Inserta operador en pila de operadores para la jerarquía de operaciones
+/**
+#Nombre: insert_to_StackOper
+#Descripcion: Inserta operador en pila de operadores para la jerarquía de operaciones
+#Parametros: int oper
+#Salida: void
+**/
 void insert_to_StackOper(int oper){
     g_queue_push_tail(StackOper, (gpointer)oper);
 }
 
-// Saca el operador de fondo falso al terminar un parentesis en expresion
+/**
+#Nombre: remove_from_StackOper
+#Descripcion: Saca el operador de fondo falso al terminar un parentesis en expresion
+#Parametros: -
+#Salida: void
+**/
 void remove_from_StackOper(){
     g_queue_pop_tail(StackOper);
 }
 
-// Saca el id de la pila de operandos en caso de que en la definicion no se le asigne un valor
+/**
+#Nombre: remove_from_StackO
+#Descripcion: Saca el id de la pila de operandos en caso de que en la definicion no se le asigne un valor
+#Parametros: -
+#Salida: void
+**/
 void remove_from_StackO(){
     g_queue_pop_tail(StackO);
 }
 
-/* Bloque de validación jerarquico
-    Verifica los operadores en la pila de tipos para aplicar su jerarquia
- */
+/**
+#Nombre: generate_add_sust_quadruple
+#Descripcion: Agrega a la pila de operadores la suma o resta segun corresponda
+#Parametros: -
+#Salida: void
+**/
 void generate_add_sust_quadruple() {
     if ((int)g_queue_peek_tail(StackOper) == PLUS || (int)g_queue_peek_tail(StackOper) == MINUS) // '+' o '-'
         generate_exp_quadruples();
 }
 
+/**
+#Nombre: generate_exp_quadruples
+#Descripcion: Agrega a la pila de operadores la multiplicacion o division segun corresponda
+#Parametros: -
+#Salida: void
+**/
 void generate_mult_div_quadruple() {
     if ((int)g_queue_peek_tail(StackOper) == TIMES || (int)g_queue_peek_tail(StackOper) == DIV) // '*' o '/'
         generate_exp_quadruples();
 }
 
+/**
+#Nombre: generate_exponential_quadruple
+#Descripcion: Agrega a la pila de operadores el exponencial
+#Parametros: -
+#Salida: void
+**/
 void generate_exponential_quadruple() {
     if ((int)g_queue_peek_tail(StackOper) == EXP) // '^'
         generate_exp_quadruples();
 }
 
+/**
+#Nombre: generate_relational_quadruple
+#Descripcion: Agrega a la pila de operadores la el operador relacional segun corresponda 'and', 'or', '<', '>', '!', <>, >=, <= 
+#Parametros: -
+#Salida: void
+**/
 void generate_relational_quadruple() {
     if ((int)g_queue_peek_tail(StackOper) == AND || (int)g_queue_peek_tail(StackOper) == OR ||
         (int)g_queue_peek_tail(StackOper) == LT || (int)g_queue_peek_tail(StackOper) == GT ||
         (int)g_queue_peek_tail(StackOper) == 33 || (int)g_queue_peek_tail(StackOper) == DIFF ||
 		(int)g_queue_peek_tail(StackOper) == G_EQUAL_T || (int)g_queue_peek_tail(StackOper) == L_EQUAL_T ||
-        (int)g_queue_peek_tail(StackOper) == SAME) // 'ad', 'or', '<', '>', '!', <>, >=, <=        
+        (int)g_queue_peek_tail(StackOper) == SAME)        
         generate_exp_quadruples();
 }
 
-//Funcion para la generacion de cuadruplos para IF
+/**
+#Nombre: generate_gotoF_if_quadruple
+#Descripcion: Funcion para la generacion de un gotoF para el estatuto if
+#Parametros: -
+#Salida: void
+**/
 void generate_gotoF_if_quadruple(){
 	char *aux = g_queue_pop_tail(StackTypes);
 	int result;
@@ -433,12 +562,24 @@ void generate_gotoF_if_quadruple(){
 	}
 }
 
+/**
+#Nombre: generate_goto_if_quadruple
+#Descripcion: Funcion para la generacion de un goto para el estatuto if
+#Parametros: -
+#Salida: void
+**/
 void generate_goto_if_quadruple(){
 	insert_quadruple_to_array(GOTO, 0, 0, 0);
 	fill_if();
 	g_queue_push_tail(StackJumps, (gpointer)(quadruple_index - 1));
 }
 
+/**
+#Nombre: fill_if
+#Descripcion: Funcion para el rellenado de saltos del estatuto if (goto - gotoF)
+#Parametros: -
+#Salida: void
+**/
 void fill_if() {
 	int temp_count;
 	char *t_count = (char *)malloc(sizeof(int));
@@ -450,11 +591,23 @@ void fill_if() {
 
 }
 
-// Mete a pila de saltos el cuadruplo al que saltara (para seguir haciendo el ciclo) y rellenar con el salto de direccion
+/**
+#Nombre: push_cont_to_stack_jumps
+#Descripcion: Mete a pila de saltos el cuadruplo al que saltara (para seguir haciendo el ciclo) y rellenar con el salto de direccion
+			  Guarda a posicion del cuadruplo al cual ira Goto - Mantiene ciclo vivo
+#Parametros: -
+#Salida: void
+**/
 void push_cont_to_stack_jumps(){
-	g_queue_push_tail(StackJumps, (gpointer)(quadruple_index + 1)); // Guarda a posicion del cuadruplo al cual ira Goto - Mantiene ciclo vivo
+	g_queue_push_tail(StackJumps, (gpointer)(quadruple_index + 1));
 }
 
+/**
+#Nombre: generate_for_limit_quadruple
+#Descripcion: Genera el cuadruplo para el maximo de saltos del estatuto for
+#Parametros: -
+#Salida: void
+**/
 void generate_for_limit_quadruple(){
     int exp_address, id;
     id = g_queue_pop_tail(StackO);
@@ -465,6 +618,12 @@ void generate_for_limit_quadruple(){
     const_booleans_count = const_booleans_count + 1;                        
 }
 
+/**
+#Nombre: generate_step_for_quadruple
+#Descripcion: Genera el cuadruplo para los 'pasos' a dar por cada vuelta que el for da
+#Parametros: -
+#Salida: void
+**/
 void generate_step_for_quadruple(){
     int exp_address, id;
     id = g_queue_pop_tail(StackO);
@@ -488,6 +647,12 @@ void generate_step_for_quadruple(){
     g_queue_push_tail(StackSteps, (gpointer)step_struct);
 }
 
+/**
+#Nombre: generate_gotoF_for_quadruple
+#Descripcion: Genera el cuadruplo para el gotoF del estatuto for
+#Parametros: -
+#Salida: void
+**/
 void generate_gotoF_for_quadruple(){
 	int result;
     result = g_queue_pop_tail(StackO);
@@ -495,6 +660,12 @@ void generate_gotoF_for_quadruple(){
     g_queue_push_tail(StackJumps, (gpointer)(quadruple_index - 1)); // Guarda la posicion del cuadruplo al cual ira GotoF
 }
 
+/**
+#Nombre: generate_while_gotoF_quadruple
+#Descripcion: Genera el cuadruplo para el gotoF del estatuo while
+#Parametros: -
+#Salida: void
+**/
 void generate_while_gotoF_quadruple() {
 	int temp_count;
 	int result;
@@ -512,13 +683,24 @@ void generate_while_gotoF_quadruple() {
 	
 }
 
+/**
+#Nombre: fill_step
+#Descripcion: Rellena el numero de saltos para los 'pasos' del estatuto for por cada vuelta
+#Parametros: -
+#Salida: void
+**/
 void fill_step(){
     quad_struct *qs = g_queue_pop_tail(StackSteps);
     g_ptr_array_add(QuadruplesList, (gpointer)qs);     // Agrega estructura para el step
     ++quadruple_index;  // Necesario incrementar despues de haber insertado una estructura
 }
 
-// Genera direccion a ir del gotoF y genera cuadruplo para goto
+/**
+#Nombre: fill_for
+#Descripcion: Genera direccion a ir del gotoF y genera cuadruplo para goto
+#Parametros: -
+#Salida: void
+**/
 void fill_for(int step){
     int __return, id;
 	int __false;
@@ -536,6 +718,12 @@ void fill_for(int step){
 	t_quadruple->result = t_false;
 }
 
+/**
+#Nombre: fill_while
+#Descripcion: Rellena el numero de saltos a dar para el estatuto while
+#Parametros: -
+#Salida: void
+**/
 void fill_while(){
 	int __return;
 	int __false;
@@ -552,7 +740,12 @@ void fill_while(){
 	t_quadruple->result = t_false;
 }
 
-// Se inserta cuadruplo en forma de estructura en el arreglo de cuadruplos
+/**
+#Nombre: insert_quadruple_to_array
+#Descripcion: Se inserta cuadruplo en forma de estructura en el arreglo de cuadruplos, para su impresion posterior al archivo
+#Parametros: -
+#Salida: void
+**/
 void insert_quadruple_to_array(int operator, int second_oper, int first_oper, int *count){
 	quad_struct *quadruple = g_slice_new(quad_struct);
 	char *c_operator = (char *)malloc(sizeof(int));
@@ -573,6 +766,12 @@ void insert_quadruple_to_array(int operator, int second_oper, int first_oper, in
 }
 
 // Funcion que genera los cuadruplos para las expresiones
+/**
+#Nombre: insert_quadruple_to_array
+#Descripcion: Genera los cuadruplos de las expresiones
+#Parametros: -
+#Salida: void
+**/
 void generate_exp_quadruples(){
     char *first_type, *second_type;  // Top y Top-1 de la pila de tipos
     char *temp_type;                 // Tipo de dato de la variable temporal
@@ -632,14 +831,35 @@ void generate_exp_quadruples(){
 /*
 Bloque de impresión
 */
+
+/**
+#Nombre: print_hash
+#Descripcion: Imprime los valores de la tabla de hashing
+#Parametros: char *key, type_table *value, gpointer user_data
+#Salida: void
+#Dependencias: print_has_table
+**/
 static void print_hash(char *key, type_table *value, gpointer user_data){
 	printf("%s : %s\n", key, value->method_type);
 }
 
+/**
+#Nombre: print_hash_table
+#Descripcion: Manda llamar la funcion print_has para imprimir la tabla de hashing
+#Parametros: -
+#Salida: void
+**/
 void print_hash_table(){
 	g_hash_table_foreach(proc_table, (GHFunc)print_hash, NULL);
 }
 
+/**
+#Nombre: print_constants
+#Descripcion: Imprime la tabla de constantes al archivo de codigo objeto
+#Parametros: char *key, vars_memory *value, gpointer user_data
+#Salida: void
+#Dependencias: print_constants_table
+**/
 static void print_constants(char *key, vars_memory *value, gpointer user_data){
 	if (middle_code = fopen("tlaloc.txt", "a+")){
 		fprintf(middle_code, "%s\t%s\t%d\n", key, value->type, value->virtual_address);
@@ -649,14 +869,33 @@ static void print_constants(char *key, vars_memory *value, gpointer user_data){
 	}
 }
 
+/**
+#Nombre: print_constants_table
+#Descripcion: Manda llamar la funcion print_constants para imprimir la tabla de constantes
+#Parametros: -
+#Salida: void
+**/
 void print_constants_table(){
 	g_hash_table_foreach(constants_table, (GHFunc)print_constants, NULL);
 }
 
+/**
+#Nombre: print_hash_var_table
+#Descripcion: Imprime los valores de la tabla de hashing de variables
+#Parametros: char *key, vars_memory *value, gpointer user_data
+#Salida: void
+#Dependencias: print_var_table
+**/
 void print_hash_var_table(char *key, vars_memory *value, gpointer user_data){
 	printf("\t%s : %s : %d : %d\n", key, value->type, value->virtual_address, value->var_dimension);
 }
 
+/**
+#Nombre: print_var_table
+#Descripcion: Manda llamar la funcion print_hash_var_table que imprime la tabla de hashing de variables
+#Parametros: char *key, vars_memory *value, gpointer user_data
+#Salida: void
+**/
 void print_var_table(char *function){
 	printf("%s\n", function);
 	type_table *temp_t_table = g_slice_new(type_table);
@@ -664,6 +903,12 @@ void print_var_table(char *function){
 	g_hash_table_foreach(temp_t_table->h_table, (GHFunc)print_hash_var_table, NULL);
 }
 
+/**
+#Nombre: print_array
+#Descripcion: Imprime el arreglo de los cuadruplos en el archivo objeto
+#Parametros: quad_struct *quadruple, gpointer user_data
+#Salida: void
+**/
 static void print_array(quad_struct *quadruple, gpointer user_data){
 	
 	if (middle_code = fopen("tlaloc.txt", "a+")){
@@ -674,6 +919,13 @@ static void print_array(quad_struct *quadruple, gpointer user_data){
 	}
 }
 
+/**
+#Nombre: print_to_file
+#Descripcion: Manda llamar las funciones para imprimir tanto en consola como archivo objeto 
+#Parametros: -
+#Salida: void
+#Dependencias: print_array, print_constants_table
+**/
 void print_to_file(){
 	printf("---\n");
     middle_code = fopen("tlaloc.txt", "w"); // Abrimos el archivo en modo de escritura

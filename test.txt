@@ -1,17 +1,28 @@
-program edo:
+program test:
 
 	method void main():
-        define arr as integer [20].
-        define a as integer = 0.
-        define mat as integer [4,3].
-
-        print(arr[1283]).
-
-        while (a < 21):
-            arr[a] = a.
-            printline(arr[a]).
-            a = a + 1.
-        end while 
+        define i as integer.
+        define j as integer.
+        define matrix as integer[3,3].
+        
+        matrix[0,0] = 3.
+        matrix[0,1] = 6.
+        matrix[0,2] = 9.
+        
+        matrix[1,0] = 1.
+        matrix[1,1] = 2.
+        matrix[1,2] = 3.
+        
+        matrix[2,0] = 5 + 6.
+        matrix[2,1] = 2 ^ 2.
+        matrix[2,2] = 4 + 9 + 5 - 2 * 6.
+        
+      for i = 0 to 2 step 1:
+        for j = 0 to 2 step 1:
+          print(matrix[i,j]).
+        end for
+      end for
+        
 	end method
 
 end program
