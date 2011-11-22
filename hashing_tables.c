@@ -15,6 +15,7 @@ static GQueue *StackOper;
 static GQueue *StackTypes;
 static GQueue *Quadruples;
 static GQueue *StackJumps; 
+static GQueue *StackDimensions;// Pila de dimensiones para que pueda imprimir el desplazamiento default_functions 
 static GQueue *StackSteps;     // Pila para el control de steps en fors
 char *current_function;        // Variable que mantiene el nombre de la funcion actual
 char *global_function;         // Variable que mantiene el nombre del programa
@@ -49,7 +50,8 @@ typedef struct {
 typedef struct {
     char *type;
     int virtual_address;
-    int var_dimension;
+    int var_dimension;      // Primera dimension, en caso de ser un arreglo unidimensional
+    int mat_dimension;      // Segunda dimension, en caso de ser una matriz
 }vars_memory;
 
 //Estructura para la insercion del cuadruplo en el arreglo de apuntadores
@@ -115,6 +117,7 @@ void create_stacks_and_queues(){
     Quadruples = g_queue_new(); 
 	StackJumps = g_queue_new();
     StackSteps = g_queue_new();
+    StackDimensions = g_queue_new();
 }
 
 // Inicializa variables temporales para operaciones dentro de cada funcion
@@ -183,6 +186,24 @@ int get_var_dimension(char *id) {
     return dimension;
 }
 
+// get_mat_dimension: devuelve la segunda dimension de una variable que es matriz
+int get_mat_dimension(char *id) {
+    type_table *temp_t_table = g_slice_new(type_table);
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
+    vars_memory *v_table = g_slice_new(vars_memory);
+    v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    if (v_table == NULL){   // Si no encuentra en locales, busca en globales
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
+        v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    }
+    if (v_table == NULL){
+        printf("Variable '%s' no reconocida en locales ni globales\n", id);
+        exit(0);
+    }
+    int dimension = v_table->mat_dimension;
+    return dimension;
+}
+
 // set_var_dimension: asigna la dimension que le corresponde al arreglo (o ID)
 void set_var_dimension(int dimension, char *id){
     type_table *temp_t_table = g_slice_new(type_table);
@@ -194,6 +215,24 @@ void set_var_dimension(int dimension, char *id){
         v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
     }
     v_table->var_dimension = dimension - 1;     // Asigna la dimension a la variable que es arreglo
+    if (v_table == NULL){
+        printf("Variable '%s' no reconocida en locales ni globales\n", id);
+        exit(0);
+    }
+}
+
+// set_mat_dimension: asigna la dimension que le corresponde a la matriz
+void set_mat_dimension(int dimension1, int dimension2, char *id){
+    type_table *temp_t_table = g_slice_new(type_table);
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
+    vars_memory *v_table = g_slice_new(vars_memory);
+    v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    if (v_table == NULL){   // Si no encuentra en locales, busca en globales
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
+        v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    }
+    v_table->var_dimension = dimension1 - 1;     // Asigna la dimension1 a la matriz
+    v_table->mat_dimension = dimension2 - 1;     // Asigna la dimension2 a la matriz
     if (v_table == NULL){
         printf("Variable '%s' no reconocida en locales ni globales\n", id);
         exit(0);
@@ -268,7 +307,6 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
                         global_decimals_count = global_decimals_count + 1 + dimension;                        
                 }
                 v_memory->virtual_address = address;
-                //v_memory->var_dimension = dimension;
             }                
             else {  // Si las variables son parte de un metodo
                 if (strcmp(tipo, "integer") == 0) {
@@ -288,7 +326,6 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
                         local_decimals_count = local_decimals_count + 1 + dimension;                        
                 }
                 v_memory->virtual_address = address;
-                //v_memory->var_dimension = dimension;
             }     
             g_hash_table_insert(temp_t_table->h_table, (gpointer)var, (gpointer)v_memory);
         }
@@ -314,12 +351,28 @@ void insert_arr_index_to_StackO(char *id) {
     if(id != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
         int array_index, array_base_address, array_translation;
         array_index = g_queue_pop_tail(StackO);  // Saca de la pila de operandos la variable temporal que guarda exp
-
+        g_queue_push_tail(StackDimensions, (gpointer)get_var_virtual_address(id)); // Mete id a sacar a la hora de impresion
         insert_quadruple_to_array(VER, array_index, 0, get_var_dimension(id)); // cuadruplo de verificacion | * * linf lsup
 
         // Mete a pila de StackO la dir del arreglo en su pos inicial
         g_queue_push_tail(StackO, (gpointer)array_index);           // Mete direccion que guarda la posicion del arr a indexar
         g_queue_push_tail(StackTypes, (gpointer)get_var_type(id));  // Mete el tipo para que no haya conflicto al generar quads.
+    }
+}
+
+// Genera el segundo cuadruplo de verificacion para una matriz y da push a variables a utilizar para la asignacion
+void insert_arr2_index_to_StackO(char *id) {
+    if(id != NULL){     // Control de entrada. Al final de funciones entra el id como nulo, lo omite.
+        int array_index, array_base_address, array_translation;
+        array_index = g_queue_pop_tail(StackO);  // Saca de la pila de operandos la variable temporal que guarda exp
+
+        insert_quadruple_to_array(VER, array_index, 0, get_mat_dimension(id)); // cuadruplo de verificacion2 | * * linf lsup
+        insert_quadruple_to_array(PLUS, array_index, g_queue_pop_tail(StackO), temp_integers_count); // acumula desplazamientos de ambas dimensiones
+        // Mete a pila de StackO la dir del arreglo en su pos inicial
+        g_queue_push_tail(StackO, (gpointer)temp_integers_count);   // Mete direccion que guarda el desplazamiento de la matriz
+        g_queue_push_tail(StackTypes, (gpointer)"integer");  // Mete el tipo para que no haya conflicto al generar quads.
+        g_queue_push_tail(StackDimensions, (gpointer)get_var_virtual_address(id)); // Mete id a sacar a la hora de impresion
+        temp_integers_count++;
     }
 }
 
@@ -384,6 +437,11 @@ void insert_to_StackOper(int oper){
 // Saca el operador de fondo falso al terminar un parentesis en expresion
 void remove_from_StackOper(){
     g_queue_pop_tail(StackOper);
+}
+
+// Saca el arreglo o matriz que se guardo en el Stack de dimensiones
+void remove_from_StackDimensions(){
+    g_queue_clear(StackDimensions);
 }
 
 // Saca el id de la pila de operandos en caso de que en la definicion no se le asigne un valor
@@ -468,9 +526,7 @@ void generate_for_limit_quadruple(){
 void generate_step_for_quadruple(){
     int exp_address, id;
     id = g_queue_pop_tail(StackO);
-    printf("ID: %d\n", id);
     exp_address = g_queue_pop_tail(StackO);
-    printf("EXP: %d\n", exp_address);
     step_struct = g_slice_new(quad_struct);
 
 	char *c_operator = (char *)malloc(sizeof(int));
@@ -592,7 +648,7 @@ void generate_exp_quadruples(){
         temp_decimals_count = temp_decimals_count + 1;              // Se incrementa en uno el temp de decimales
     } else if (operator == PRINT || operator == PRINTLINE || operator == READINT || operator == READLINE) {  
         //default_functions     
-        insert_quadruple_to_array(operator, first_oper, g_queue_pop_tail(StackO), 0); // El pop es 0 para cuando no es arreglo.
+        insert_quadruple_to_array(operator, first_oper, g_queue_pop_tail(StackDimensions), 0); // El pop es 0 cuando no es arr
         g_queue_push_tail(StackOper, (gpointer)operator);
     } else {    // Genera cuadruplos para asignacion o el resto de tipo de cuadruplos (que no son math_functions)
         second_oper = g_queue_pop_tail(StackO);         // Saca el siguiente operando para hacer las operaciones
@@ -602,8 +658,11 @@ void generate_exp_quadruples(){
         if (valid_type != 0){ // Si es valido, se genera el cuadruplo
             if (operator == EQUALS) { // || operator == 65) {   // '='  Igual para math_choices.
 				insert_quadruple_to_array(operator, second_oper, 0, first_oper);
-            } else if (operator == ARRAY) { // En caso de ser un arreglo, la asignacion es diferente
-                insert_quadruple_to_array(operator, g_queue_pop_tail(StackO), second_oper, first_oper);
+            } else if (operator == ARRAY) { // En caso de ser un arreglo, la asignacion es a un temp o a lo que se asigne
+                if (g_queue_peek_tail(StackOper) == 0) {   
+                    printf("ARRAY: %d\n", g_queue_peek_tail(StackO));             
+                    insert_quadruple_to_array(operator, g_queue_pop_tail(StackDimensions), second_oper, first_oper);
+                }
             } else {    // Asigna el tipo de dato a la variable que guardara el resultado de la operacion
                 if (valid_type == 1) { temp_count = &temp_integers_count; temp_type = "integer"; }
                 if (valid_type == 2) { temp_count = &temp_strings_count; temp_type = "string"; }
@@ -646,6 +705,7 @@ static void print_constants(char *key, vars_memory *value, gpointer user_data){
 		fclose(middle_code);
 	}else{
 		printf("Error al abrir tlaloc.txt\n");
+        exit(0);
 	}
 }
 
@@ -654,7 +714,7 @@ void print_constants_table(){
 }
 
 void print_hash_var_table(char *key, vars_memory *value, gpointer user_data){
-	printf("\t%s : %s : %d : %d\n", key, value->type, value->virtual_address, value->var_dimension);
+	printf("\t%s : %s : %d : %d : %d\n", key, value->type, value->virtual_address, value->var_dimension, value->mat_dimension);
 }
 
 void print_var_table(char *function){
@@ -671,6 +731,7 @@ static void print_array(quad_struct *quadruple, gpointer user_data){
 		fclose(middle_code);
 	}else{
 		printf("Error al abrir tlaloc.txt\n");
+        exit(0);
 	}
 }
 

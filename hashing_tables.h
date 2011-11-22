@@ -6,6 +6,7 @@ void print_var_table(char *proc);
 void create_stacks_and_queues();
 void insert_id_to_StackO(char *id);
 void insert_arr_index_to_StackO(char *id);
+void insert_arr2_index_to_StackO(char *id);
 void insert_cte_id_to_StackO(int cte_integer);
 void insert_cte_string_to_StackO(int cte_integer);
 void insert_cte_decimal_to_StackO(int cte_integer);
