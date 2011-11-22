@@ -1,28 +1,17 @@
 program edo:
 
 	method void main():
-        define arr as integer [10].
+        define arr as integer [20].
         define a as integer = 0.
         define mat as integer [4,3].
 
-        while (a < 10):
+        print(arr[1283]).
+
+        while (a < 21):
             arr[a] = a.
             printline(arr[a]).
             a = a + 1.
-        end while
-
-        a = 0.
-        printline("done!").
-        while (a < 10):
-            if (arr[a] < 5):
-                printline(arr[a]).
-                a = a + 1.
-            end if
-        a = a + 1.
         end while 
-    printline("fin").    
 	end method
-
-
 
 end program

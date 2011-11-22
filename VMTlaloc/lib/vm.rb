@@ -104,7 +104,10 @@ class VirtualMachine
         when 125 # <=
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] <= @global_memory[second_oper.to_i]
         when 100 # VERifica para arrs
-          puts "not range =(" if !(second_oper.to_i..result.to_i).cover?(@global_memory[first_oper.to_i])
+          if !(second_oper.to_i..result.to_i).cover?(@global_memory[first_oper.to_i])
+            puts "Index out of bounds!"
+            exit
+          end
         when 501 # asignacion de arrs
           @global_memory[first_oper.to_i + @global_memory[second_oper.to_i]] = @global_memory[result.to_i]
       end
