@@ -201,8 +201,8 @@
                     | ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } factor_arreglo
             ;
 
-    factor_arreglo: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); }
-                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name);} /* insert_to_StackOper(ARRAY_S); /* generate_exp_quadruples(); } */
+    factor_arreglo: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); insert_movement_quadruple(name); }
+                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); } /* insert_to_StackOper(ARRAY_S); /* generate_exp_quadruples(); } */
                     ;
 
 	var: ID { insert_id_to_StackO(yylval.str); }
@@ -252,9 +252,9 @@
 			    ;
 
 	// Genera el cuadruplo de verificacion de dimension y al final suma desplazamiento
-    array_assignment: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(ARRAY_S); } expresion PUNTO { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
+    array_assignment: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); insert_movement_quadruple(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
 	// Genera los dos cuadruplos de verificacion de dimensiones y al final suma desplazamiento
-                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); remove_from_StackOper(); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(ARRAY_S); } expresion PUNTO { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
+                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); remove_from_StackOper(); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
                                        ;	
 	
 	estatuto: if_statement 

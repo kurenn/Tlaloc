@@ -2,28 +2,28 @@ program edo:
 
 	method void main():
         define arr as integer [10].
-        define mat as integer [10,12].
+        define mat as integer [3,5].
         define algo as integer.
         define a as integer.
         define b as integer.
         define i as integer = 0.
 
 			for a = 0 to 9 step 1:
-			  for b = 0 to 11 step 1:
-			      mat[a,b] = i.
-            i = i + 1.
-            printline(mat[a,b]).
-		    end for
-		  end for
+
+			      arr[a] = i.
+            printline(i).
+            i = i + 1. 
+
+		  end for  
 
 			for a = 0 to 9 step 1:
-			  for b = 0 to 11 step 1:
-            if (mat[a,b] == 5):
-              printline("a webo").
-            end if
-		    end for
-		  end for
-  
+
+
+            printline(arr[a]).
+            i = i + 1. 
+
+		  end for  
+
 	end method
 
 end program
