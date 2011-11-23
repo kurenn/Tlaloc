@@ -13,6 +13,7 @@
     int step_presence = 1;  // Identificador de si existe o no step en el for
     int parameter = 0;      // Si una variable es parametro, se manda en 1, si es local, 0
     int params_counter=0;   // Cuenta parametros que se mandan de un llamada de metodo
+    char *id_array= "";          // ID que guarda la variable que se le asigna un array       
 
     // Constantes para la identificacion de operadores en la generacion de cuadruplos
     enum symbols {PRINT_S=213, PRINTLINE_S=228, READINT_S=215, READLINE_S=216, RETURN_S=224, AND_S=197, OR_S=198, ABS_S=212,    
@@ -220,9 +221,7 @@
 	factor: var
 	 	    | PAR_ABIERTO { insert_to_StackOper(OPEN_BRACKET_S); } expresion PAR_CERRADO { remove_from_StackOper(); }
             | MAS CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); } // Acepta enteros y decimales negativos
-            | MAS CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.integer); }
             | MENOS CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer * -1); }
-            | MENOS CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.integer * -1); }
 			| factor_alterno
 	        ;
 	
@@ -232,13 +231,13 @@
             ;
 
     factor_arreglo: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); insert_movement_quadruple(name); }
-                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); } /* insert_to_StackOper(ARRAY_S); /* generate_exp_quadruples(); } */
+                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); }
                     ;
 
 	var: ID { insert_id_to_StackO(yylval.str); }
 		| CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); }
 			 | CTE_STRING { insert_cte_string_to_StackO(yylval.str); }
-			 | CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.decimal); }
+			 | CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.str); }
 			 | VERDADERO  { insert_cte_boolean_to_StackO(yylval.str); }
 			 | FALSO      { insert_cte_boolean_to_StackO(yylval.str); }
 		   	 ;
@@ -285,14 +284,14 @@
                 ;
 
     // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
-	asignacion: ID { insert_id_to_StackO(yylval.str); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO { generate_exp_quadruples(); reset_temp_vars(); }
-				| ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } array_assignment
+	asignacion: ID { array_in_id(yylval.str); name = yylval.str; insert_id_to_StackO(yylval.str); } IGUAL {insert_to_StackOper(EQUALS_S); } expresion PUNTO {generate_exp_quadruples(); reset_temp_vars(); }
+				| ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } array_assignment {  generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
 			    ;
 
 	// Genera el cuadruplo de verificacion de dimension y al final suma desplazamiento
-    array_assignment: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); insert_movement_quadruple(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
+    array_assignment: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); insert_movement_quadruple(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO 
 	// Genera los dos cuadruplos de verificacion de dimensiones y al final suma desplazamiento
-                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); remove_from_StackOper(); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO { generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
+                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); remove_from_StackOper(); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO
                                        ;	
 	
 	estatuto: if_statement 
@@ -326,7 +325,7 @@
 				  ;
 				
     // Siempre remueve al final lo que hay en la pila de operandos para que no haya información en el siguiente renglon
-	default_functions: { remove_from_StackDimensions(); } default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO { remove_from_StackOper(); remove_from_StackO(); } | readint | readline
+	default_functions: { /*remove_from_StackDimensions();*/ } default_choices PAR_ABIERTO default_function_input_def default_function_input PAR_CERRADO PUNTO { remove_from_StackOper(); remove_from_StackO(); } | readint | readline
 				     ;
 	
 	readint: READINT { insert_to_StackOper(READINT_S); } PAR_ABIERTO ID { insert_id_to_StackO(yylval.str); generate_exp_quadruples(); }  ids PAR_CERRADO PUNTO { remove_from_StackOper(); remove_from_StackO(); }

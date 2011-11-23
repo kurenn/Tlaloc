@@ -1200,7 +1200,7 @@ YY_RULE_SETUP
 case 59:
 YY_RULE_SETUP
 #line 75 "scanner_tlaloc.l"
-{ yylval.decimal = atof(yytext); return CTE_DECIMAL; }
+{ yylval.str = strdup(yytext); return CTE_DECIMAL; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
