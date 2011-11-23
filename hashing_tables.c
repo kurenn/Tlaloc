@@ -205,8 +205,14 @@ int get_global_virtual_address(char *id){
 int get_var_virtual_address(char *id){
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
-    vars_memory *v_table = g_slice_new(vars_memory);
+	vars_memory *v_table = g_slice_new(vars_memory);
+	vars_memory *p_table = g_slice_new(vars_memory);
     v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+	p_table = g_hash_table_lookup(temp_t_table->params_table, (gpointer)id);
+	if(p_table != NULL) {
+		v_table = g_hash_table_lookup(temp_t_table->params_table, (gpointer)id);
+		printf("ADDRESS : %d\n", v_table->virtual_address);
+	}
     if (v_table == NULL){   // Si no encuentra en locales, busca en globales
         temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
         v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
@@ -229,7 +235,13 @@ char *get_var_type(char *id){
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
     vars_memory *v_table = g_slice_new(vars_memory);
-    v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+	vars_memory *p_table = g_slice_new(vars_memory);
+	v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+	v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+	p_table = g_hash_table_lookup(temp_t_table->params_table, (gpointer)id);
+	if(p_table != NULL) {
+		v_table = g_hash_table_lookup(temp_t_table->params_table, (gpointer)id);
+	}
     if (v_table == NULL){   // Si no encuentra en locales, busca en globales
         temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
         v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
@@ -542,10 +554,11 @@ void insert_arr2_index_to_StackO(char *id) {
 
         insert_quadruple_to_array(VER, array_index, 0, get_mat_dimension(id)); // cuadruplo de verificacion2 | * * linf lsup
         insert_quadruple_to_array(TIMES, array_function_dimension, get_mat_dimension(id)+1, temp_integers_count); // funcion de despl.
-        insert_quadruple_to_array(PLUS, array_index, temp_integers_count, temp_integers_count+1); // acumula desplazamientos de ambas dimensiones
+        insert_quadruple_to_array(PLUS, array_index, g_queue_pop_tail(StackO), temp_integers_count+1); // acumula desplazamientos de ambas dimensiones
         // Mete a pila de StackO la dir del arreglo en su pos inicial 
-        temp_integers_count++;       
         g_queue_push_tail(StackO, (gpointer)temp_integers_count);   // Mete direccion que guarda el desplazamiento de la matriz
+		temp_integers_count = temp_integers_count + 1;       
+        
         //g_queue_push_tail(StackTypes, (gpointer)"integer");  // Mete el tipo para que no haya conflicto al generar quads.
         g_queue_push_tail(StackDimensions, (gpointer)get_var_virtual_address(id)); // Mete id a sacar a la hora de impresion
         array_function_dimension = 0;
@@ -554,10 +567,11 @@ void insert_arr2_index_to_StackO(char *id) {
 
 // Genera el desplazamiento al tener el corrimiento de los arreglos
 void insert_movement_quadruple(char *id){
-    insert_quadruple_to_array(501, get_var_virtual_address(id), g_queue_pop_tail(StackO), ++temp_integers_count);
+	temp_integers_count = temp_integers_count + 1;
+    insert_quadruple_to_array(501, get_var_virtual_address(id), g_queue_pop_tail(StackO), temp_integers_count);
     g_queue_push_tail(StackO, (gpointer)(temp_integers_count*-1));   // Mete direccion que guarda el desplazamiento de la matriz
     g_queue_push_tail(StackTypes, (gpointer)"integer");  // Mete el tipo para que no haya conflicto al generar quads.
-    temp_integers_count++;
+    temp_integers_count = temp_integers_count + 1;
 }
 
 /**

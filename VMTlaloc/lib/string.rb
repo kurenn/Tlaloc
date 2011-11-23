@@ -4,4 +4,8 @@ class String
     self.chomp("\"").reverse.chomp("\"").reverse
   end
 
+  def to_boolean
+      return self == "true"
+  end
+  
 end

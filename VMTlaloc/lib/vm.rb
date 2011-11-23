@@ -1,15 +1,24 @@
 require 'string'
+require 'variables'
 
 class VirtualMachine
 
   
   def initialize(input_file)
     file_lines = IO.readlines(input_file) # Convierte la lectura del archivo en lineas tipo string como arreglo
-    @procedures = []
+    @variables = Variables.new
+    @procedures = {}
     @quadruples = []
     @global_memory = [85000]  # Casillas asignadas para la memoria del programa
     i = 0   # Index de lineas leidas
     
+    until file_lines[i] == "$$$\n"
+      direccion = file_lines[i].split("\t")[2]
+      @procedures.merge!( { direccion.to_i => [] } )
+      i += 1
+    end
+    
+    i = 0 
     until file_lines[i] == "$\n"
       value, type, address = file_lines[i].chomp("\n").split("\t")
       @global_memory[address.to_i] = value.to_i if type == "integer"
@@ -30,13 +39,17 @@ class VirtualMachine
       # Seccion para verificar si llega una variable como pointer (-000)
       if first_oper.to_i < 0
         first_oper = @global_memory[first_oper.to_i.abs]
+        #puts @global_memory[first_oper.to_i.abs].inspect
       end
       if second_oper.to_i < 0
         second_oper = @global_memory[second_oper.to_i.abs]
+        
       end
       if result.to_i < 0
-        result = @global_memory[result.to_i.abs]
+        result = @global_memory[result.to_i.abs] 
+        #puts @global_memory[result.to_i.abs]
       end
+      
       case operator.to_i
         when 213 # print()
           print @global_memory[first_oper.to_i] if second_oper.to_i == 0
@@ -104,7 +117,7 @@ class VirtualMachine
         when 45 # -
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] - @global_memory[second_oper.to_i]
         when 42 # * - Diferente para la funcion de matrices
-          if second_oper.to_i >= 5000            
+          if second_oper.to_i >= 5000       
             @global_memory[result.to_i] = @global_memory[first_oper.to_i] * @global_memory[second_oper.to_i]
           else
             @global_memory[result.to_i] = @global_memory[first_oper.to_i] * second_oper.to_i
@@ -130,6 +143,9 @@ class VirtualMachine
             #@global_memory[first_oper.to_i + @global_memory[second_oper.to_i]] = @global_memory[result.to_i]
             @global_memory[result.to_i] = first_oper.to_i + @global_memory[second_oper.to_i]
             #@global_memory[result.to_i] = @global_memory[first_oper.to_i + @global_memory[second_oper.to_i]] # 25010 + 6 = 25016
+        when 209 #gosub
+          @variables.push_to_stack
+          puts @variables.stack.inspect
         end
     i += 1
     end
