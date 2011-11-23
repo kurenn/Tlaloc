@@ -25,8 +25,8 @@
 "decimal" 	{ yylval.str = strdup(yytext); return DECIMAL; }
 "boolean" 	{ yylval.str = strdup(yytext); return BOOLEAN; }
 "end" 		{ return END;}
-"true" 		{ return VERDADERO; }
-"false" 	{ return FALSO; }
+"true" 		{ yylval.str = strdup(yytext); return VERDADERO; }
+"false" 	{ yylval.str = strdup(yytext); return FALSO; }
 "void" 		{ yylval.str = strdup(yytext); return VOID; }
 "return" 	{ return RETURN; }
 "and" 		{ return AND; }

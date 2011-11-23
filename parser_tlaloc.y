@@ -11,11 +11,13 @@
     int first_dim;          // Primera dimension de un arreglo bidimensional. Usado para obtener dimension entera.
     int equals_var;         // Guarda la direccion de la variable a la cual se le asignara una expresion
     int step_presence = 1;  // Identificador de si existe o no step en el for
+    int parameter = 0;      // Si una variable es parametro, se manda en 1, si es local, 0
+    int params_counter=0;   // Cuenta parametros que se mandan de un llamada de metodo
 
     // Constantes para la identificacion de operadores en la generacion de cuadruplos
     enum symbols {PRINT_S=213, PRINTLINE_S=228, READINT_S=215, READLINE_S=216, RETURN_S=224, AND_S=197, OR_S=198, ABS_S=212,    
 				  COS_S=214, SIN_S=225, LOG_S=211, TAN_S=226, SQRT_S=231, RET_S=166, __TRUE_S=217, __FALSE_S=203, GOTOF_S=205, 
-				  GOTO_S=206, GOTOV_S=207, EQUALS_S=61, SAME_S=122, LT_S=60, GT_S=62, DIFF_S=123, TIMES_S=42, PLUS_S=43, 
+				  GOTO_S=206, GOSUB_S=209, GOTOV_S=207, EQUALS_S=61, SAME_S=122, LT_S=60, GT_S=62, DIFF_S=123, TIMES_S=42, PLUS_S=43,
 				  MINUS_S=45, DIV_S=47, EXP_S=94, POINTER_S=107, G_EQUAL_T_S=124, L_EQUAL_T_S=125, OPEN_BRACKET_S=91, GOTOFOR_S=208, 
 				  GOTOWHILE_S=207, INDEX_S=500, ARRAY_S=501 };
 
@@ -48,20 +50,21 @@
 	**/
     void set_dimension(){
         if (strcmp(var_type, "integer") == 0) {
-                insert_vars_to_proc_table(name, var_type, integer_dimension);
+                insert_vars_to_proc_table(name, var_type, integer_dimension, parameter);
                 integer_dimension = 0;
         } else if (strcmp(var_type, "string") == 0) {
-                insert_vars_to_proc_table(name, var_type, string_dimension);
+                insert_vars_to_proc_table(name, var_type, string_dimension, parameter);
                 string_dimension = 0;
         } else if (strcmp(var_type, "boolean") == 0) {
-                insert_vars_to_proc_table(name, var_type, boolean_dimension);
+                insert_vars_to_proc_table(name, var_type, boolean_dimension, parameter);
                 boolean_dimension = 0;
         } else if (strcmp(var_type, "decimal") == 0) {
-                insert_vars_to_proc_table(name, var_type, decimal_dimension);
+                insert_vars_to_proc_table(name, var_type, decimal_dimension, parameter);
                 decimal_dimension = 0;
         } else { 
-                insert_vars_to_proc_table(name, var_type, 0); 
+                insert_vars_to_proc_table(name, var_type, 0, parameter); 
         }
+        parameter = 0;  // Asigna 0 nuevamente, indicando que la variable no es un parametro
     }
 
 	/**
@@ -103,7 +106,7 @@
 		create_quadruples_array();
 		yyparse();
 		print_to_file();
-		print_hash_table();
+		//print_hash_table();
         //printf("---------------------------\n\n");
         //system("ruby VMTlaloc/init.rb");    // Ejecuta maquina virtual con comando en consola
 	}
@@ -140,6 +143,7 @@
 	
 	vars_def: DEFINE declaracion {name = yylval.str;} AS tipo { 
                 var_type = yylval.str; 
+                parameter = 0;
                 set_dimension();
                 insert_id_to_StackO(name);
             } asignacion_var PUNTO { remove_from_StackO(); } // Retira el id en caso de no tener asignacion alguna
@@ -149,16 +153,16 @@
 				 | ID
 			     ;
 	
-    params: APUNTADOR ID {insert_vars_to_proc_table(yylval.str, var_type, 0);}
-				 | ID {insert_vars_to_proc_table(yylval.str, var_type, 0);}
-                 | ID {name = yylval.str; set_dimension();} dimension_arreglo
+    params: APUNTADOR ID {insert_vars_to_proc_table(yylval.str, var_type, 0, 1);}
+				 | ID {insert_vars_to_proc_table(yylval.str, var_type, 0, 1);}
+                 | ID {name = yylval.str; parameter = 1; set_dimension();} dimension_arreglo
 			     ;
 	
-	tipo: INTEGER 
-		  | STRING
-		  | BOOLEAN 
-		  | DECIMAL 
-		  | VOID
+	tipo: INTEGER { type = "integer"; }
+		  | STRING { type = "string"; }
+		  | BOOLEAN { type = "boolean"; }
+		  | DECIMAL { type = "decimal"; } 
+		  | VOID { type = "void"; }
 		  ;
 	
 	asignacion_var: IGUAL { insert_to_StackOper(EQUALS_S); } expresion { generate_exp_quadruples(); reset_temp_vars(); }
@@ -235,18 +239,18 @@
 		| CTE_INTEGER { insert_cte_int_to_StackO(yylval.integer); }
 			 | CTE_STRING { insert_cte_string_to_StackO(yylval.str); }
 			 | CTE_DECIMAL { insert_cte_decimal_to_StackO(yylval.decimal); }
-			 | VERDADERO  /*En la maquina virtual se asigna directamente el valor*/
-			 | FALSO      /*En la maquina virtual se asigna directamente el valor*/
+			 | VERDADERO  { insert_cte_boolean_to_StackO(yylval.str); }
+			 | FALSO      { insert_cte_boolean_to_StackO(yylval.str); }
 		   	 ;
 		 
 	metodo: metodo metodo_def 
 			| 
 		  ;
 	 
-	metodo_main: METHOD VOID MAIN {insert_proc_to_table(yylval.str, "void"); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body {print_var_table(proc);} END METHOD
+	metodo_main: METHOD VOID MAIN { fill_goto_main(); insert_proc_to_table(yylval.str, "void"); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS { generate_beginning_address(); } metodo_body {print_var_table(proc);} END METHOD
                 ;
 	
-	metodo_def: METHOD tipo {type = yylval.str;} ID {insert_proc_to_table(yylval.str, type); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS metodo_body {print_var_table(proc);} RETURN expresion PUNTO END METHOD 
+	metodo_def: METHOD tipo ID { insert_proc_to_table(yylval.str, type); insert_proc_as_global_var(type, yylval.str); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS { generate_beginning_address(); } metodo_body {print_var_table(proc); type = ""; } RETURN expresion PUNTO END METHOD { generate_ret_action(); } 
 			  ;
 	
 	metodo_body: metodo_body body_code | ; 
@@ -269,9 +273,17 @@
 			   | default_functions
 			   ;
 	
-	llamado: ID PAR_ABIERTO exp PAR_CERRADO
+	llamado: ID { name=yylval.str; verify_non_method_presence(name); } llamado_params { generate_gosub(name); params_counter = 0; }
 		   ;
-	
+
+    llamado_params: PAR_ABIERTO { generate_era_action(); } exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra PAR_CERRADO { check_params_number(name, params_counter); }
+                    | PAR_ABIERTO  { generate_era_action(); }  PAR_CERRADO { check_params_number(name, params_counter); }
+	                ;
+        
+    exp_extra: COMA exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra
+                |
+                ;
+
     // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
 	asignacion: ID { insert_id_to_StackO(yylval.str); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO { generate_exp_quadruples(); reset_temp_vars(); }
 				| ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } array_assignment

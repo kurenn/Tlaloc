@@ -995,12 +995,12 @@ YY_RULE_SETUP
 case 18:
 YY_RULE_SETUP
 #line 28 "scanner_tlaloc.l"
-{ return VERDADERO; }
+{ yylval.str = strdup(yytext); return VERDADERO; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 29 "scanner_tlaloc.l"
-{ return FALSO; }
+{ yylval.str = strdup(yytext); return FALSO; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
@@ -1059,178 +1059,178 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 41 "scanner_tlaloc.l"
+#line 43 "scanner_tlaloc.l"
 { return FOR; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 42 "scanner_tlaloc.l"
+#line 44 "scanner_tlaloc.l"
 { return WHILE; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 43 "scanner_tlaloc.l"
+#line 45 "scanner_tlaloc.l"
 { return IF; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 44 "scanner_tlaloc.l"
+#line 46 "scanner_tlaloc.l"
 { return ELSE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 45 "scanner_tlaloc.l"
+#line 47 "scanner_tlaloc.l"
 { return SELECT; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 46 "scanner_tlaloc.l"
+#line 50 "scanner_tlaloc.l"
 { return PAR_ABIERTO; }     
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 47 "scanner_tlaloc.l"
+#line 51 "scanner_tlaloc.l"
 { return PAR_CERRADO; }     
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 48 "scanner_tlaloc.l"
+#line 52 "scanner_tlaloc.l"
 { return COMA;}             
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 49 "scanner_tlaloc.l"
+#line 53 "scanner_tlaloc.l"
 { return DOS_PUNTOS; }       
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 50 "scanner_tlaloc.l"
+#line 54 "scanner_tlaloc.l"
 { return CORCHETE_ABIERTO; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 51 "scanner_tlaloc.l"
+#line 55 "scanner_tlaloc.l"
 { return CORCHETE_CERRADO; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 52 "scanner_tlaloc.l"
+#line 56 "scanner_tlaloc.l"
 { return IGUAL; }           
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 53 "scanner_tlaloc.l"
+#line 57 "scanner_tlaloc.l"
 { return IGUAL_IGUAL;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 54 "scanner_tlaloc.l"
+#line 58 "scanner_tlaloc.l"
 { return MENOR_QUE; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 55 "scanner_tlaloc.l"
+#line 59 "scanner_tlaloc.l"
 { return MAYOR_QUE; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 56 "scanner_tlaloc.l"
+#line 60 "scanner_tlaloc.l"
 { return DIFERENTE; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 57 "scanner_tlaloc.l"
+#line 61 "scanner_tlaloc.l"
 { return POR; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 58 "scanner_tlaloc.l"
+#line 62 "scanner_tlaloc.l"
 { return MAS; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 59 "scanner_tlaloc.l"
+#line 63 "scanner_tlaloc.l"
 { return MENOS; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 60 "scanner_tlaloc.l"
+#line 64 "scanner_tlaloc.l"
 { return DIVISION; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 61 "scanner_tlaloc.l"
+#line 65 "scanner_tlaloc.l"
 { return EXPONENCIAL; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 62 "scanner_tlaloc.l"
+#line 66 "scanner_tlaloc.l"
 { return PUNTO; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 63 "scanner_tlaloc.l"
+#line 67 "scanner_tlaloc.l"
 { return APUNTADOR; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 64 "scanner_tlaloc.l"
+#line 68 "scanner_tlaloc.l"
 { return COMILLAS; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 65 "scanner_tlaloc.l"
+#line 69 "scanner_tlaloc.l"
 { return MAYOR_IGUAL; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 66 "scanner_tlaloc.l"
+#line 70 "scanner_tlaloc.l"
 { return MENOR_IGUAL; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 67 "scanner_tlaloc.l"
+#line 73 "scanner_tlaloc.l"
 { yylval.str = strdup(yytext); return ID; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 68 "scanner_tlaloc.l"
+#line 74 "scanner_tlaloc.l"
 { yylval.integer = atoi(yytext); return CTE_INTEGER; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 69 "scanner_tlaloc.l"
+#line 75 "scanner_tlaloc.l"
 { yylval.decimal = atof(yytext); return CTE_DECIMAL; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 70 "scanner_tlaloc.l"
+#line 76 "scanner_tlaloc.l"
 { yylval.str = strdup(yytext); return CTE_STRING; }
 	YY_BREAK
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
-#line 71 "scanner_tlaloc.l"
+#line 77 "scanner_tlaloc.l"
 
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 72 "scanner_tlaloc.l"
+#line 78 "scanner_tlaloc.l"
 
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 73 "scanner_tlaloc.l"
+#line 79 "scanner_tlaloc.l"
 
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 74 "scanner_tlaloc.l"
+#line 80 "scanner_tlaloc.l"
 
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 75 "scanner_tlaloc.l"
+#line 81 "scanner_tlaloc.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
 #line 1237 "lex.yy.c"
@@ -2243,7 +2243,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 75 "scanner_tlaloc.l"
+#line 81 "scanner_tlaloc.l"
 
 
 

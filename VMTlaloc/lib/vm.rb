@@ -15,6 +15,7 @@ class VirtualMachine
       @global_memory[address.to_i] = value.to_i if type == "integer"
       @global_memory[address.to_i] = value.to_f if type == "decimal"
       @global_memory[address.to_i] = value.to_s.rchomp if type == "string"
+      @global_memory[address.to_i] = value.rchomp if type == "boolean"
       i += 1
     end
 
@@ -50,9 +51,17 @@ class VirtualMachine
         when 224 # return
           puts "return"
         when 197 # and
-          puts "and"
+          if @global_memory[first_oper.to_i] == true and @global_memory[second_oper.to_i] == true
+            @global_memory[result.to_i] = true 
+          else
+            @global_memory[result.to_i] = false
+          end
         when 198 # or
-          puts "or"
+          if @global_memory[first_oper.to_i] == true or @global_memory[second_oper.to_i] == true
+            @global_memory[result.to_i] = true 
+          else
+            @global_memory[result.to_i] = false
+          end
         when 212 # abs()
           @global_memory[result.to_i] = @global_memory[first_oper.to_i].abs
         when 214 # cos()
@@ -67,16 +76,11 @@ class VirtualMachine
           @global_memory[result.to_i] = Math.sqrt(@global_memory[first_oper.to_i])
         when 166 # RET
           puts "RET"
-        when 217 # true
-          puts "true"
-        when 203 # false
-          puts "false"
         when 205 # gotoF  gotoF de los estatutos if, while y for
-          i = result.to_i - 1 if @global_memory[first_oper.to_i] == false          
+          i = result.to_i - 1 if @global_memory[first_oper.to_i] == false or @global_memory[first_oper.to_i] == "false"      
         when 206 # goto de if/while. Se va hasta el final del if cuando es true. Se va al inicio del while.
           i = result.to_i - 1
         when 208 # gotoFor
-          #@global_memory[first_oper.to_i] += second_oper.to_i   # suma si es que tiene step
           i = result.to_i - 1
         when 666 # step
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] + @global_memory[second_oper.to_i]

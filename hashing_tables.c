@@ -5,8 +5,8 @@
 
 //Bloque de identificacion de tokens
 enum symbols {PRINT=213, PRINTLINE=228, READINT=215, READLINE=216, RETURN=224, AND=197, OR=198, ABS=212, COS=214, SIN=225,
-	 		  LOG=211, TAN=226, SQRT=231, RET=166, __TRUE=217, __FALSE=203, GOTOF=205, GOTO=206,
-	 		  EQUALS=61, SAME=122, LT=60, GT=62, DIFF=123, TIMES=42, PLUS=43, MINUS=45, DIV=47, EXP=94, VER=100,
+	 		  LOG=211, TAN=226, SQRT=231, RET=166, __TRUE=217, __FALSE=203, GOTOF=205, GOTO=206, GOSUB=209, ERA=999,
+	 		  EQUALS=61, SAME=122, LT=60, GT=62, DIFF=123, TIMES=42, PLUS=43, MINUS=45, DIV=47, EXP=94, VER=100, PARAM=900,
 	  		  POINTER=107, G_EQUAL_T=124, L_EQUAL_T=125, OPEN_BRACKET=91, GOTOWHILE=207, GOTOFOR=208, STEP=666, INDEX=500, ARRAY=501};
 
 static GHashTable *proc_table; // HashTable de procedimientos (key) leidos. (value) apunta a type_table
@@ -49,6 +49,11 @@ int global_integers_count = 0, global_strings_count = 0,
 // type_table: tabla que guarda el tipo de valor de retorno de la funcion leia en programa
 typedef struct {
 	char *method_type;          // Tipo de retorno del metodo
+    int beginning_address;      // Cuadruplo de inicio del procedimiento (cont: quadruple_index)
+    int params_declared;        // Numero de parametros declarados (para el workspace en ejecucion)
+    int local_vars_declared;    // Numero de variables locales definidas (para el workspace en ejecucion)
+    GQueue *ParamsTypes;         // Guarda los tipos de valor de los parametros
+    GHashTable *params_table;   // Parametros que recibe la funcion 
 	GHashTable *h_table;        // Tabla de variables del metodo
 }type_table;
 
@@ -100,7 +105,7 @@ void create_constants_table(){
 **/
 void create_quadruples_array(){
 	QuadruplesList = g_ptr_array_new();
-	
+    insert_quadruple_to_array(GOTO, 0, 0, 0);   // Genera el primer cuadruplo que va directo a la funcion main	
 }
 
 /**
@@ -317,6 +322,8 @@ void insert_proc_to_table(char *proc, char *tipo){
 		type_table *t_table = g_slice_new(type_table); //Creamos tabla de hashing para los tipos 1x2
 		t_table->method_type = tipo;
 		t_table->h_table = g_hash_table_new(g_str_hash, g_str_equal); //Tabla de variables inicializada
+        t_table->params_table = g_hash_table_new(g_str_hash, g_str_equal); //Tabla de parametros inicializada
+        t_table->ParamsTypes = g_queue_new(); 
 		g_hash_table_insert(proc_table, (gpointer)proc, (gpointer)t_table);
 		current_function = proc;
         reset_memory_counters();    // Reinicia contadores locales de memoria a 0 para nueva metodo
@@ -332,17 +339,19 @@ void insert_proc_to_table(char *proc, char *tipo){
 #Parametros: char *var, char *tipo, int dimension
 #Salida: void
 **/
-void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
+void insert_vars_to_proc_table(char *var, char *tipo, int dimension, int parameter){
 	 if (g_hash_table_lookup(proc_table, (gpointer)current_function) != NULL) {
 		type_table *temp_t_table = g_slice_new(type_table);
 
         temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
-        if (g_hash_table_lookup(temp_t_table->h_table, (gpointer)var) != NULL) {
+        if (g_hash_table_lookup(temp_t_table->h_table, (gpointer)var) != NULL ||
+            g_hash_table_lookup(temp_t_table->params_table, (gpointer)var) != NULL) {
 			printf("La variable '%s' ya esta declarada como global\n", var);
 			exit(0);
         }
 		temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
-        if (g_hash_table_lookup(temp_t_table->h_table, (gpointer)var) != NULL) {
+        if (g_hash_table_lookup(temp_t_table->h_table, (gpointer)var) != NULL ||
+            g_hash_table_lookup(temp_t_table->params_table, (gpointer)var) != NULL) {
 			printf("La variable '%s' ya esta declarada en el metodo\n", var);
 			exit(0);
 		}
@@ -353,6 +362,8 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
         else {    // Variable no declarada y agregada en la tabla de variables
             vars_memory *v_memory = g_slice_new(vars_memory);
             v_memory->type = tipo;
+            v_memory->var_dimension = 0;    // Se inicializan en 0 para evitar futuros conflictos
+            v_memory->mat_dimension = 0;    // con variables que nos son ni arreglos ni matrices
             int address;
             if (strcmp(current_function, global_function) == 0) {   // Si las variables son globales
                 if (strcmp(tipo, "integer") == 0) {
@@ -391,12 +402,88 @@ void insert_vars_to_proc_table(char *var, char *tipo, int dimension){
                         local_decimals_count = local_decimals_count + 1 + dimension;                        
                 }
                 v_memory->virtual_address = address;
-            }     
-            g_hash_table_insert(temp_t_table->h_table, (gpointer)var, (gpointer)v_memory);
+            }
+            if (parameter == 0) {  
+                g_hash_table_insert(temp_t_table->h_table, (gpointer)var, (gpointer)v_memory);
+                temp_t_table->local_vars_declared = temp_t_table->local_vars_declared + 1;
+            } else { 
+                g_hash_table_insert(temp_t_table->params_table, (gpointer)var, (gpointer)v_memory);
+                temp_t_table->params_declared = temp_t_table->params_declared + 1;                
+                g_queue_push_tail(temp_t_table->ParamsTypes, tipo);
+            }        
         }
     } else {
         printf("Error. Procedimiento no existe\n");
+        exit(0);
     }
+}
+
+void insert_proc_as_global_var(char *tipo, char *id){
+    type_table *temp_t_table = g_slice_new(type_table);    
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
+    if (g_hash_table_lookup(temp_t_table->h_table, (gpointer)id) != NULL) {
+		printf("La funcion '%s' ya esta declarada como variable\n", id);
+		exit(0);
+    } else {    // Variable no declarada y agregada en la tabla de variables globales
+        vars_memory *v_memory = g_slice_new(vars_memory);
+        v_memory->type = tipo;
+        v_memory->var_dimension = 0;    // Se inicializan en 0 para evitar futuros conflictos
+        v_memory->mat_dimension = 0;    // con variables que nos son ni arreglos ni matrices
+        int address;
+        if (strcmp(tipo, "integer") == 0) {
+                address = GINTEGERS + global_integers_count;                        
+                global_integers_count = global_integers_count + 1; 
+                
+        }
+        if (strcmp(tipo, "string") == 0) {
+                address = GSTRINGS + global_strings_count;                        
+                global_strings_count = global_strings_count + 1;                        
+        }
+        if (strcmp(tipo, "boolean") == 0) {
+                address = GBOOLEANS + global_booleans_count;                        
+                global_booleans_count = global_booleans_count + 1;                        
+        }
+        if (strcmp(tipo, "decimal") == 0) {
+                address = GDECIMALS + global_decimals_count;                        
+                global_decimals_count = global_decimals_count + 1;                        
+        }
+        v_memory->virtual_address = address;
+        g_hash_table_insert(temp_t_table->h_table, (gpointer)id, (gpointer)v_memory);  
+    }
+}
+
+// Agrega el contador de cuadruplo a la estructura de control del procedimiento para saber donde empieza la funcion
+void generate_beginning_address(){
+    if (g_hash_table_lookup(proc_table, (gpointer)current_function) != NULL) {
+		type_table *temp_t_table = g_slice_new(type_table);
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
+        temp_t_table->beginning_address = quadruple_index + 1;  //+1 para dejar listo el siguiente cuadruplo a empezar
+    } else {
+        printf("Error. Procedimiento no existe\n");
+        exit(0);
+    }
+}
+
+// Genera el cuadruplo de retorno a la funcion original donde se hizo el llamado
+void generate_ret_action(){
+    insert_quadruple_to_array(RET, 0, 0, 0);
+}
+
+// Genera el cuadruplo que retorna un parametro a la funcion original donde se hizo el llamado (return var)
+void generate_return_action(){
+    //insert_quadruple_to_array(RETURN, g_queue_push_tail, 0, 0);   
+}
+
+// Verifica que una funcion llamada dentro de otra, exista en la tabla de procedimientos
+void verify_non_method_presence(char *id){
+    if (g_hash_table_lookup(proc_table, (gpointer)id) == NULL) {
+        printf("Error. Metodo no declarado en el programa\n");
+        exit(0);
+    }
+}
+
+void generate_era_action() {
+    insert_quadruple_to_array(ERA, 0, 0, 0);
 }
 
 /**
@@ -441,8 +528,6 @@ void insert_arr2_index_to_StackO(char *id) {
         insert_quadruple_to_array(VER, array_index, 0, get_mat_dimension(id)); // cuadruplo de verificacion2 | * * linf lsup
         insert_quadruple_to_array(TIMES, array_function_dimension, get_mat_dimension(id)+1, temp_integers_count); // funcion de despl.
         insert_quadruple_to_array(PLUS, array_index, temp_integers_count, temp_integers_count+1); // acumula desplazamientos de ambas dimensiones
-        //insert_quadruple_to_array(PLUS, array_index, array_function_dimension, temp_integers_count); // acumula desplazamientos de ambas dimensiones
-        //insert_quadruple_to_array(TIMES, temp_integers_count, get_var_dimension(id), temp_integers_count+1); // funcion de despl.
         // Mete a pila de StackO la dir del arreglo en su pos inicial 
         temp_integers_count++;       
         g_queue_push_tail(StackO, (gpointer)temp_integers_count);   // Mete direccion que guarda el desplazamiento de la matriz
@@ -529,6 +614,69 @@ void insert_cte_string_to_StackO(char *cte_string){
         g_queue_push_tail(StackTypes, (gpointer)"string"); 
         const_strings_count = const_strings_count + 1;    
 //    }         
+}
+
+/**
+#Nombre: insert_arr_string_to_StackO
+#Descripcion: Inserta una constante string a la pila de operandos
+#Parametros: char *cte_string
+#Salida: void
+**/
+void insert_cte_boolean_to_StackO(char *cte_string){
+//    if(c_string != NULL){
+        vars_memory *temp_memory = g_slice_new(vars_memory);
+        if (g_hash_table_lookup(constants_table, (gpointer)cte_string) != NULL) { // ya existe la constante
+            temp_memory = g_hash_table_lookup(constants_table, (gpointer)cte_string);
+        } else {
+            temp_memory->type = "boolean";
+            temp_memory->virtual_address = const_booleans_count;
+            g_hash_table_insert(constants_table, (gpointer)cte_string, (gpointer)temp_memory);
+        }
+        g_queue_push_tail(StackO, (gpointer)temp_memory->virtual_address);
+        g_queue_push_tail(StackTypes, (gpointer)"boolean"); 
+        const_booleans_count = const_booleans_count + 1;    
+//    }         
+}
+
+// Saca la expresion en pilas y verifica semantica con el parametro de la funcion
+void params_semantic_validation(char *id, int counter){
+    int param;
+    if (g_hash_table_lookup(proc_table, (gpointer)id) != NULL) {
+		type_table *temp_t_table = g_slice_new(type_table);
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)id);
+        char *method_var_type = g_queue_pop_head(temp_t_table->ParamsTypes);
+        char *parameter_var_type = g_queue_pop_tail(StackTypes);
+        if (strcmp(method_var_type, parameter_var_type) == 0) {
+            param = g_queue_pop_tail(StackO);
+            insert_quadruple_to_array(PARAM, param, 0, (counter+1));     // Genera cuadruplo para el parametro congruente
+            g_queue_push_tail(temp_t_table->ParamsTypes, method_var_type);
+        } else {
+            printf("Error. Parametro mandado en funcion no es del mismo tipo\n");
+            exit(0);
+        }
+    } else {
+        printf("Error. Procedimiento no existe\n");
+        exit(0);
+    }
+}
+
+// Verifica que el numero de parametros en la funcion sean los mismos al llamado
+void check_params_number(char *id, int params){
+    type_table *temp_t_table = g_slice_new(type_table);
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)id);
+    int method_params = temp_t_table->params_declared;
+    if (method_params != params){   // Si el numero de parametros no son los mismos, truena.
+        printf("Numero de parametros no coincide con el llamado\n");
+        exit(0);
+    }
+}
+
+// Genera cuadruplo GoSub para ir a la direccion de inicio de un procedimiento
+void generate_gosub(char *id){
+    type_table *temp_t_table = g_slice_new(type_table);
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)id);
+    int beginning_address = temp_t_table->beginning_address;    // Direccion en la que empieza el procedimiento ID
+    insert_quadruple_to_array(GOSUB, beginning_address, 0, 0);
 }
 
 /**
@@ -652,7 +800,7 @@ void generate_goto_if_quadruple(){
 #Parametros: -
 #Salida: void
 **/
-void fill_if() {
+void fill_if(){
 	int temp_count;
 	char *t_count = (char *)malloc(sizeof(int));
 	temp_count = g_queue_pop_tail(StackJumps);
@@ -661,6 +809,15 @@ void fill_if() {
 	t_quadruple = g_ptr_array_index(QuadruplesList,temp_count);
 	t_quadruple->result = t_count;
 
+}
+
+// Rellena el primer cuadruplo con la direccion de la funcion main
+void fill_goto_main(){
+    quad_struct *qs = g_slice_new(quad_struct);
+    qs = g_ptr_array_index(QuadruplesList, 0);
+	char *ba = (char *)malloc(sizeof(int));
+    sprintf (ba, "%d", (quadruple_index + 1));
+    qs->result = ba;
 }
 
 /**
@@ -890,6 +1047,7 @@ void generate_exp_quadruples(){
                    operator == L_EQUAL_T || operator == SAME || operator == DIFF ||
                    operator == AND || operator == OR) {
 					g_queue_push_tail(StackTypes, (gpointer)"boolean");
+                    g_queue_push_tail(StackTypes, (gpointer)"boolean");
 				}
                 *temp_count = *temp_count + 1;
             }   
@@ -974,7 +1132,11 @@ void print_var_table(char *function){
 	printf("%s\n", function);
 	type_table *temp_t_table = g_slice_new(type_table);
 	temp_t_table = g_hash_table_lookup(proc_table, (gpointer)function);
+    printf("Locales: %d\t Params: %d\n", temp_t_table->local_vars_declared, temp_t_table->params_declared);
+    printf("\nVariables locales:\n");
 	g_hash_table_foreach(temp_t_table->h_table, (GHFunc)print_hash_var_table, NULL);
+    printf("\nParametros:\n");
+    g_hash_table_foreach(temp_t_table->params_table, (GHFunc)print_hash_var_table, NULL);
 }
 
 /**
@@ -994,6 +1156,25 @@ static void print_array(quad_struct *quadruple, gpointer user_data){
 	}
 }
 
+void print_globals(char *key, vars_memory *value, gpointer user_data){
+	if (middle_code = fopen("tlaloc.txt", "a+")){
+		fprintf(middle_code, "%s\t%s\t%d\n", key, value->type, value->virtual_address);
+		fclose(middle_code);
+	}else{
+		printf("Error al abrir tlaloc.txt\n");
+        exit(0);
+	}
+}
+
+
+void print_globals_to_file(){
+    type_table *temp_t_table = g_slice_new(type_table);
+	temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
+    
+    g_hash_table_foreach(temp_t_table->h_table, (GHFunc)print_globals, NULL);
+
+}
+
 /**
 #Nombre: print_to_file
 #Descripcion: Manda llamar las funciones para imprimir tanto en consola como archivo objeto 
@@ -1004,7 +1185,11 @@ static void print_array(quad_struct *quadruple, gpointer user_data){
 void print_to_file(){
 	printf("---\n");
     middle_code = fopen("tlaloc.txt", "w"); // Abrimos el archivo en modo de escritura
-    fclose(middle_code);                    // Cerramos el archivo inmediatamente para borrar su contenido
+    fclose(middle_code);                    // Cerramos el archivo inmediatamente para borrar su contenido    
+    print_globals_to_file();
+    middle_code = fopen("tlaloc.txt", "a+");
+	fprintf(middle_code, "$$$\n");
+	fclose(middle_code);
     print_constants_table();
 	middle_code = fopen("tlaloc.txt", "a+");
 	fprintf(middle_code, "$\n");
