@@ -77,7 +77,7 @@ class VirtualMachine
           end
         when 212 # abs()
           @global_memory[result.to_i] = @global_memory[first_oper.to_i].abs
-        when 214 # cos()
+      when 214 # cos()
           @global_memory[result.to_i] = Math.cos(@global_memory[first_oper.to_i])
         when 225 # sin()
           @global_memory[result.to_i] = Math.sin(@global_memory[first_oper.to_i])
