@@ -249,7 +249,10 @@
 	metodo_main: METHOD VOID MAIN { fill_goto_main(); insert_proc_to_table(yylval.str, "void"); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS { generate_beginning_address(); } metodo_body {print_var_table(proc);} END METHOD
                 ;
 	
-	metodo_def: METHOD tipo ID { insert_proc_to_table(yylval.str, type); insert_proc_as_global_var(type, yylval.str); proc = yylval.str} PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS { generate_beginning_address(); } metodo_body {print_var_table(proc); type = ""; } RETURN expresion PUNTO END METHOD { generate_ret_action(); } 
+	metodo_def: METHOD tipo ID { insert_proc_to_table(yylval.str, type); insert_proc_as_global_var(type, yylval.str); proc = yylval.str} 
+				PAR_ABIERTO parametros PAR_CERRADO DOS_PUNTOS { generate_beginning_address(); } 
+				metodo_body {print_var_table(proc); type = ""; } {insert_to_StackOper(RETURN_S); insert_id_to_StackO(proc);}
+				RETURN expresion {generate_return_action(proc);} PUNTO END METHOD { generate_ret_action(); } 
 			  ;
 	
 	metodo_body: metodo_body body_code | ; 

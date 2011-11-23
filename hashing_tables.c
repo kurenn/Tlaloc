@@ -189,6 +189,21 @@ void reset_memory_counters(){
 #Parametros: char *id
 #Salida: int address
 **/
+int get_global_virtual_address(char *id){
+    type_table *temp_t_table = g_slice_new(type_table);
+    temp_t_table = g_hash_table_lookup(proc_table, (gpointer)global_function);
+    vars_memory *v_table = g_slice_new(vars_memory);
+    v_table = g_hash_table_lookup(temp_t_table->h_table, (gpointer)id);
+    int address = v_table->virtual_address;
+    return address;
+}
+
+/**
+#Nombre: get_var_virtual_address
+#Descripcion: Obtiene la direccion virtual de la tabla de hashing de un determinado id
+#Parametros: char *id
+#Salida: int address
+**/
 int get_var_virtual_address(char *id){
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)current_function);
@@ -472,8 +487,8 @@ void generate_ret_action(){
 }
 
 // Genera el cuadruplo que retorna un parametro a la funcion original donde se hizo el llamado (return var)
-void generate_return_action(){
-    //insert_quadruple_to_array(RETURN, g_queue_push_tail, 0, 0);   
+void generate_return_action(char *id){
+    insert_quadruple_to_array(RETURN, g_queue_pop_tail(StackO), 0, get_global_virtual_address(id));   
 }
 
 // Verifica que una funcion llamada dentro de otra, exista en la tabla de procedimientos
@@ -1041,6 +1056,12 @@ void generate_exp_quadruples(){
         second_type = g_queue_pop_tail(StackTypes);     // Saca siguiente operando
         valid_type = valid_var_types(first_type, second_type); // Obtiene el tipo de valor al cual se casteara la operacion
         if (valid_type != 0){ // Si es valido, se genera el cuadruplo
+			// if(operator == RETURN){
+			// 			printf("EDOOOOO\n");
+			// 			insert_quadruple_to_array(RETURN, first_oper, 0, second_oper);
+			// 			g_queue_clear(StackOper);
+			// 			g_queue_clear(StackO);
+			// 		}
             if (operator == EQUALS) { // || operator == 65) {   // '='  Igual para math_choices.
                 //g_queue_pop_tail(second_oper);
                 //printf("oper fondo %d\n", g_queue_peek_tail(StackOper));

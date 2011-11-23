@@ -1,5 +1,31 @@
 program test:
 
+  define pruebaGlobal as integer. 
+  
+  method integer uno(integer aa):
+
+        define arr as integer [10].
+        define mat as integer [3,5].
+        define algo as integer.
+        define a as integer = 100.
+        define b as integer = 5.
+        define i as integer = 1.
+        define booly as boolean = true.
+    return a+b+a+a+b+a+b.
+	end method
+
+  method integer dos(integer a, integer b):
+
+        define arr as integer [10].
+        define mat as integer [3,5].
+        define algo as integer.
+        define aaa as integer = 100.
+        define bbb as integer = 5.
+        define i as integer = 1.
+        define booly as boolean = true.
+    return 0.
+	end method
+
 	method void main():
   
       define var as integer.
