@@ -1,57 +1,20 @@
 program test:
-<<<<<<< HEAD
+
   
     method integer uno(integer a):
       printline(a).
       return 0.
     end method
 
+
     method void main():
-       define a as integer = 2.
-       printline("Hello World!").
+       define a as integer = -2.
+       define b as integer = 3.
        uno(a).
+       printline("Hello World!").
+    
+       
+    
     end method
 
 end program
-=======
-
-  define pruebaGlobal as integer. 
-  
-  method integer uno(integer aa):
-
-        define arr as integer [10].
-        define mat as integer [3,5].
-        define algo as integer.
-        define a as integer = 100.
-        define b as integer = 5.
-        define i as integer = 1.
-        define booly as boolean = true.
-    return a+b+a+a+b+a+b.
-	end method
-
-  method integer dos(integer a, integer b):
-
-        define arr as integer [10].
-        define mat as integer [3,5].
-        define algo as integer.
-        define aaa as integer = 100.
-        define bbb as integer = 5.
-        define i as integer = 1.
-        define booly as boolean = true.
-    return 0.
-	end method
-
-	method void main():
-  
-      define var as integer.
-      define var2 as integer = 5.
-      define var3 as integer = 3.
-
-      var = (2 * ((3 + 4) / 6) ^ var3 + ((6+2 * 8) + var2).
-      printline(var2).
-      printline(var).
-            
-	end method
-
-end program
->>>>>>> 49c4a0a23303644286f8baca83be2acb9159fae8

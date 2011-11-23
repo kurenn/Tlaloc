@@ -10,6 +10,7 @@ class VirtualMachine
     @procedures = {}
     @quadruples = []
     @global_memory = [85000]  # Casillas asignadas para la memoria del programa
+    @persistance = 0
     i = 0   # Index de lineas leidas
     
     until file_lines[i] == "$$$\n"
@@ -33,13 +34,12 @@ class VirtualMachine
   end
   
   def launch!
-    i = 0
+    i = @quadruples[1].chomp("\n").split("\t")[3].to_i
     while @quadruples[i] != nil and @quadruples[i] != "$$"
       operator, first_oper, second_oper, result = @quadruples[i].chomp("\n").split("\t")
       # Seccion para verificar si llega una variable como pointer (-000)
       if first_oper.to_i < 0
         first_oper = @global_memory[first_oper.to_i.abs]
-        #puts @global_memory[first_oper.to_i.abs].inspect
       end
       if second_oper.to_i < 0
         second_oper = @global_memory[second_oper.to_i.abs]
@@ -47,7 +47,6 @@ class VirtualMachine
       end
       if result.to_i < 0
         result = @global_memory[result.to_i.abs] 
-        #puts @global_memory[result.to_i.abs]
       end
       
       case operator.to_i
@@ -62,7 +61,7 @@ class VirtualMachine
         when 216 # readline()
           @global_memory[first_oper.to_i] = gets.to_s
         when 224 # return
-          puts "return"
+          puts @variables.inspect
         when 197 # and
           if @global_memory[first_oper.to_i] == true and @global_memory[second_oper.to_i] == true
             @global_memory[result.to_i] = true 
@@ -88,7 +87,7 @@ class VirtualMachine
         when 231 # sqrt()
           @global_memory[result.to_i] = Math.sqrt(@global_memory[first_oper.to_i])
         when 166 # RET
-          puts "RET"
+          i = @variables.pop_stack
         when 205 # gotoF  gotoF de los estatutos if, while y for
           i = result.to_i - 1 if @global_memory[first_oper.to_i] == false or @global_memory[first_oper.to_i] == "false"      
         when 206 # goto de if/while. Se va hasta el final del if cuando es true. Se va al inicio del while.
@@ -145,7 +144,8 @@ class VirtualMachine
             #@global_memory[result.to_i] = @global_memory[first_oper.to_i + @global_memory[second_oper.to_i]] # 25010 + 6 = 25016
         when 209 #gosub
           @variables.push_to_stack
-          puts @variables.stack.inspect
+          @variables.push_persistance(i)
+          i = result.to_i + 1
         end
     i += 1
     end

@@ -20,4 +20,8 @@ class Stack
     @stack.pop
   end
   
+  def push_persistance(persistance)
+    @stack.last << persistance
+  end
+  
 end

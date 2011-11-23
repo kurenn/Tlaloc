@@ -570,9 +570,6 @@ void insert_movement_quadruple(char *id){
     insert_quadruple_to_array(501, get_var_virtual_address(id), g_queue_pop_tail(StackO), temp_integers_count);
     g_queue_push_tail(StackO, (gpointer)(temp_integers_count*-1));   // Mete direccion que guarda el desplazamiento de la matriz
     g_queue_push_tail(StackTypes, (gpointer)"integer");  // Mete el tipo para que no haya conflicto al generar quads.
-<<<<<<< HEAD
-    temp_integers_count = temp_integers_count + 1;
-=======
     temp_integers_count++;
     g_queue_push_tail(StackDimensions, (gpointer)get_var_virtual_address(id)); // Mete id a sacar a la hora de impresion
 }
@@ -586,7 +583,6 @@ void array_in_id(char *id){
         equals_id_address = get_var_virtual_address(id);
         printf("address %d: %s", equals_id_address, id);
     }
->>>>>>> 49c4a0a23303644286f8baca83be2acb9159fae8
 }
 
 /**
