@@ -125,7 +125,11 @@ class Variables
           @tlocales_int          = array_pop[4]
           @tlocales_decimal      = array_pop[5]
           @tlocales_boolean      = array_pop[6]
-          return pop[7].to_i
+          return array_pop[7].to_i
+        end
+        
+        def push_persistance(persistance)
+             @stack.push_persistance(persistance)
         end
   
 end

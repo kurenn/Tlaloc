@@ -1,26 +1,19 @@
 program test:
+  
+    method integer uno(integer a):
+      printline(a).
+      return 0.
+    end method
 
-  define pruebaGlobal as integer. 
 
-  method void main():
-
-        define arr as integer [10].
-        define mat as integer [3,5].
-        define tmp as integer.
-        define i as integer.
-        define j as integer.
-        define bbb as integer.
-        define booly as boolean.
-	
-  arr[1] = 20.
-  arr[2] = 20.
-  j = arr[1] + arr[2] + arr[1] * arr[1].
-  if (j == 440):
-    printline("a weboooo").
-  else:
-    printline(j).
-  end if
-            
-	end method
+    method void main():
+       define a as integer = -2.
+       define b as integer = 3.
+       uno(a).
+       printline("Hello World!").
+    
+       
+    
+    end method
 
 end program
