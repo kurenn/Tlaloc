@@ -227,7 +227,7 @@
 	
 	factor_alterno: llamado 
                     | funcion_matematica 
-                    | ID { name = yylval.str; /*insert_id_to_StackO(name);*/ insert_to_StackOper(INDEX_S); } factor_arreglo
+                    | ID { name = yylval.str; insert_to_StackOper(INDEX_S); } factor_arreglo
             ;
 
     factor_arreglo: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); insert_movement_quadruple(name); }
@@ -278,8 +278,8 @@
 	llamado: ID { name=yylval.str; verify_non_method_presence(name); } llamado_params { generate_gosub(name); params_counter = 0; }
 		   ;
 
-    llamado_params: PAR_ABIERTO { generate_era_action(); } exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra PAR_CERRADO { check_params_number(name, params_counter); }
-                    | PAR_ABIERTO  { generate_era_action(); }  PAR_CERRADO { check_params_number(name, params_counter); }
+    llamado_params: PAR_ABIERTO { generate_era_action(name); } exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra PAR_CERRADO { check_params_number(name, params_counter); }
+                    | PAR_ABIERTO  { generate_era_action(name); }  PAR_CERRADO { check_params_number(name, params_counter); }
 	                ;
         
     exp_extra: COMA exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra

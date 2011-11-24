@@ -493,14 +493,27 @@ void generate_beginning_address(){
     }
 }
 
+int get_beginning_address(char *id){
+    int address;
+    if (g_hash_table_lookup(proc_table, (gpointer)id) != NULL) {
+		type_table *temp_t_table = g_slice_new(type_table);
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)id);
+        address = temp_t_table->beginning_address;  //+1 para dejar listo el siguiente cuadruplo a empezar
+    } else {
+        printf("Error. Procedimiento no existe\n");
+        exit(0);
+    }
+    return address;
+}
+
 // Genera el cuadruplo de retorno a la funcion original donde se hizo el llamado
 void generate_ret_action(){
     insert_quadruple_to_array(RET, 0, 0, 0);
 }
 
 // Genera el cuadruplo que retorna un parametro a la funcion original donde se hizo el llamado (return var)
-void generate_return_action(char *id){
-    insert_quadruple_to_array(RETURN, g_queue_pop_tail(StackO), 0, get_global_virtual_address(id));   
+void generate_return_action(char *proc){
+    insert_quadruple_to_array(RETURN, g_queue_pop_tail(StackO), 0, get_beginning_address(proc)); 
 }
 
 // Verifica que una funcion llamada dentro de otra, exista en la tabla de procedimientos
@@ -511,8 +524,8 @@ void verify_non_method_presence(char *id){
     }
 }
 
-void generate_era_action() {
-    insert_quadruple_to_array(ERA, 0, 0, 0);
+void generate_era_action(char *proc) {
+    insert_quadruple_to_array(ERA, get_beginning_address(proc), 0, 0);
 }
 
 /**
@@ -1061,7 +1074,6 @@ void generate_exp_quadruples(){
         g_queue_push_tail(StackOper, (gpointer)operator);
     } else {    // Genera cuadruplos para asignacion o el resto de tipo de cuadruplos (que no son math_functions)
         second_oper = g_queue_pop_tail(StackO);         // Saca el siguiente operando para hacer las operaciones
-        printf("%d\n", g_queue_peek_tail(StackO));
         first_type = g_queue_pop_tail(StackTypes);      // Saca primer operando
         second_type = g_queue_pop_tail(StackTypes);     // Saca siguiente operando
         valid_type = valid_var_types(first_type, second_type); // Obtiene el tipo de valor al cual se casteara la operacion
