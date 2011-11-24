@@ -61,7 +61,7 @@ class VirtualMachine
         when 216 # readline()
           @global_memory[first_oper.to_i] = gets.to_s
         when 224 # return
-          puts @variables.inspect
+          #puts @variables.inspect
         when 197 # and
           if @global_memory[first_oper.to_i] == true and @global_memory[second_oper.to_i] == true
             @global_memory[result.to_i] = true 

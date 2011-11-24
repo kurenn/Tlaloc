@@ -29,6 +29,7 @@ static GPtrArray *QuadruplesList; //lista de cuadruplosarray_function_dimension
 
 int array_function_dimension = 0; // Guarda el valor por el cual se multiplicara la matriz (funcion para el desplazamiento)
 int equals_id_address;
+int array_in;
 
 // Inicio de bloques de memoria para cada tipo de variables
 enum memory_blocks {GINTEGERS=5000, GSTRINGS=10000, GBOOLEANS=15000, GDECIMALS=20000, 
@@ -554,7 +555,7 @@ void insert_arr2_index_to_StackO(char *id) {
 
         insert_quadruple_to_array(VER, array_index, 0, get_mat_dimension(id)); // cuadruplo de verificacion2 | * * linf lsup
         insert_quadruple_to_array(TIMES, array_function_dimension, get_mat_dimension(id)+1, temp_integers_count); // funcion de despl.
-        insert_quadruple_to_array(PLUS, array_index, g_queue_pop_tail(StackO), temp_integers_count+1); // acumula desplazamientos de ambas dimensiones
+        insert_quadruple_to_array(PLUS, array_index, temp_integers_count, temp_integers_count+1); // acumula desplazamientos de ambas dimensiones
         // Mete a pila de StackO la dir del arreglo en su pos inicial 
 		temp_integers_count++;
 		g_queue_push_tail(StackO, (gpointer)temp_integers_count);   // Mete direccion que guarda el desplazamiento de la matriz
@@ -564,9 +565,9 @@ void insert_arr2_index_to_StackO(char *id) {
 }
 
 // Genera el desplazamiento al tener el corrimiento de los arreglos
-void insert_movement_quadruple(){
+void insert_movement_quadruple(char *id){
 	temp_integers_count = temp_integers_count + 1;
-    insert_quadruple_to_array(501, g_queue_pop_tail(StackO), g_queue_pop_tail(StackO), temp_integers_count);
+    insert_quadruple_to_array(501, get_var_virtual_address(id), g_queue_pop_tail(StackO), temp_integers_count);
     g_queue_push_tail(StackO, (gpointer)(temp_integers_count*-1));   // Mete direccion que guarda el desplazamiento de la matriz
     g_queue_push_tail(StackTypes, (gpointer)"integer");  // Mete el tipo para que no haya conflicto al generar quads.
     temp_integers_count++;
@@ -662,6 +663,15 @@ void insert_cte_boolean_to_StackO(char *cte_string){
         g_queue_push_tail(StackTypes, (gpointer)"boolean"); 
         const_booleans_count = const_booleans_count + 1;    
 //    }         
+}
+
+void array_in_id(char *id){
+    if (strcmp(id,"") != 0) { 
+        printf("ID: %s\n",id );   
+        array_in = 1;
+        equals_id_address = get_var_virtual_address(id);
+        printf("address %d: %s", equals_id_address, id);
+    }
 }
 
 // Saca la expresion en pilas y verifica semantica con el parametro de la funcion
@@ -1057,6 +1067,7 @@ void generate_exp_quadruples(){
         valid_type = valid_var_types(first_type, second_type); // Obtiene el tipo de valor al cual se casteara la operacion
         if (valid_type != 0){ // Si es valido, se genera el cuadruplo
             if (operator == EQUALS) {
+                if (array_in == 1) { second_oper = equals_id_address; array_in = 0; equals_id_address = 0; }
                 insert_quadruple_to_array(operator, second_oper, 0, first_oper);
             } else {    // Asigna el tipo de dato a la variable que guardara el resultado de la operacion
                     if (valid_type == 1) { temp_count = &temp_integers_count; temp_type = "integer"; }
