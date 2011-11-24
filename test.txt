@@ -14,35 +14,33 @@ program multMatrix:
       define k as integer.
       define suma as integer = 0.  
 
-      mat1[0,0] = 2.
-      mat1[0,1] = 0.
+      mat1[0,0] = 1.
+      mat1[0,1] = 1.
       mat1[0,2] = 1.
-      mat1[1,0] = 3.
-      mat1[1,1] = 0.
-      mat1[1,2] = 0.
-      mat1[2,0] = 5.
+      mat1[1,0] = 1.
+      mat1[1,1] = 1.
+      mat1[1,2] = 1.
+      mat1[2,0] = 1.
       mat1[2,1] = 1.
       mat1[2,2] = 1.
 
       mat2[0,0] = 1.
-      mat2[0,1] = 0.
+      mat2[0,1] = 1.
       mat2[0,2] = 1.
       mat2[1,0] = 1.
-      mat2[1,1] = 2.
+      mat2[1,1] = 1.
       mat2[1,2] = 1.
       mat2[2,0] = 1.
       mat2[2,1] = 1.
-      mat2[2,2] = 0.
+      mat2[2,2] = 1.
 
       for i = 0 to 2 step 1:
         for j = 0 to 2 step 1:
+          suma = 0.
           for k = 0 to 2 step 1:
-            primero = mat1[i,k].
-            segundo = mat2[k,j].
-            suma = suma + (primero * segundo).
+            suma = suma + (mat1[i,k] * mat2[k,j]).
           end for
           mat3[i,j] = suma.
-          suma = 0.
           print(mat3[i,j] + " ").
         end for
         printline("").

@@ -543,7 +543,6 @@ void insert_arr_index_to_StackO(char *id) {
         // Mete a pila de StackO la dir del arreglo en su pos inicial
         g_queue_push_tail(StackO, (gpointer)array_index);           // Mete direccion que guarda la posicion del arr a indexar
         g_queue_push_tail(StackTypes, (gpointer)get_var_type(id));  // Mete el tipo para que no haya conflicto al generar quads.
-        //g_queue_push_tail(StackDimensions, (gpointer)get_var_virtual_address(id)); // Mete id a sacar a la hora de impresion
     }
 }
 
@@ -1062,6 +1061,7 @@ void generate_exp_quadruples(){
         g_queue_push_tail(StackOper, (gpointer)operator);
     } else {    // Genera cuadruplos para asignacion o el resto de tipo de cuadruplos (que no son math_functions)
         second_oper = g_queue_pop_tail(StackO);         // Saca el siguiente operando para hacer las operaciones
+        printf("%d\n", g_queue_peek_tail(StackO));
         first_type = g_queue_pop_tail(StackTypes);      // Saca primer operando
         second_type = g_queue_pop_tail(StackTypes);     // Saca siguiente operando
         valid_type = valid_var_types(first_type, second_type); // Obtiene el tipo de valor al cual se casteara la operacion
