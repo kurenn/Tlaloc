@@ -36,18 +36,16 @@ class VirtualMachine
     i = 0
     while @quadruples[i] != nil and @quadruples[i] != "$$"
       operator, first_oper, second_oper, result = @quadruples[i].chomp("\n").split("\t")
+      
       # Seccion para verificar si llega una variable como pointer (-000)
       if first_oper.to_i < 0
         first_oper = @global_memory[first_oper.to_i.abs]
-        #puts @global_memory[first_oper.to_i.abs].inspect
       end
       if second_oper.to_i < 0
         second_oper = @global_memory[second_oper.to_i.abs]
-        
       end
       if result.to_i < 0
         result = @global_memory[result.to_i.abs] 
-        #puts @global_memory[result.to_i.abs]
       end
       
       case operator.to_i
@@ -77,7 +75,7 @@ class VirtualMachine
           end
         when 212 # abs()
           @global_memory[result.to_i] = @global_memory[first_oper.to_i].abs
-      when 214 # cos()
+        when 214 # cos()
           @global_memory[result.to_i] = Math.cos(@global_memory[first_oper.to_i])
         when 225 # sin()
           @global_memory[result.to_i] = Math.sin(@global_memory[first_oper.to_i])
@@ -97,9 +95,9 @@ class VirtualMachine
           i = result.to_i - 1
         when 666 # step
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] + @global_memory[second_oper.to_i]
-      when 61 # =
+        when 61 # =
           @global_memory[first_oper.to_i] = @global_memory[result.to_i]
-      when 122 # ==
+        when 122 # ==
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] == @global_memory[second_oper.to_i]
         when 60 # <
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] < @global_memory[second_oper.to_i]
@@ -128,7 +126,7 @@ class VirtualMachine
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] ** @global_memory[second_oper.to_i]
         when 107 # ->
           puts "->"
-        when 33 # !
+        when 33 # ! 
           puts "!"
         when 124 # >=
           @global_memory[result.to_i] = @global_memory[first_oper.to_i] >= @global_memory[second_oper.to_i]
@@ -140,14 +138,11 @@ class VirtualMachine
             exit
           end
         when 501 # asignacion de arrs mediante variables por referencia *gm[result] = gm[first + gm[second]]
-            #@global_memory[first_oper.to_i + @global_memory[second_oper.to_i]] = @global_memory[result.to_i]
-            @global_memory[result.to_i] = first_oper.to_i + @global_memory[second_oper.to_i]
-            #@global_memory[result.to_i] = @global_memory[first_oper.to_i + @global_memory[second_oper.to_i]] # 25010 + 6 = 25016
-        when 209 #gosub
+          @global_memory[result.to_i] = first_oper.to_i + @global_memory[second_oper.to_i]
+        when 209 #gosub - va a otra funcion como llamado
           @variables.push_to_stack
-          puts @variables.stack.inspect
         end
-    i += 1
+    i += 1 #Incremento para recorrer todos los cuadruplos
     end
   end
   
