@@ -1,7 +1,18 @@
 program test:
-
   
     method integer uno(integer a):
+      define r as integer.
+      r =  a.
+      printline(a).
+      return 0.
+    end method
+    
+    method integer dos(integer a):
+      printline(a).
+      return 0.
+    end method
+    
+    method integer tres(integer a):
       printline(a).
       return 0.
     end method
@@ -9,11 +20,9 @@ program test:
 
     method void main():
        define a as integer = -2.
-       define b as integer = 3.
-       uno(a).
-       printline("Hello World!").
+       define b as integer = 3.       
     
-       
+      uno(2).
     
     end method
 

@@ -62,22 +62,22 @@ class Variables
       direccion = direccion.to_i
 
       case direccion
-        when GLOBAL_INT         then @global_int.merge!({direccion => valor.to_i})
-        when GLOBAL_STRING      then @global_float.merge!({direccion => valor.to_f})
-        when GLOBAL_BOOLEAN     then @global_boolean.merge!({direccion => valor.to_boolean})
-        when GLOBAL_DECIMAL     then @global_string.merge!({direccion => valor.gsub("\"", "")})
-        when LOCAL_INTEGERS     then @l_int.merge!({direccion => valor.to_i})
-        when LOCAL_STRINGS      then @l_float.merge!({direccion => valor.to_f})
-        when LOCAL_BOOLEANS     then @l_boolean.merge!({direccion => valor.to_boolean})
-        when LOCAL_DECIMALS     then @l_string.merge!({direccion => valor.gsub("\"", "")})
-        when T_INT              then @t_globales_int.merge!({direccion => valor.to_i})
-        when T_STRING           then @t_globales_float.merge!({direccion => valor.to_f})
-        when T_BOOLEAN          then @t_globales_boolean.merge!({direccion => valor.to_boolean})
-        when T_DECIMALS         then @t_locales_int.merge!({direccion => valor.to_i})
-        when C_INT              then @t_locales_float.merge!({direccion => valor.to_f})
-        when C_STRING           then @t_locales_boolean.merge!({direccion => valor.to_boolean})
-        when C_BOOLEAN          then @constante_int.merge!({direccion => valor.to_i})
-        when C_DECIMAL          then @constante_decimal.merge!({direccion => valor.to_f})
+        when GLOBAL_INT         then 
+        when GLOBAL_STRING      then 
+        when GLOBAL_BOOLEAN     then 
+        when GLOBAL_DECIMAL     then 
+        when LOCAL_INTEGERS     then 
+        when LOCAL_STRINGS      then 
+        when LOCAL_BOOLEANS     then 
+        when LOCAL_DECIMALS     then 
+        when T_INT              then 
+        when T_STRING           then 
+        when T_BOOLEAN          then 
+        when T_DECIMALS         then 
+        when C_INT              then 
+        when C_STRING           then 
+        when C_BOOLEAN          then 
+        when C_DECIMAL          then 
       end
     end
     

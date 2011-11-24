@@ -26,6 +26,7 @@ class VirtualMachine
       @global_memory[address.to_i] = value.to_f if type == "decimal"
       @global_memory[address.to_i] = value.to_s.rchomp if type == "string"
       @global_memory[address.to_i] = value.rchomp if type == "boolean"
+      puts "#{@global_memory[address.to_i]} : #{address.to_i}"
       i += 1
     end
 
@@ -61,7 +62,7 @@ class VirtualMachine
         when 216 # readline()
           @global_memory[first_oper.to_i] = gets.to_s
         when 224 # return
-          puts @variables.inspect
+          i = @variables.pop_stack.to_i
         when 197 # and
           if @global_memory[first_oper.to_i] == true and @global_memory[second_oper.to_i] == true
             @global_memory[result.to_i] = true 
