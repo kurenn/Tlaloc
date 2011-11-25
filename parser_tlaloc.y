@@ -275,14 +275,14 @@
 			   | default_functions
 			   ;
 	
-	llamado: ID { name=yylval.str; verify_non_method_presence(name); } llamado_params { generate_gosub(name); params_counter = 0; }
+	llamado: ID { name=yylval.str; verify_non_method_presence(name); push_to_stack_type(name);} llamado_params { generate_gosub(name); params_counter = 0; }
 		   ;
 
-    llamado_params: PAR_ABIERTO { generate_era_action(name); } exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra PAR_CERRADO { check_params_number(name, params_counter); }
+	llamado_params: PAR_ABIERTO { generate_era_action(name); insert_to_StackOper(OPEN_BRACKET_S); } exp {remove_from_StackOper(); params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra PAR_CERRADO { check_params_number(name, params_counter); }
                     | PAR_ABIERTO  { generate_era_action(name); }  PAR_CERRADO { check_params_number(name, params_counter); }
 	                ;
         
-    exp_extra: COMA exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra
+    exp_extra: COMA {insert_to_StackOper(OPEN_BRACKET_S);} exp {remove_from_StackOper(); params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra
                 |
                 ;
 

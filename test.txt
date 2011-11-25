@@ -1,15 +1,19 @@
 program multMatrix:
-
-  define pruebaGlobal as integer. 
-
-    method void algo():
-      define vector as integer[5].
+    
+    
+    method integer factorial(integer n):
+      define d as integer = 1.
       
-      for 0 to 4 step 1:
-        
-      end for
-      
+      if(n <= 1):
+        d = 1.
+      else:
+        d = factorial(n - 1) + factorial(n - 2).
+      end if
+      return d.
     end method
 
+    method void main():
+      printline(factorial(3)).
+    end method
 
 end program

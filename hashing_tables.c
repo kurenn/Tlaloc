@@ -42,7 +42,7 @@ enum memory_blocks {GINTEGERS=5000, GSTRINGS=10000, GBOOLEANS=15000, GDECIMALS=2
 int global_integers_count = 0, global_strings_count = 0,
     global_booleans_count = 0, global_decimals_count = 0, 
     local_integers_count = 0, local_strings_count = 0,
-    local_booleans_count = 0, local_decimals_count = 0,
+    local_booleans_count = 0, local_decimals_count = 0, functions_count = 0,
     temp_integers_count = TINTEGERS, temp_strings_count = TSTRINGS,
     temp_booleans_count = TBOOLEANS, temp_decimals_count = TDECIMALS,
     const_integers_count = CINTEGERS, const_strings_count = CSTRINGS,
@@ -254,6 +254,11 @@ char *get_var_type(char *id){
     }
     char *this_type = v_table->type;
     return this_type;
+}
+
+void push_to_stack_type(char *id) {
+	char *type = get_var_type(id);
+	g_queue_push_tail(StackTypes, type);
 }
 
 /**
@@ -513,7 +518,7 @@ void generate_ret_action(){
 
 // Genera el cuadruplo que retorna un parametro a la funcion original donde se hizo el llamado (return var)
 void generate_return_action(char *proc){
-    insert_quadruple_to_array(RETURN, g_queue_pop_tail(StackO), 0, get_beginning_address(proc)); 
+    insert_quadruple_to_array(RETURN, g_queue_pop_tail(StackO), 0, get_global_virtual_address(proc)); 
 }
 
 // Verifica que una funcion llamada dentro de otra, exista en la tabla de procedimientos
@@ -721,10 +726,20 @@ void check_params_number(char *id, int params){
 
 // Genera cuadruplo GoSub para ir a la direccion de inicio de un procedimiento
 void generate_gosub(char *id){
+	int *temp_count;
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)id);
+	char *type = temp_t_table->method_type;
+	if (strcmp(type, "integer") == 0) { temp_count = &temp_integers_count; }
+    if (strcmp(type, "string") == 0) { temp_count = &temp_strings_count;  }
+    if (strcmp(type, "boolean") == 0) { temp_count = &temp_booleans_count; }
+    if (strcmp(type, "decimal") == 0) { temp_count = &temp_decimals_count; }
+	
     int beginning_address = temp_t_table->beginning_address;    // Direccion en la que empieza el procedimiento ID
     insert_quadruple_to_array(GOSUB, beginning_address, 0, 0);
+	insert_quadruple_to_array(EQUALS, *temp_count, 0, get_global_virtual_address(id));
+	g_queue_push_tail(StackO, *temp_count);
+	*temp_count = *temp_count + 1;
 }
 
 /**

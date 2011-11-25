@@ -49,3 +49,4 @@ void generate_for_limit_quadruple();
 void generate_gotoF_for_quadruple();
 void fill_for();
 void fill_step();
+void push_to_stack_type(char *name);
