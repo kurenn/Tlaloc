@@ -464,7 +464,7 @@ void insert_proc_as_global_var(char *tipo, char *id){
         v_memory->var_dimension = 0;    // Se inicializan en 0 para evitar futuros conflictos
         v_memory->mat_dimension = 0;    // con variables que nos son ni arreglos ni matrices
         int address;
-        if (strcmp(tipo, "integer") == 0) {
+        if (strcmp(tipo, "integer") == 0 || strcmp(tipo, "void") == 0) {
                 address = GINTEGERS + global_integers_count;                        
                 global_integers_count = global_integers_count + 1; 
                 
@@ -730,7 +730,7 @@ void generate_gosub(char *id){
     type_table *temp_t_table = g_slice_new(type_table);
     temp_t_table = g_hash_table_lookup(proc_table, (gpointer)id);
 	char *type = temp_t_table->method_type;
-	if (strcmp(type, "integer") == 0) { temp_count = &temp_integers_count; }
+	if (strcmp(type, "integer") == 0 || strcmp(type, "void") == 0) { temp_count = &temp_integers_count; }
     if (strcmp(type, "string") == 0) { temp_count = &temp_strings_count;  }
     if (strcmp(type, "boolean") == 0) { temp_count = &temp_booleans_count; }
     if (strcmp(type, "decimal") == 0) { temp_count = &temp_decimals_count; }
