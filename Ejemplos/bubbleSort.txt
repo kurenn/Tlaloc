@@ -1,0 +1,41 @@
+program test:
+  
+    method integer uno(integer a):
+      printline(a).
+      return 0.
+    end method
+
+
+    method void main():
+       define a as integer.
+       define b as integer.
+       define arr as integer[20].
+       define max as integer = 19.
+       define temp as integer.
+       define temp2 as integer.
+       
+      for a = 0 to 19 step 1:
+        arr[max-a] = a.
+      end for
+
+      for a = 0 to 19 step 1:
+        print(arr[a] + " ").
+      end for
+      printline("").
+
+      for a = 1 to (max) step 1:
+        for b = 0 to (max - a) step 1:
+            if (arr[b] > arr[b+1]):
+              temp = arr[b].  arr[b] = arr[b+1].  arr[b+1] = temp.
+            end if
+        end for
+    end for
+
+    for a = 0 to 19 step 1:
+      print(arr[a] + " ").
+    end for
+    printline("").
+    
+    end method
+
+end program

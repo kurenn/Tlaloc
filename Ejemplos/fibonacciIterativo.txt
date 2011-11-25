@@ -1,0 +1,23 @@
+program fibIter:
+
+    method void main():
+       define x as integer.
+       define prev1 as integer = 0.
+       define prev2 as integer = 1.
+       define fib as integer.
+       define temp1 as integer = 0.
+
+      print("Introduce un numero para saber su fibonacci: ").
+      readint(fib).
+
+      for x = 0 to fib-1 step 1:
+            temp1 = prev1.
+            prev1 = prev2.
+            prev2 = temp1 + prev1.
+      end for
+
+      printline("Fibonacci es " + prev1).
+
+    end method
+
+end program

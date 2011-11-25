@@ -1,0 +1,51 @@
+program multMatrix:
+
+  define pruebaGlobal as integer. 
+
+    method void main():
+  
+      define mat1 as integer[3,3].
+      define mat2 as integer[3,3].
+      define mat3 as integer[3,3].  
+      define primero as integer.
+      define segundo as integer.
+      define i as integer.
+      define j as integer.
+      define k as integer.
+      define suma as integer = 0.  
+
+      mat1[0,0] = 2.
+      mat1[0,1] = 0.
+      mat1[0,2] = 1.
+      mat1[1,0] = 3.
+      mat1[1,1] = 0.
+      mat1[1,2] = 0.
+      mat1[2,0] = 5.
+      mat1[2,1] = 1.
+      mat1[2,2] = 1.
+
+      mat2[0,0] = 1.
+      mat2[0,1] = 0.
+      mat2[0,2] = 1.
+      mat2[1,0] = 1.
+      mat2[1,1] = 2.
+      mat2[1,2] = 1.
+      mat2[2,0] = 1.
+      mat2[2,1] = 1.
+      mat2[2,2] = 0.
+
+      for i = 0 to 2 step 1:
+        for j = 0 to 2 step 1:
+          for k = 0 to 2 step 1:
+            suma = suma + (mat1[i,k] * mat2[k,j]).
+          end for
+          mat3[i,j] = suma.
+          suma = 0.
+          print(mat3[i,j] + " ").
+        end for
+        printline("").
+      end for
+            
+    end method
+
+end program

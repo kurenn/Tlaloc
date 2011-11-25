@@ -1,0 +1,14 @@
+program test:
+
+    method void main():
+  
+      define var as integer.
+      define var2 as decimal = 2.
+      define var3 as integer = 3.
+
+      var = abs(cos((2 * ((3 + 4) / 6)) ^ var2 + ((6+2 * 8)+ var2))).
+      printline(var).
+            
+    end method
+
+end program

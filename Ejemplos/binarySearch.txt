@@ -1,0 +1,38 @@
+program binary:
+
+    method void main():
+  
+    define arr as integer[20].
+    define linf as integer = 0.
+    define lsup as integer = 19.
+    define mitad as integer.
+    define a as integer.
+    define encontrar as integer.
+    define mensaje as string = "No encontre...".
+
+    for a = 0 to 19 step 1:
+      arr[a] = a.
+    end for
+
+    print("Vamos a encontrar tu numero del 0 a N: ").
+    readint(encontrar).
+
+		while (linf <= lsup):
+			mitad = (linf + lsup) / 2.
+			if (arr[mitad] == encontrar):
+				mensaje = "Encontre!".
+        linf = lsup + 1.
+			else:
+			  if (arr[mitad] < encontrar):
+				  linf = mitad + 1.
+			  else:
+				  lsup = mitad - 1.
+	      end if
+      end if
+    end while
+
+    printline(mensaje).
+            
+    end method
+
+end program
