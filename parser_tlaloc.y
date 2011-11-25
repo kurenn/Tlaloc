@@ -227,11 +227,11 @@
 	
 	factor_alterno: llamado 
                     | funcion_matematica 
-                    | ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } factor_arreglo
+                    | ID { name = yylval.str; insert_to_StackOper(INDEX_S); } factor_arreglo
             ;
 
     factor_arreglo: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); insert_movement_quadruple(name); }
-                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); }
+                    | CORCHETE_ABIERTO exp { insert_arr_index_to_StackO(name); remove_from_StackO(); } COMA {} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); }
                     ;
 
 	var: ID { insert_id_to_StackO(yylval.str); }
@@ -278,8 +278,8 @@
 	llamado: ID { name=yylval.str; verify_non_method_presence(name); } llamado_params { generate_gosub(name); params_counter = 0; }
 		   ;
 
-    llamado_params: PAR_ABIERTO { generate_era_action(); } exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra PAR_CERRADO { check_params_number(name, params_counter); }
-                    | PAR_ABIERTO  { generate_era_action(); }  PAR_CERRADO { check_params_number(name, params_counter); }
+    llamado_params: PAR_ABIERTO { generate_era_action(name); } exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra PAR_CERRADO { check_params_number(name, params_counter); }
+                    | PAR_ABIERTO  { generate_era_action(name); }  PAR_CERRADO { check_params_number(name, params_counter); }
 	                ;
         
     exp_extra: COMA exp { params_semantic_validation(name, params_counter); params_counter = params_counter + 1; } exp_extra
@@ -288,13 +288,13 @@
 
     // Guarda direccion de memoria a la cual se le asignara el resultado en el cuadruplo de asignacion
 	asignacion: ID { array_in_id(yylval.str); name = yylval.str; insert_id_to_StackO(yylval.str); } IGUAL {insert_to_StackOper(EQUALS_S); } expresion PUNTO {generate_exp_quadruples(); reset_temp_vars(); }
-				| ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } array_assignment {  generate_exp_quadruples(); remove_from_StackOper(); reset_temp_vars(); }
+				| ID { name = yylval.str; insert_id_to_StackO(name); insert_to_StackOper(INDEX_S); } array_assignment {  generate_exp_quadruples(); reset_temp_vars(); }
 			    ;
 
 	// Genera el cuadruplo de verificacion de dimension y al final suma desplazamiento
     array_assignment: CORCHETE_ABIERTO exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr_index_to_StackO(name); insert_movement_quadruple(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO 
 	// Genera los dos cuadruplos de verificacion de dimensiones y al final suma desplazamiento
-                    | CORCHETE_ABIERTO exp { generate_exp_quadruples(); insert_arr_index_to_StackO(name); remove_from_StackOper(); } COMA {insert_to_StackOper(INDEX_S);} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO
+                    | CORCHETE_ABIERTO exp { insert_arr_index_to_StackO(name); remove_from_StackO();  } COMA {} exp CORCHETE_CERRADO { generate_exp_quadruples(); insert_arr2_index_to_StackO(name); insert_movement_quadruple(name); remove_from_StackOper(); } IGUAL { insert_to_StackOper(EQUALS_S); } expresion PUNTO
                                        ;	
 	
 	estatuto: if_statement 

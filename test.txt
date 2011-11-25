@@ -1,29 +1,15 @@
-program test:
-  
-    method integer uno(integer a):
-      define r as integer.
-      r =  a.
-      printline(a).
-      return 0.
-    end method
-    
-    method integer dos(integer a):
-      printline(a).
-      return 0.
-    end method
-    
-    method integer tres(integer a):
-      printline(a).
-      return 0.
+program multMatrix:
+
+  define pruebaGlobal as integer. 
+
+    method void algo():
+      define vector as integer[5].
+      
+      for 0 to 4 step 1:
+        
+      end for
+      
     end method
 
-
-    method void main():
-       define a as integer = -2.
-       define b as integer = 3.       
-    
-      uno(2).
-    
-    end method
 
 end program

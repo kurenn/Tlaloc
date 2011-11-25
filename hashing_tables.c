@@ -28,8 +28,8 @@ FILE *middle_code;			   //Archivo de cuadruplos
 static GPtrArray *QuadruplesList; //lista de cuadruplosarray_function_dimension
 
 int array_function_dimension = 0; // Guarda el valor por el cual se multiplicara la matriz (funcion para el desplazamiento)
-int array_in = 0;                   // Contol si id es un arreglo o matriz
 int equals_id_address;
+int array_in;
 
 // Inicio de bloques de memoria para cada tipo de variables
 enum memory_blocks {GINTEGERS=5000, GSTRINGS=10000, GBOOLEANS=15000, GDECIMALS=20000, 
@@ -493,14 +493,27 @@ void generate_beginning_address(){
     }
 }
 
+int get_beginning_address(char *id){
+    int address;
+    if (g_hash_table_lookup(proc_table, (gpointer)id) != NULL) {
+		type_table *temp_t_table = g_slice_new(type_table);
+        temp_t_table = g_hash_table_lookup(proc_table, (gpointer)id);
+        address = temp_t_table->beginning_address;  //+1 para dejar listo el siguiente cuadruplo a empezar
+    } else {
+        printf("Error. Procedimiento no existe\n");
+        exit(0);
+    }
+    return address;
+}
+
 // Genera el cuadruplo de retorno a la funcion original donde se hizo el llamado
 void generate_ret_action(){
     insert_quadruple_to_array(RET, 0, 0, 0);
 }
 
 // Genera el cuadruplo que retorna un parametro a la funcion original donde se hizo el llamado (return var)
-void generate_return_action(char *id){
-    insert_quadruple_to_array(RETURN, g_queue_pop_tail(StackO), 0, get_global_virtual_address(id));   
+void generate_return_action(char *proc){
+    insert_quadruple_to_array(RETURN, g_queue_pop_tail(StackO), 0, get_beginning_address(proc)); 
 }
 
 // Verifica que una funcion llamada dentro de otra, exista en la tabla de procedimientos
@@ -511,8 +524,8 @@ void verify_non_method_presence(char *id){
     }
 }
 
-void generate_era_action() {
-    insert_quadruple_to_array(ERA, 0, 0, 0);
+void generate_era_action(char *proc) {
+    insert_quadruple_to_array(ERA, get_beginning_address(proc), 0, 0);
 }
 
 /**
@@ -543,7 +556,6 @@ void insert_arr_index_to_StackO(char *id) {
         // Mete a pila de StackO la dir del arreglo en su pos inicial
         g_queue_push_tail(StackO, (gpointer)array_index);           // Mete direccion que guarda la posicion del arr a indexar
         g_queue_push_tail(StackTypes, (gpointer)get_var_type(id));  // Mete el tipo para que no haya conflicto al generar quads.
-        //g_queue_push_tail(StackDimensions, (gpointer)get_var_virtual_address(id)); // Mete id a sacar a la hora de impresion
     }
 }
 
@@ -555,7 +567,7 @@ void insert_arr2_index_to_StackO(char *id) {
 
         insert_quadruple_to_array(VER, array_index, 0, get_mat_dimension(id)); // cuadruplo de verificacion2 | * * linf lsup
         insert_quadruple_to_array(TIMES, array_function_dimension, get_mat_dimension(id)+1, temp_integers_count); // funcion de despl.
-        insert_quadruple_to_array(PLUS, array_index, g_queue_pop_tail(StackO), temp_integers_count+1); // acumula desplazamientos de ambas dimensiones
+        insert_quadruple_to_array(PLUS, array_index, temp_integers_count, temp_integers_count+1); // acumula desplazamientos de ambas dimensiones
         // Mete a pila de StackO la dir del arreglo en su pos inicial 
 		temp_integers_count++;
 		g_queue_push_tail(StackO, (gpointer)temp_integers_count);   // Mete direccion que guarda el desplazamiento de la matriz
@@ -571,18 +583,6 @@ void insert_movement_quadruple(char *id){
     g_queue_push_tail(StackO, (gpointer)(temp_integers_count*-1));   // Mete direccion que guarda el desplazamiento de la matriz
     g_queue_push_tail(StackTypes, (gpointer)"integer");  // Mete el tipo para que no haya conflicto al generar quads.
     temp_integers_count++;
-    g_queue_push_tail(StackDimensions, (gpointer)get_var_virtual_address(id)); // Mete id a sacar a la hora de impresion
-}
-
-
-// Verifica si la variable a asignar tendra un arreglo o matriz, a diferencia de una variable normal
-void array_in_id(char *id){
-    if (strcmp(id,"") != 0) { 
-        printf("ID: %s\n",id );   
-        array_in = 1;
-        equals_id_address = get_var_virtual_address(id);
-        printf("address %d: %s", equals_id_address, id);
-    }
 }
 
 /**
@@ -675,6 +675,15 @@ void insert_cte_boolean_to_StackO(char *cte_string){
         g_queue_push_tail(StackTypes, (gpointer)"boolean"); 
         const_booleans_count = const_booleans_count + 1;    
 //    }         
+}
+
+void array_in_id(char *id){
+    if (strcmp(id,"") != 0) { 
+        printf("ID: %s\n",id );   
+        array_in = 1;
+        equals_id_address = get_var_virtual_address(id);
+        printf("address %d: %s", equals_id_address, id);
+    }
 }
 
 // Saca la expresion en pilas y verifica semantica con el parametro de la funcion
@@ -1069,38 +1078,10 @@ void generate_exp_quadruples(){
         second_type = g_queue_pop_tail(StackTypes);     // Saca siguiente operando
         valid_type = valid_var_types(first_type, second_type); // Obtiene el tipo de valor al cual se casteara la operacion
         if (valid_type != 0){ // Si es valido, se genera el cuadruplo
-			// if(operator == RETURN){
-			// 			printf("EDOOOOO\n");
-			// 			insert_quadruple_to_array(RETURN, first_oper, 0, second_oper);
-			// 			g_queue_clear(StackOper);
-			// 			g_queue_clear(StackO);
-			// 		}
-            if (operator == EQUALS) { // || operator == 65) {   // '='  Igual para math_choices.
-                //g_queue_pop_tail(second_oper);
-                //printf("oper fondo %d\n", g_queue_peek_tail(StackOper));
+            if (operator == EQUALS) {
                 if (array_in == 1) { second_oper = equals_id_address; array_in = 0; equals_id_address = 0; }
-                    //g_queue_pop_tail(StackO);
-                //    printf("entre array %d\n", g_queue_pop_head(StackOper));
-				//    insert_quadruple_to_array(operator, g_queue_pop_tail(StackO), 0, first_oper);
-                //} else
-                    insert_quadruple_to_array(operator, second_oper, 0, first_oper);
-            //} //else if (operator == ARRAY) { // En caso de ser un arreglo, la asignacion es a un temp o a lo que se asigne
-            //        insert_quadruple_to_array(operator, second_oper, 0, first_oper);
-            //    }
+                insert_quadruple_to_array(operator, second_oper, 0, first_oper);
             } else {    // Asigna el tipo de dato a la variable que guardara el resultado de la operacion
-                /*if (array_in == 1) { 
-                    second_oper = equals_id_address;
-                    array_in = 0;
-                    equals_id_address = 0; 
-                    g_queue_push_tail(StackO, (gpointer)second_oper); 
-                    g_queue_push_tail(StackO, (gpointer)first_oper); 
-                    first_oper = g_queue_pop_tail(StackDimensions);
-                    second_oper = g_queue_pop_tail(StackDimensions);
-                    insert_quadruple_to_array(operator, second_oper, first_oper, temp_integers_count);
-                    g_queue_push_tail(StackO, (gpointer)temp_integers_count);  
-                    g_queue_push_tail(StackTypes, (gpointer)"integer");
-                    temp_integers_count = temp_integers_count + 1;
-                } else {*/
                     if (valid_type == 1) { temp_count = &temp_integers_count; temp_type = "integer"; }
                     if (valid_type == 2) { temp_count = &temp_strings_count; temp_type = "string"; }
                     if (valid_type == 3) { temp_count = &temp_booleans_count; temp_type = "boolean"; }

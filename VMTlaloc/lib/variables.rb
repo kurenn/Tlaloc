@@ -1,4 +1,4 @@
-require 'Stack'
+require 'stack'
 
 class Variables
   
