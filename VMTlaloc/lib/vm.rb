@@ -140,7 +140,7 @@ class VirtualMachine
         when 209 #gosub - va a otra funcion como llamado
           @memory.push_to_stack(@memory.global_memory[25000..44999], i)
           @memory.init_params
-          i = result.to_i + 1
+          i = first_oper.to_i - 1
         when 900
           @memory.push_param(first_oper.to_i)
         end

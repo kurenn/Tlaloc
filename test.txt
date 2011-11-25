@@ -1,20 +1,20 @@
 program test:
 
-    method void factorial(integer n):
-      printline(n).
-      return 0.
-    end method
+    method integer factorial(integer n):
+      define d as integer = 1.
 
-    method void algo(string texto):
-      printline(texto).
-      return 0.
+      if(n <= 1):
+        d = 1.
+      else:
+        d = factorial(n - 1) + factorial (n - 2).
+      end if
+      return d.
+
     end method
 
 
     method void main():
-      define facto as integer.
-      algo("Entre a algo").
-      factorial(5).
+      printline(factorial(5)).
     end method
 
 
