@@ -1,0 +1,34 @@
+program funciones:
+
+    method void prueba(string texto):
+      printline(texto).
+      return 0.
+    end method
+
+    method integer factorial(integer n):
+      define d as integer = 1.
+
+      if(n <= 1):
+        d = 1.
+      else:
+        d = n * factorial(n - 1).
+      end if
+      return d.
+
+    end method
+
+    method void algo():
+      define nas as string = "Entre a algo".
+      printline(nas).
+      return 0.
+    end method
+
+
+    method void main():
+      algo().
+      prueba("Por aqui paso").
+      printline(factorial(5)).
+    end method
+
+
+ end program

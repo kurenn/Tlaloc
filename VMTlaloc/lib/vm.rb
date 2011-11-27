@@ -108,7 +108,8 @@ class VirtualMachine
             @memory.global_memory[result.to_i] = @memory.global_memory[first_oper.to_i].to_s + 
                                           @memory.global_memory[second_oper.to_i].to_s
           else
-            @memory.global_memory[result.to_i] = @memory.global_memory[first_oper.to_i] + @memory.global_memory[second_oper.to_i]                    
+            @memory.global_memory[result.to_i] = @memory.global_memory[first_oper.to_i] + @memory.global_memory[second_oper.to_i]
+            #puts @memory.global_memory[result.to_i]                    
           end
         when 45 # -
           @memory.global_memory[result.to_i] = @memory.global_memory[first_oper.to_i] - @memory.global_memory[second_oper.to_i]
@@ -138,7 +139,7 @@ class VirtualMachine
         when 501 # asignacion de arrs mediante variables por referencia *gm[result] = gm[first + gm[second]]
           @memory.global_memory[result.to_i] = first_oper.to_i + @memory.global_memory[second_oper.to_i]
         when 209 #gosub - va a otra funcion como llamado
-          @memory.push_to_stack(@memory.global_memory[25000..44999], i)
+          @memory.push_to_stack(@memory.global_memory[25000..64999], i)
           @memory.init_params
           i = first_oper.to_i - 1
         when 900

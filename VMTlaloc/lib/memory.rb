@@ -34,9 +34,9 @@ class Memory
    end
 
    # Agrega variables locales y el index del cuadruplo donde se queda
-   def push_to_stack(locales, i)
-     @stack.push(locales, i)
-     @global_memory[25000..44999].map{|gm| gm = nil}
+   def push_to_stack(locals_and_temps, i)
+     @stack.push(locals_and_temps, i)
+     @global_memory[25000..64999].map{|gm| gm = nil}
    end
    
    # Resuelve parametros y arreglo auxiliar lo resetea para guardar valores para siguientes llamados

@@ -1,20 +1,19 @@
-program test:
+program funciones:
 
-    method integer factorial(integer n):
+    method integer fibo(integer n):
       define d as integer = 1.
 
       if(n <= 1):
-        d = 1.
+        d = n.
       else:
-        d = factorial(n - 1) + factorial (n - 2).
+        d = fibo(n - 2) + fibo(n - 1).
       end if
       return d.
 
     end method
 
-
     method void main():
-      printline(factorial(5)).
+      printline(fibo(7)).
     end method
 
 
