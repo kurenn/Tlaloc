@@ -16,9 +16,9 @@ Algunas de las ventajas que el lenguaje brindará a los estudiantes serán las s
 * Compatible por la generación de código interpretado por medio de una máquina virtual. 
 * Lenguaje como herramienta de aprendizaje que facilitará el reconocimiento de estructuras básicas en todo lenguaje de programación estructurado.  
 * Mismos estatutos a los utilizados en los lenguajes más populares hoy en día en el mundo. 
+<br /> <br /> 
 
-
-Los atributos de calidad como producto de software del mismo lenguaje serán:
+Los atributos de calidad como producto de software del mismo lenguaje son:
 
 * Compatibilidad
 * Aprendibilidad	
@@ -28,7 +28,7 @@ Los atributos de calidad como producto de software del mismo lenguaje serán:
 Elementos disponibles
 ---------------------
 
-El lenguaje en toda su extensión contará con los siguientes elementos:
+El lenguaje en toda su extensión cuenta con los siguientes elementos:
 
 * Declaración y asignación de variables locales y globales.
 * Generación de expresiones.
@@ -43,21 +43,10 @@ El lenguaje en toda su extensión contará con los siguientes elementos:
 Estructura técnica
 ---------------------
 
-Licencia
----------------------
+Pendiente
 
-Compilador y Máquina Virtual para el lenguaje de programación Tláloc, como proyecto académico. 
-
-Copyright (C) 2011 Eduardo López & Abraham Kuri
-
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
-
-
-Manual de usuario
+<br /> <br /> <br /> <br /> 
+Empezando a usar Tláloc
 ====================
 
 Para empezar a usar Tláloc, es necesario definir un nombre para el programa, en este caso test. Todo programa debe llamar una función main() del tipo void la cual no recibirá parámetros, e insertar el bloque de código a ejecutar.
@@ -71,7 +60,22 @@ Para empezar a usar Tláloc, es necesario definir un nombre para el programa, en
     end program
 
 
-Ejemplo de elementos disponibles
+Forma de ejecución
+---------------------
+
+1. Situarse en la carpeta donde estan los archivos fuente
+2. Ejecutar el siguiente comando en la terminal:
+    
+        make && ./tlaloc < nombre_archivo_a_compilar.txt
+
+3. Una vez que el programa haya compilado correctamente, se debe de correr la maquina virtual a traves del siguiente comando:
+    
+        $ ruby VMTlaloc/init.ruby
+
+Cabe mencionar que el comando anterior solo funciona para maquinas con arquitectura UNIX y con las dependencias necesarias para la ejecucion, en este caso ruby en la version 1.9.2 y gcc en la version 4.1 o superior.
+
+
+Uso de elementos disponibles
 ---------------------
 
 Toda instrucción en Tláloc debe tener un inicio y un fin, es decir:
@@ -112,10 +116,19 @@ Tipos de dato
 
 Los tipos de dato con los que el programador cuenta son:
 
-* Integer (Entero)
-* Decimal (Flotante)
-* Boolean (Variable con valor True o False)
-* String (Conjunto de carácteres)
+    ---------------------------------------------------------------------
+    |Tipo de dato|       Traducción       |        Valores esperados    |
+    ---------------------------------------------------------------------
+    |Integer     |   Entero               |         [0-9]+              |
+    |Decimal     |   Flotante             |         [0-9]+\.[0-9]+       |
+    |Boolean     |   Booleano             |         True o False        |
+    |String      |   Cadena de caractéres |         \".*\"                |
+    ---------------------------------------------------------------------
+
+La formación de sus ID's se da con la siguiente expresión regular:
+
+    [a-zA-Z_][a-zA-Z0-9_]*
+
 
 Estos tipos se utilizan para la definición de variables, tal y como se muestra a continuación:
 
@@ -138,7 +151,7 @@ La definición de variables en Tláloc se lleva a cabo de la siguiente manera:
 	
     define var as integer.
 
-	Del estatuto anterior se puede fácilmente identificar que con la palabra reservada "define" se indica al programa que será una variable, posteriormente sigue el identificador de la variable y finalmente su tipo de dato.
+Del estatuto anterior se puede fácilmente identificar que con la palabra reservada "define" se indica al programa que será una variable, posteriormente sigue el identificador de la variable y finalmente su tipo de dato.
 
 Para variables globales, solo es cuestión de definirlas después de la inicialización del programa:
 
@@ -150,7 +163,7 @@ Para variables globales, solo es cuestión de definirlas después de la iniciali
             ...
             ...
 
-	Para la asignación de una variable en su definición, se haría de la siguiente manera:
+Para la asignación de una variable en su definición, se haría de la siguiente manera:
 
 	define var as integer = 1.
 
@@ -185,7 +198,7 @@ Definición de estatutos tradicionales
 		printline(“a es mayor que b”).
 	end if
 
-	Es necesario marcar el inicio del condicional, con los dos puntos como símbolo y se cierra con las palabras clave end y el estatuto en cuestión en este caso if.
+Es necesario marcar el inicio del condicional, con los dos puntos como símbolo y se cierra con las palabras clave end y el estatuto en cuestión en este caso if.
 
 #### Estatuto 'for' en Tláloc
 
@@ -230,6 +243,7 @@ Para la escritura se tienen dos funciones para evitar errores en ejecución.
 	readint(a).
 
 En caso de querer leer un string, se puede utilizar la función readline.
+
 	define palabra as string.
 	readline(palabra).
 
@@ -291,18 +305,42 @@ Puntos importantes a considerar
 Descripción de los posibles errores
 ---------------------
 
-Forma de ejecución
+    ------------------------------------------------------------------------------
+    | Descripción del error                  |    Ejecución    |   Compilación   |
+    ------------------------------------------------------------------------------
+    | Acceso a una casilla inexistente       |                 |                 |
+    | de un arreglo                          |                 |         X       |
+    ------------------------------------------------------------------------------
+    | Operación entre tipos incompatibles    |                 |                 |
+    | de dato                                |                 |         X       |
+    | Operador lógico faltante para la       |                 |                 |
+    | comparación                            |        X        |                 |
+    | Error al tratar de abrir el archivo    |                 |                 |
+    | donde se imprimirán cuádruplos         |                 |                 |
+    | La memoria virtual asignada se agota   |                 |                 |
+    | Operaciones entre operadores lógicos   |                 |                 |
+    | y binarios                             |        X        |                 |
+    | Asignación de tipos de variable        |                 |                 |
+    | incorrectos.                           |        X        |                 |
+    | Variable no inicializada               |                 |         X       |
+    | Falta de terminación con un punto      |                 |                 |
+    | para cada instrucción	                 |        X        |                 |
+    | Definición de variable fuera del       |                 |                 |
+    | bloque de asignación                   |        X        |                 |
+    ------------------------------------------------------------------------------
+
+
+Licencia
 ---------------------
 
-1. Situarse en la carpeta donde estan los archivos fuente
-2. Ejecutar el siguiente comando en la terminal:
-    
-        make && ./tlaloc < nombre_archivo_a_compilar.txt
+Compilador y Máquina Virtual para el lenguaje de programación Tláloc, como proyecto académico. 
 
-3. Una vez que el programa haya compilado correctamente, se debe de correr la maquina virtual a traves del siguiente comando:
-    
-        $ ruby VMTlaloc/init.ruby
+Copyright (C) 2011 Eduardo López & Abraham Kuri
 
-Cabe mencionar que el comando anterior solo funciona para maquinas con arquitectura UNIX y con las dependencias necesarias para la ejecucion, en este caso ruby en la version 1.9.2 y gcc en la version 4.1 o superior.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/gpl.html.
 
 
