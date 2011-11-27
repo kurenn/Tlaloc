@@ -188,7 +188,7 @@ Es necesario considerar que todas las definiciones deben de hacerse al principio
 Definición de estatutos tradicionales
 ---------------------
 
-#### Estatuto 'if' en Tláloc
+### Estatuto 'if' en Tláloc
 
 	Para definir un estatuto de tipo condicional en Tláloc, se maneja la siguiente sintaxis:
 	
@@ -200,7 +200,7 @@ Definición de estatutos tradicionales
 
 Es necesario marcar el inicio del condicional, con los dos puntos como símbolo y se cierra con las palabras clave end y el estatuto en cuestión en este caso if.
 
-#### Estatuto 'for' en Tláloc
+### Estatuto 'for' en Tláloc
 
 La estructura sintáctica para construir un estatuto for es la siguiente:
 
@@ -210,7 +210,7 @@ La estructura sintáctica para construir un estatuto for es la siguiente:
 
 En el ejemplo anterior, se sigue el mismo orden para la declaración de estatutos, facilitando así el desarrollo de enunciados dentro del código.
 
-#### Estatuto 'while' en Tláloc
+### Estatuto 'while' en Tláloc
 
 La construcción el estatuto while dentro de Tláloc es la siguiente:
 
@@ -220,7 +220,7 @@ La construcción el estatuto while dentro de Tláloc es la siguiente:
 	end while
 
 
-#### Estatutos de lectura y escritura
+### Estatutos de lectura y escritura
 
 Los estatutos de lectura y escritura son sencillos de usar.
 
@@ -296,9 +296,9 @@ Es necesario tener una variable a la cual se le asignará el valor, ya que cada 
 Puntos importantes a considerar
 ---------------------
 
-1. Tláloc es un lenguaje estructurado de alto nivel, que permite la manipulación de arreglos unidimensionales y bidimensionales.
-2. Cuenta con funciones matemáticas predefinidas para facilitar los cálculos.
-3. Todas las definiciones deben de hacerse al principio de un bloque
+1. Todas las definiciones deben de hacerse al principio de un bloque.
+2. Solo puede haber una variable al hacer el 'return' en la función.
+3. Para las funciones void debe haber un return necesariamente. Para que el programa funcione sin problemas debe retornarse un entero (Recomendado: return 0).
 
 
 
@@ -313,18 +313,26 @@ Descripción de los posibles errores
     ------------------------------------------------------------------------------
     | Operación entre tipos incompatibles    |                 |                 |
     | de dato                                |                 |        X        |
+    ------------------------------------------------------------------------------
     | Operador lógico faltante para la       |                 |                 |
     | comparación                            |        X        |                 |
+    ------------------------------------------------------------------------------
     | Error al tratar de abrir el archivo    |                 |                 |
     | donde se imprimirán cuádruplos         |                 |                 |
+    ------------------------------------------------------------------------------
     | La memoria virtual asignada se agota   |                 |                 |
+    ------------------------------------------------------------------------------
     | Operaciones entre operadores lógicos   |                 |                 |
     | y binarios                             |        X        |                 |
+    ------------------------------------------------------------------------------
     | Asignación de tipos de variable        |                 |                 |
     | incorrectos.                           |        X        |                 |
+    ------------------------------------------------------------------------------
     | Variable no inicializada               |                 |        X        |
+    ------------------------------------------------------------------------------
     | Falta de terminación con un punto      |                 |                 |
-    | para cada instrucción	               |        X        |                 |
+    | para cada instrucción	              |        X        |                 |
+    ------------------------------------------------------------------------------
     | Definición de variable fuera del       |                 |                 |
     | bloque de asignación                   |        X        |                 |
     ------------------------------------------------------------------------------
