@@ -120,9 +120,9 @@ Los tipos de dato con los que el programador cuenta son:
     |Tipo de dato|       Traducción       |        Valores esperados    |
     ---------------------------------------------------------------------
     |Integer     |   Entero               |         [0-9]+              |
-    |Decimal     |   Flotante             |         [0-9]+\.[0-9]+       |
+    |Decimal     |   Flotante             |         [0-9]+\.[0-9]+      |
     |Boolean     |   Booleano             |         True o False        |
-    |String      |   Cadena de caractéres |         \".*\"                |
+    |String      |   Cadena de caractéres |         \".*\"              |
     ---------------------------------------------------------------------
 
 La formación de sus ID's se da con la siguiente expresión regular:
@@ -309,10 +309,10 @@ Descripción de los posibles errores
     | Descripción del error                  |    Ejecución    |   Compilación   |
     ------------------------------------------------------------------------------
     | Acceso a una casilla inexistente       |                 |                 |
-    | de un arreglo                          |                 |         X       |
+    | de un arreglo                          |                 |        X        |
     ------------------------------------------------------------------------------
     | Operación entre tipos incompatibles    |                 |                 |
-    | de dato                                |                 |         X       |
+    | de dato                                |                 |        X        |
     | Operador lógico faltante para la       |                 |                 |
     | comparación                            |        X        |                 |
     | Error al tratar de abrir el archivo    |                 |                 |
@@ -322,9 +322,9 @@ Descripción de los posibles errores
     | y binarios                             |        X        |                 |
     | Asignación de tipos de variable        |                 |                 |
     | incorrectos.                           |        X        |                 |
-    | Variable no inicializada               |                 |         X       |
+    | Variable no inicializada               |                 |        X        |
     | Falta de terminación con un punto      |                 |                 |
-    | para cada instrucción	                 |        X        |                 |
+    | para cada instrucción	               |        X        |                 |
     | Definición de variable fuera del       |                 |                 |
     | bloque de asignación                   |        X        |                 |
     ------------------------------------------------------------------------------
